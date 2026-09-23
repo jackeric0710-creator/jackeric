@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google 日曆一鍵加入連結產生器</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 16px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 90px;
+      resize: vertical;
+    }
+    .time-row {
+      display: flex;
+      gap: 12px;
+    }
+    .time-row > div {
+      flex: 1;
+    }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      font-size: 16px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:active {
+      background: #1557b0;
+    }
+    .result {
+      margin-top: 28px;
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+      word-break: break-all;
+      display: none;
+    }
+    .result a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: 600;
+      display: block;
+      margin: 10px 0;
+    }
+    .copy-btn {
+      margin-top: 12px;
+      background: #34a853;
+    }
+    .hint {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 4px;
+    }
+    .note {
+      margin-top: 20px;
+      padding: 12px;
+      background: #e8f0fe;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>Google 日曆一鍵加入連結產生器</h1>
+
+  <label for="title">事件名稱</label>
+  <input type="text" id="title" placeholder="例如：設計會議" value="設計會議">
+
+  <label for="date">日期（西元年）</label>
+  <input type="date" id="date" value="2026-10-10">
+
+  <div class="time-row">
+    <div>
+      <label for="startTime">開始時間</label>
+      <input type="time" id="startTime" value="10:00">
+    </div>
+    <div>
+      <label for="endTime">結束時間</label>
+      <input type="time" id="endTime">
+      <div class="hint">未填則預設 1 小時</div>
+    </div>
+  </div>
+
+  <label for="location">地點</label>
+  <input type="text" id="location" placeholder="例如：高雄市中山路1號" value="高雄市中山路1號">
+
+  <label for="details">說明內容（選填）</label>
+  <textarea id="details" placeholder="請輸入活動說明或注意事項…"></textarea>
+
+  <button onclick="generateLink()">產生一鍵加入連結</button>
+
+  <div class="result" id="result">
+    <div>請點擊下方連結，即可加入 Google 日曆：</div>
+    <a id="link" href="#" target="_blank"></a>
+    <button class="copy-btn" onclick="copyLink()">複製連結</button>
+  </div>
+
+  <div class="note">
+    ✅ 已自動加上 <code>openExternalBrowser=1</code><br>
+    在 LINE 中點擊此連結時，會直接使用手機的預設瀏覽器開啟（不會用 LINE 內建瀏覽器）。
+  </div>
+
+  <script>
+    function formatDateTime(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      const h = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      return `${y}${m}${d}T${h}${min}00`;
+    }
+
+    function generateLink() {
+      const title = document.getElementById('title').value.trim() || '未命名活動';
+      const dateStr = document.getElementById('date').value;
+      const startTime = document.getElementById('startTime').value;
+      const endTime = document.getElementById('endTime').value;
+      const location = document.getElementById('location').value.trim();
+      const details = document.getElementById('details').value.trim();
+
+      if (!dateStr) {
+        alert('請選擇日期');
+        return;
+      }
+
+      let datesParam = '';
+
+      if (startTime) {
+        // 有開始時間 → 使用時段活動
+        const start = new Date(`${dateStr}T${startTime}:00`);
+        let end;
+
+        if (endTime) {
+          end = new Date(`${dateStr}T${endTime}:00`);
+          // 如果結束時間比開始時間早，視為隔天
+          if (end <= start) {
+            end.setDate(end.getDate() + 1);
+          }
+        } else {
+          // 沒有結束時間 → 預設 1 小時
+          end = new Date(start.getTime() + 60 * 60 * 1000);
+        }
+
+        datesParam = formatDateTime(start) + '/' + formatDateTime(end);
+      } else {
+        // 沒有開始時間 → 整天活動
+        const start = dateStr.replace(/-/g, '');
+        const endDate = new Date(dateStr);
+        endDate.setDate(endDate.getDate() + 1);
+        const end = endDate.toISOString().slice(0, 10).replace(/-/g, '');
+        datesParam = start + '/' + end;
+      }
+
+      let url = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+      url += '&text=' + encodeURIComponent(title);
+      url += '&dates=' + datesParam;
+      if (location) url += '&location=' + encodeURIComponent(location);
+      if (details) url += '&details=' + encodeURIComponent(details);
+      url += '&ctz=Asia/Taipei';
+      
+      // 關鍵：強制 LINE 使用外部預設瀏覽器開啟
+      url += '&openExternalBrowser=1';
+
+      const linkEl = document.getElementById('link');
+      linkEl.href = url;
+      linkEl.textContent = url;
+
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function copyLink() {
+      const url = document.getElementById('link').href;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('連結已複製！');
+      }).catch(() => {
+        const temp = document.createElement('input');
+        temp.value = url;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        alert('連結已複製！');
+      });
+    }
+
+    // 頁面載入時自動產生一次
+    window.onload = generateLink;
+  </script>
+</body>
+</html>
