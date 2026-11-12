@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
 <meta name="theme-color" content="#0b1220">
-<title>台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與損益計算器</title>
+<title>台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與反轉訊號計算器</title>
 <style>
 :root{
  --bg:#0b1220;--panel:#142137;--line:#2d425e;--txt:#f1f6ff;--muted:#9fb2ca;
@@ -146,6 +146,64 @@ tr:last-child td{border:0}
 .tech-tag.blue{border-color:rgba(120,181,255,0.55);color:#93c5fd;background:rgba(120,181,255,0.1)}
 .tech-tag.purple{border-color:rgba(192,132,252,0.55);color:#e9d5ff;background:rgba(192,132,252,0.12)}
 
+/* 技術指標符合項目明細列表 */
+.ind-match-box{
+ background:#0b1727;border:1px solid #2a3d56;border-radius:14px;padding:13px 14px;margin-top:12px;
+}
+.ind-match-head{font-size:14.5px;font-weight:800;color:#93c5fd;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.ind-match-list{display:flex;flex-direction:column;gap:7px}
+.ind-match-item{
+ background:#112036;border:1px solid #283f5e;border-radius:10px;padding:9px 11px;
+ font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:8px;
+}
+.ind-match-item.bull{border-left:3.5px solid #ff5e74}
+.ind-match-item.bear{border-left:3.5px solid #2ee0a1}
+.ind-match-item.neutral{border-left:3.5px solid #fbbf24}
+.ind-match-item.etf-buy{border-left:3.5px solid #c084fc}
+.ind-badge{
+ flex:0 0 auto;font-size:11.5px;font-weight:800;padding:2px 7px;border-radius:6px;margin-top:1px;
+ background:#1d3252;color:#cfe3ff;
+}
+.ind-match-item.bull .ind-badge{background:rgba(255,94,116,0.18);color:#ff8fa0}
+.ind-match-item.bear .ind-badge{background:rgba(46,224,161,0.16);color:#4be8b0}
+.ind-match-item.neutral .ind-badge{background:rgba(251,191,36,0.18);color:#fcd34d}
+.ind-match-item.etf-buy .ind-badge{background:rgba(192,132,252,0.2);color:#e9d5ff}
+
+/* 反轉訊號偵測專區 */
+.reversal-box{
+ background:linear-gradient(145deg,#122238,#0b1524);
+ border:1.5px solid #355682;border-radius:14px;padding:14px;margin-top:12px;
+}
+.reversal-box.bull-rev{
+ background:linear-gradient(145deg,#261420,#111827);
+ border-color:#f43f5e;
+}
+.reversal-box.bear-rev{
+ background:linear-gradient(145deg,#102622,#0d1726);
+ border-color:#10b981;
+}
+.reversal-box.mixed-rev{
+ background:linear-gradient(145deg,#241d12,#111827);
+ border-color:#f59e0b;
+}
+.rev-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.rev-title{font-size:15px;font-weight:900;color:#93c5fd}
+.reversal-box.bull-rev .rev-title{color:#ff8091}
+.reversal-box.bear-rev .rev-title{color:#34d399}
+.reversal-box.mixed-rev .rev-title{color:#fbbf24}
+.rev-status-pill{
+ font-size:12.5px;font-weight:800;padding:4px 11px;border-radius:99px;
+ background:#1b304d;border:1px solid #496e9c;color:#dbeafe;
+}
+.reversal-box.bull-rev .rev-status-pill{background:rgba(244,63,94,0.18);border-color:#fb7185;color:#fecdd3}
+.reversal-box.bear-rev .rev-status-pill{background:rgba(16,185,129,0.18);border-color:#34d399;color:#a7f3d0}
+.reversal-box.mixed-rev .rev-status-pill{background:rgba(245,158,11,0.18);border-color:#fbbf24;color:#fef3c7}
+.rev-list{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.rev-item{
+ background:#0a1220;border:1px solid #263954;border-radius:10px;padding:9px 11px;
+ font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:8px;
+}
+
 /* 專屬策略檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） */
 .strategy-box{
  background:linear-gradient(145deg,#1d1626,#10192b);
@@ -249,7 +307,23 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  .card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:13px!important;margin-bottom:10px!important;break-inside:avoid;page-break-inside:avoid;border-radius:10px!important}
  .section{color:#0f172a!important;font-size:15px!important}
  .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
- .score-hero,.metric,.rb-item,.tech-tag,.pill{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
+ .score-hero,.metric,.rb-item,.tech-tag,.pill,.ind-match-box,.ind-match-item,.rev-item{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
+ .ind-match-item.bull{border-left:4px solid #dc2626!important}
+ .ind-match-item.bear{border-left:4px solid #059669!important}
+ .ind-match-item.neutral{border-left:4px solid #d97706!important}
+ .ind-match-item.etf-buy{border-left:4px solid #7e22ce!important}
+ .ind-badge{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #cbd5e1!important}
+ .ind-match-head{color:#0f172a!important}
+ .reversal-box{background:#ffffff!important;border:1.5px solid #64748b!important}
+ .reversal-box.bull-rev{border-color:#dc2626!important}
+ .reversal-box.bear-rev{border-color:#059669!important}
+ .reversal-box.mixed-rev{border-color:#d97706!important}
+ .rev-title{color:#0f172a!important}
+ .reversal-box.bull-rev .rev-title{color:#dc2626!important}
+ .reversal-box.bear-rev .rev-title{color:#059669!important}
+ .reversal-box.mixed-rev .rev-title{color:#b45309!important}
+ .rev-status-pill{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
+ #revSummary{color:#1e293b!important}
  .score-hero{flex-direction:row!important}
  .metrics{grid-template-columns:repeat(3,1fr)!important}
  .metrics-5{grid-template-columns:repeat(5,1fr)!important}
@@ -290,8 +364,8 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
 <body><main>
 <header>
  <div class="logo">📊</div>
- <h1>台股即時行情、KD走勢、個股/ETF雙軌評分與損益計算器</h1>
- <div class="sub">自動辨識個股與 ETF 切換專屬評分模型｜支援手機觸控縮放與全白底 PDF 報表</div>
+ <h1>台股即時行情、KD走勢、個股/ETF雙軌評分與反轉訊號計算器</h1>
+ <div class="sub">自動辨識個股與 ETF 切換專屬評分模型｜支援反轉訊號偵測、指標符合明細與全白底 PDF 報表</div>
  <div class="print-meta" id="printMeta">報表產出時間：—</div>
 
  <div id="stockBanner" class="stock-banner hidden">
@@ -330,7 +404,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
   <div class="field" style="grid-column:1/-1">
    <label for="target">目標價格（選填）</label>
    <input id="target" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="輸入目標價自動算連續漲跌停次數">
-   <div class="hint">系統會自動判斷輸入代號為「個股」或「ETF」，並套用專屬技術評分標準。</div>
+   <div class="hint">系統會自動判斷輸入代號為「個股」或「ETF」，套用專屬技術評分標準並偵測有無反轉訊號。</div>
   </div>
  </div>
 
@@ -341,11 +415,11 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
 
  <div class="pdf-action-bar hidden" id="pdfActionBar">
   <button type="button" class="pdf-btn" id="exportPdfBtn">📄 產生 PDF 報表（全白底省墨版）</button>
-  <span class="pdf-tip">自動轉換為<b>全白底高對比圖表</b>（含文末雙軌評分說明），檔名預設為「<b>名稱_代號_當天日期</b>」。</span>
+  <span class="pdf-tip">自動轉換為<b>全白底高對比圖表</b>（含反轉訊號、指標符合明細與文末評分標準），檔名預設為「<b>名稱_代號_當天日期</b>」。</span>
  </div>
 </section>
 
-<!-- 技術面強勢度綜合指數卡（自動切換個股／ETF 雙軌評分） -->
+<!-- 技術面強勢度綜合指數卡（自動切換個股／ETF 雙軌評分 + 指標符合明細 + 反轉訊號） -->
 <section class="card hidden" id="strengthCard">
  <div id="assetModeChip" class="mode-chip stock">📌 目前套用：一般個股攻擊動能評分模型</div>
  <div class="subhead" style="margin-bottom:10px">
@@ -363,7 +437,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
   </div>
   <div style="flex:1.5;min-width:220px">
-   <div class="signal-title-lg">多空訊號拆解：</div>
+   <div class="signal-title-lg">多空訊號標籤：</div>
    <div class="tag-list" id="strengthTags"></div>
   </div>
  </div>
@@ -374,6 +448,25 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
   <div class="metric"><small>RSI (6) 相對強弱</small><strong id="indRsi">—</strong></div>
   <div class="metric"><small>MACD (12,26,9) 柱狀</small><strong id="indMacd">—</strong></div>
   <div class="metric"><small>量比 (當日量 / 5日均量)</small><strong id="indVolRatio">—</strong></div>
+ </div>
+
+ <!-- 新增功能 1：技術分析指標符合項目逐項說明 -->
+ <div class="ind-match-box" id="indMatchBox">
+  <div class="ind-match-head">
+   <span>📋 技術分析指標符合項目逐項說明</span>
+   <span style="font-size:11.5px;color:#9fb2ca;font-weight:600" id="indMatchCount">共檢核 5 大指標</span>
+  </div>
+  <div class="ind-match-list" id="indMatchList"></div>
+ </div>
+
+ <!-- 新增功能 2：有無反轉訊號偵測專區 -->
+ <div class="reversal-box" id="reversalBox">
+  <div class="rev-head">
+   <span class="rev-title" id="revTitle">🔄 趨勢反轉訊號偵測</span>
+   <span class="rev-status-pill" id="revBadge">偵測中…</span>
+  </div>
+  <div style="font-size:12.5px;color:#d6e2f0;line-height:1.55" id="revSummary">—</div>
+  <div class="rev-list" id="revList"></div>
  </div>
 
  <!-- 專屬檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） -->
@@ -545,7 +638,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  </div>
 </section>
 
-<!-- 完整使用說明與雙軌評分規則說明（PDF 匯出時完整保留於報表最末） -->
+<!-- 完整使用說明與個股／ETF 雙軌評分標準（含反轉訊號與指標符合判讀說明） -->
 <section class="card guide-block" id="guideCard">
  <div class="section">📖 使用說明與個股／ETF 雙軌評分標準</div>
  <div class="note">
@@ -556,7 +649,29 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    <li><b>模式 B｜ETF（波段趨勢與超賣低接模型）</b>：ETF 由一籃子成分股組成，波動較穩健，評分改以 <b>月線（MA20）與季線（MA60）中長線多頭保護（±24 分）</b> 為核心；日 KD 黃金交叉加 14 分，若 <b>KD 跌破 25 進入低檔超賣區</b>不給予重罰，反而標記為「<b>低檔超賣分批低接觀察區（+6 分）</b>」；遇到除息或大盤急跌爆量下殺時，亦解讀為低接承接量而非主力出貨。</li>
   </ul>
 
-  <h3>二、綜合技術強勢總分（0～100 分）等級對照</h3>
+  <h3>二、技術分析指標符合項目說明</h3>
+  <p style="margin:4px 0 8px">在「技術面綜合評分」卡片中，系統會列出 <b>均線架構、日 KD(9,3,3)、RSI(6)、MACD(12,26,9)、成交量能（量比）</b> 五大指標目前究竟符合哪一種型態（多頭排列、空頭排列、低檔超賣低接區、零軸上紅柱擴大、帶量上攻或急跌低接買盤等），並顯示各自對總分的加減分影響，讓評分依據一目了然。</p>
+
+  <h3>三、趨勢反轉訊號偵測標準（有無反轉訊號）</h3>
+  <p style="margin:4px 0 8px">系統會同步掃描近 10～15 個交易日的價量與指標變化，自動判斷目前「<b>無明顯反轉訊號（延續原趨勢）</b>」、「<b>出現底部止跌轉強反轉訊號</b>」、「<b>出現高檔轉弱／見頂反轉警訊</b>」或「<b>多空反轉訊號並存</b>」，偵測條件包含：</p>
+  <ul>
+   <li><b>底部轉強（多頭反轉）訊號</b>：
+    <br>① <b>KD 低檔黃金交叉</b>（K 值與 D 值位於 30 以下低檔區由下往上交叉，代表短線超賣止跌轉強）；
+    <br>② <b>MACD 綠柱轉紅（翻正）</b>（OSC 柱狀體由負轉正，空方動能竭盡、多方開始接手）；
+    <br>③ <b>K 線底部反轉型態</b>（包含「<b>多頭吞噬／長紅棒</b>」收盤吞掉前一日黑 K 實體且漲幅 ≥ 2.5%，或「<b>長下影線探底回升（錘子線）</b>」下影線長度達實體 2 倍以上）；
+    <br>④ <b>指標底背離</b>（近 10 日股價創波段新低，但日 KD 的 K 值或 RSI(6) 未破前低，顯示下跌動能明顯鈍化）；
+    <br>⑤ <b>帶量長紅突破月線（MA20）</b>（股價由月線下方一舉帶量站回月線之上，扭轉中期弱勢）。
+   </li>
+   <li><b>高檔轉弱（空頭反轉）訊號</b>：
+    <br>① <b>KD 高檔死亡交叉</b>（K 值與 D 值位於 75 以上高檔區由上往下交叉，短線過熱獲利賣壓湧現）；
+    <br>② <b>MACD 紅柱轉綠（翻負）</b>（OSC 柱狀體由正轉負，多方推升動能轉弱）；
+    <br>③ <b>K 線高檔反轉型態</b>（包含「<b>空頭吞噬／長黑棒</b>」跌破前一日紅 K 實體且跌幅 ≥ 2.5%，或「<b>長上影線遇壓回落（避雷針／射擊之星）</b>」上影線長度達實體 2 倍以上）；
+    <br>④ <b>指標頂背離</b>（近 10 日股價創波段新高，但日 KD 的 K 值或 RSI(6) 卻低於前高，追價動能跟不上股價）；
+    <br>⑤ <b>帶量長黑跌破月線（MA20）</b>（股價由月線上方帶量跌破月線支撐，中期趨勢恐由多翻空）。
+   </li>
+  </ul>
+
+  <h3>四、綜合技術強勢總分（0～100 分）等級對照</h3>
   <ul>
    <li><b>75 分以上</b>：🔥 極強勢多頭格局（個股主升段噴發／ETF 強勢多頭波段）</li>
    <li><b>60～74 分</b>：📈 偏多震盪走強（均線有撐、趨勢偏多操作）</li>
@@ -565,15 +680,15 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    <li><b>29 分以下</b>：❄️ 弱勢空頭格局（短中期均線空頭排列，宜保守觀望）</li>
   </ul>
 
-  <h3>三、手機操作與全白底 PDF 報表說明</h3>
+  <h3>五、手機操作與全白底 PDF 報表說明</h3>
   <ul>
    <li><b>三圖同步縮放與平移</b>：K 線、成交量與 KD 走勢圖共用同步時間軸，在手機上可用<b>雙指捏合放大縮小、單指左右滑動檢視歷史區間</b>，或點擊圖表右上角「<b>＋ / － / 重置</b>」按鈕。</li>
-   <li><b>全白底省墨 PDF 報表</b>：查詢後點擊「<b>產生 PDF 報表</b>」，系統會將所有圖表自動轉為純白底高對比配色以節省列印油墨，預設檔名為「<b>股票名稱_代號_當天日期</b>」，並完整附帶本評分標準供分享或上傳給 AI 分析。</li>
-   <li><i>註：以上指標與評分均由歷史與即時成交數據客觀運算得出，僅供技術分析與試算參考，不構成投資買賣建議；損益試算亦未扣除手續費與證交稅。</i></li>
+   <li><b>全白底省墨 PDF 報表</b>：查詢後點擊「<b>產生 PDF 報表</b>」，系統會將所有圖表自動轉為純白底高對比配色以節省列印油墨，預設檔名為「<b>股票名稱_代號_當天日期</b>」，並完整附帶反轉訊號、指標符合明細與本評分標準供分享或上傳給 AI 分析。</li>
+   <li><i>註：以上指標、反轉訊號與評分均由歷史與即時成交數據客觀運算得出，僅供技術分析與試算參考，不構成投資買賣建議；損益試算亦未扣除手續費與證交稅。</i></li>
   </ul>
  </div>
 </section>
-<footer class="note" style="text-align:center;padding:5px 0 20px">台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與損益計算器</footer>
+<footer class="note" style="text-align:center;padding:5px 0 20px">台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與反轉訊號計算器</footer>
 </main>
 <script>
 const $=id=>document.getElementById(id),v=id=>Number($(id).value);
@@ -582,13 +697,12 @@ const fmtInt=n=>Math.round(Number(n)).toLocaleString("zh-TW");
 const fmtSignedInt=n=>{const val=Math.round(Number(n));return (val>0?"+":"")+val.toLocaleString("zh-TW")};
 
 let stockNameCache="";
-let isEtfAsset=false; // 自動判定為 ETF 或個股
+let isEtfAsset=false;
 let fullChartSeries=[];
 let instSeriesCache=[];
 let activeIdx=-1;
 let isPrintMode=false;
 
-// 同步縮放與平移狀態（K線、成交量、KD 三圖共用）
 let viewStart=0;
 let viewCount=75;
 const MIN_BARS=15;
@@ -733,10 +847,126 @@ function buildIndicatorSeries(rawList){
  return out.length>180?out.slice(-180):(out.length>15?out.slice(8):out);
 }
 
-// 雙軌技術評分引擎：自動區分 ETF（波段趨勢與超賣低接）與 個股（攻擊動能與紅牛股）
+// 趨勢反轉訊號偵測引擎（偵測近 10 日價量與指標反轉條件）
+function detectReversalSignals(series,isEtf){
+ if(!series||series.length<5){
+  return {status:"none",badge:"⚪ 資料不足暫無反轉訊號",summary:"歷史交易日數較少，暫無法完整比對多空背離與反轉型態。",signals:[]};
+ }
+ const pt=series[series.length-1];
+ const prev=series[series.length-2];
+ const signals=[];
+ const volRatio=pt.vma5>0?(pt.volLots/pt.vma5):1;
+
+ // 1. KD 低檔黃金交叉 / 高檔死亡交叉
+ if(pt.prevK<=pt.prevD&&pt.k9>pt.d9){
+  if(pt.k9<=35||pt.d9<=35){
+   signals.push({dir:"bull",icon:"🔺",name:"KD 低檔黃金交叉",desc:`日 K9(${pt.k9.toFixed(1)}) 於 35 以下低檔區向上突破 D9(${pt.d9.toFixed(1)})，屬典型超賣止跌轉強反轉訊號。`});
+  }else if(pt.k9<65){
+   signals.push({dir:"bull",icon:"🔺",name:"KD 中低檔黃金交叉",desc:`日 K9(${pt.k9.toFixed(1)}) 由下往上突破 D9(${pt.d9.toFixed(1)})，短線整理結束重新轉多。`});
+  }
+ }
+ if(pt.prevK>=pt.prevD&&pt.k9<pt.d9){
+  if(pt.k9>=70||pt.d9>=70){
+   signals.push({dir:"bear",icon:"🔻",name:"KD 高檔死亡交叉",desc:`日 K9(${pt.k9.toFixed(1)}) 於 70 以上過熱區向下跌破 D9(${pt.d9.toFixed(1)})，需防範短線高檔反轉拉回。`});
+  }
+ }
+
+ // 2. MACD 柱狀體零軸翻轉（綠轉紅 / 紅轉綠）
+ if(prev.osc<=0&&pt.osc>0){
+  signals.push({dir:"bull",icon:"🔺",name:"MACD 綠柱轉紅（動能翻多）",desc:`MACD 柱狀體由負值 (${prev.osc.toFixed(2)}) 翻正 (+${pt.osc.toFixed(2)})，空方力道竭盡、多方動能啟動反轉。`});
+ }else if(prev.osc>=0&&pt.osc<0){
+  signals.push({dir:"bear",icon:"🔻",name:"MACD 紅柱轉綠（動能轉弱）",desc:`MACD 柱狀體由正值 (+${prev.osc.toFixed(2)}) 翻負 (${pt.osc.toFixed(2)})，多頭推升力道衰竭、進入修正反轉。`});
+ }
+
+ // 3. K 線反轉型態（多頭吞噬／長下影錘子線 vs 空頭吞噬／長上影避雷針）
+ const body=Math.abs(pt.close-pt.open);
+ const upperShadow=pt.high-Math.max(pt.open,pt.close);
+ const lowerShadow=Math.min(pt.open,pt.close)-pt.low;
+ const chgPct=pt.prevClose>0?((pt.close-pt.prevClose)/pt.prevClose)*100:0;
+ const prevBear=prev.close<prev.open;
+ const prevBull=prev.close>prev.open;
+
+ if(prevBear&&pt.close>pt.open&&pt.close>=prev.open&&pt.open<=prev.close&&chgPct>=1.8){
+  signals.push({dir:"bull",icon:"🔺",name:"K 線多頭吞噬反轉",desc:`今日紅 K 實體完全吞沒前一日黑 K 實體（漲幅 +${chgPct.toFixed(2)}%），低檔買盤強勢反撲。`});
+ }else if(lowerShadow>Math.max(body*2,pt.close*0.012)&&upperShadow<body*0.8&&pt.k9<45){
+  signals.push({dir:"bull",icon:"🔺",name:"長下影線探底回升（錘子線）",desc:`下影線長度達實體 2 倍以上，顯示盤中下探遭遇強力低接買盤支撐並收腳。`});
+ }
+
+ if(prevBull&&pt.close<pt.open&&pt.close<=prev.open&&pt.open>=prev.close&&chgPct<=-1.8){
+  signals.push({dir:"bear",icon:"🔻",name:"K 線空頭吞噬反轉",desc:`今日黑 K 實體完全吞沒前一日紅 K 實體（跌幅 ${chgPct.toFixed(2)}%），高檔獲利了結賣壓湧現。`});
+ }else if(upperShadow>Math.max(body*2,pt.close*0.012)&&lowerShadow<body*0.8&&pt.k9>65){
+  signals.push({dir:"bear",icon:"🔻",name:"長上影線遇壓回落（避雷針）",desc:`高檔衝高後留長上影線（上影線逾實體 2 倍），顯示上方解套與獲利賣壓沉重。`});
+ }
+
+ // 4. 關鍵月線（MA20）帶量突破或跌破反轉
+ if(pt.ma20&&prev.ma20){
+  if(prev.close<prev.ma20&&pt.close>pt.ma20&&volRatio>=1.15){
+   signals.push({dir:"bull",icon:"🔺",name:"帶量突破月線（MA20）扭轉弱勢",desc:`股價由月線 (${fmt(pt.ma20)}) 下方帶量（${volRatio.toFixed(1)}x）向上站回月線，中期趨勢由空轉多。`});
+  }else if(prev.close>prev.ma20&&pt.close<pt.ma20&&volRatio>=1.15){
+   signals.push({dir:"bear",icon:"🔻",name:"帶量跌破月線（MA20）趨勢轉弱",desc:`股價由月線 (${fmt(pt.ma20)}) 上方帶量（${volRatio.toFixed(1)}x）跌破支撐，須留意波段轉空風險。`});
+  }
+ }
+
+ // 5. 近 10 日指標底背離 / 頂背離偵測
+ if(series.length>=10){
+  const recent10=series.slice(-10,-1);
+  const minLow10=Math.min(...recent10.map(x=>x.low));
+  const minK10=Math.min(...recent10.map(x=>x.k9));
+  const maxHigh10=Math.max(...recent10.map(x=>x.high));
+  const maxK10=Math.max(...recent10.map(x=>x.k9));
+
+  if(pt.low<=minLow10&&pt.k9>minK10+4&&pt.k9<40){
+   signals.push({dir:"bull",icon:"🔺",name:"日 KD 指標底背離",desc:`股價創近 10 日低點 (${fmt(pt.low)})，但 K 值 (${pt.k9.toFixed(1)}) 高於前低 (${minK10.toFixed(1)})，殺盤動能鈍化醞釀反彈。`});
+  }
+  if(pt.high>=maxHigh10&&pt.k9<maxK10-4&&pt.k9>60){
+   signals.push({dir:"bear",icon:"🔻",name:"日 KD 指標頂背離",desc:`股價創近 10 日高點 (${fmt(pt.high)})，但 K 值 (${pt.k9.toFixed(1)}) 低於前高 (${maxK10.toFixed(1)})，高檔追價動能出現背離警訊。`});
+  }
+ }
+
+ const bullCount=signals.filter(s=>s.dir==="bull").length;
+ const bearCount=signals.filter(s=>s.dir==="bear").length;
+
+ if(bullCount>0&&bearCount===0){
+  return {
+   status:"bull-rev",
+   badge:`🔺 出現多頭轉強反轉訊號（${bullCount} 項）`,
+   summary:isEtf
+    ?"偵測到底部止跌或指標翻多反轉訊號！適合搭配 ETF 分批低接或波段加碼策略。"
+    :"偵測到明確的止跌轉強或突破反轉訊號，短線有望扭轉整理格局展開反彈波段。",
+   signals
+  };
+ }else if(bearCount>0&&bullCount===0){
+  return {
+   status:"bear-rev",
+   badge:`🔻 出現高檔轉弱反轉警訊（${bearCount} 項）`,
+   summary:isEtf
+    ?"偵測到短線過熱或跌破月線轉弱訊號，波段操作可先暫緩追高，等待拉回季線或 KD 超賣區再行布局。"
+    :"偵測到高檔賣壓或動能轉弱反轉訊號，持股宜嚴設停利／停損點，避免追高風險。",
+   signals
+  };
+ }else if(bullCount>0&&bearCount>0){
+  return {
+   status:"mixed-rev",
+   badge:`⚡ 多空反轉訊號並存（多 ${bullCount} / 空 ${bearCount}）`,
+   summary:"盤面同時出現多方抵抗與空方調節訊號，代表多空正在關鍵轉折點激烈交戰，建議觀察隔日收盤價確認方向。",
+   signals
+  };
+ }else{
+  const trendText=pt.ma20?(pt.close>=pt.ma20?"目前維持月線之上原有偏多節奏":"目前仍處於月線之下原有整理節奏"):"目前沿既有趨勢運行";
+  return {
+   status:"none",
+   badge:"⚪ 無明顯反轉訊號（延續原趨勢）",
+   summary:`今日未觸發 KD 極端交叉、MACD 零軸翻轉、吞噬型態或指標背離等反轉條件，${trendText}。`,
+   signals:[]
+  };
+ }
+}
+
+// 雙軌技術評分引擎：自動區分 ETF（波段趨勢與超賣低接）與 個股（攻擊動能與紅牛股）+ 逐項符合說明
 function evaluateTechStrength(pt,isEtf){
  let score=50;
  const tags=[];
+ const indicatorMatches=[];
  const volRatio=pt.vma5>0?(pt.volLots/pt.vma5):1;
  const kdText=`K:${pt.k9.toFixed(1)} / D:${pt.d9.toFixed(1)}`;
 
@@ -749,48 +979,88 @@ function evaluateTechStrength(pt,isEtf){
 
   if(pt.ma20&&pt.ma60){
    if(pt.close>pt.ma20&&pt.ma20>pt.ma60){
-    score+=24;maText="月線>季線多頭排列";tags.push({txt:"🛡️ 站穩月線與季線多頭",cls:"purple"});
+    score+=24;maText="月線>季線多頭排列";
+    tags.push({txt:"🛡️ 站穩月線與季線多頭",cls:"purple"});
+    indicatorMatches.push({type:"bull",label:"均線架構 (+24分)",text:`符合「月線 (${fmt(pt.ma20)}) > 季線 (${fmt(pt.ma60)}) 且股價站穩雙線之上」的中長線多頭保護格局。`});
    }else if(pt.close>pt.ma60){
-    score+=12;maText="季線之上有撐";tags.push({txt:"📈 季線 (MA60) 長線保護",cls:"blue"});
+    score+=12;maText="季線之上有撐";
+    tags.push({txt:"📈 季線 (MA60) 長線保護",cls:"blue"});
+    indicatorMatches.push({type:"etf-buy",label:"均線架構 (+12分)",text:`符合「股價守穩季線 (${fmt(pt.ma60)}) 之上」長線保護短線條件，回測月線屬於良性整理。`});
    }else if(pt.close<pt.ma20&&pt.ma20<pt.ma60){
-    score-=16;maText="跌破月季線整理";tags.push({txt:"⚠️ 處於月季線之下",cls:"green"});
+    score-=16;maText="跌破月季線整理";
+    tags.push({txt:"⚠️ 處於月季線之下",cls:"green"});
+    indicatorMatches.push({type:"bear",label:"均線架構 (-16分)",text:`目前股價位於月線 (${fmt(pt.ma20)}) 與季線 (${fmt(pt.ma60)}) 之下，處於中期修正打底階段。`});
    }else{
     score-=6;maText="回測季線支撐";
+    indicatorMatches.push({type:"neutral",label:"均線架構 (-6分)",text:`股價介於月線 (${fmt(pt.ma20)}) 與季線 (${fmt(pt.ma60)}) 之間，正在測試季線支撐力道。`});
    }
   }else if(pt.ma20){
-   if(pt.close>pt.ma20){score+=14;maText="站穩月線 (MA20)"}else{score-=10;maText="跌破月線 (MA20)"}
+   if(pt.close>pt.ma20){
+    score+=14;maText="站穩月線 (MA20)";
+    indicatorMatches.push({type:"bull",label:"均線架構 (+14分)",text:`股價站穩月線 (${fmt(pt.ma20)}) 之上，短中期波段維持偏多。`});
+   }else{
+    score-=10;maText="跌破月線 (MA20)";
+    indicatorMatches.push({type:"bear",label:"均線架構 (-10分)",text:`股價跌破月線 (${fmt(pt.ma20)})，短線進入回檔整理。`});
+   }
+  }else{
+   indicatorMatches.push({type:"neutral",label:"均線架構 (0分)",text:"掛牌交易日尚不足 20 日，暫以短線價格與 KD 指標為主。"});
   }
 
-  // ETF KD 評估：低檔超賣 (<25) 視為分批低接黃金觀察區，給予正向加分而非重罰
+  // ETF KD 評估
   const isKdFavorable=(pt.prevK<=pt.prevD&&pt.k9>pt.d9)||pt.k9<=25||(pt.k9>pt.d9&&pt.k9>=50);
   if(pt.prevK<=pt.prevD&&pt.k9>pt.d9){
    score+=14;tags.push({txt:"✨ 日 KD 黃金交叉轉強",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"日 KD 指標 (+14分)",text:`符合「日 KD 黃金交叉」條件（K9=${pt.k9.toFixed(1)} 由下往上突破 D9=${pt.d9.toFixed(1)}），波段買點浮現。`});
   }else if(pt.k9<=25){
    score+=6;tags.push({txt:"💎 KD 低檔超賣低接區 (≤25)",cls:"purple"});
+   indicatorMatches.push({type:"etf-buy",label:"日 KD 指標 (+6分)",text:`符合 ETF 專屬「KD ≤ 25 低檔超賣低接觀察區」（目前 K9=${pt.k9.toFixed(1)}），適合分批逢低布局而不給予重罰。`});
   }else if(pt.k9>pt.d9){
    score+=8;tags.push({txt:"KD 偏多向上 (K>D)",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"日 KD 指標 (+8分)",text:`符合「K9 (${pt.k9.toFixed(1)}) > D9 (${pt.d9.toFixed(1)})」多方控盤格局，波段動能延續。`});
   }else if(pt.prevK>=pt.prevD&&pt.k9<pt.d9){
    score-=8;tags.push({txt:"📉 日 KD 高檔拉回交叉",cls:"amber"});
+   indicatorMatches.push({type:"neutral",label:"日 KD 指標 (-8分)",text:`符合「日 KD 死亡交叉」（K9=${pt.k9.toFixed(1)} 跌破 D9=${pt.d9.toFixed(1)}），短線進入拉回修正。`});
   }else{
    score-=4;tags.push({txt:"KD 修正整理中 (K<D)",cls:"green"});
+   indicatorMatches.push({type:"neutral",label:"日 KD 指標 (-4分)",text:`目前處於 K9 (${pt.k9.toFixed(1)}) < D9 (${pt.d9.toFixed(1)}) 修正階段，可等待指標落入 25 以下或再次黃金交叉。`});
   }
   if(pt.k9>=80&&pt.d9>=80)tags.push({txt:"⚡ 波段高檔強勢鈍化 (≥80)",cls:"amber"});
 
   // ETF RSI 評估
-  if(pt.rsi6>=60){score+=6;tags.push({txt:`RSI(6) 偏多 (${pt.rsi6.toFixed(1)})`,cls:"red"})}
-  else if(pt.rsi6<=28){score+=4;tags.push({txt:`RSI(6) 超賣浮現 (${pt.rsi6.toFixed(1)})`,cls:"purple"})}
+  if(pt.rsi6>=60){
+   score+=6;tags.push({txt:`RSI(6) 偏多 (${pt.rsi6.toFixed(1)})`,cls:"red"});
+   indicatorMatches.push({type:"bull",label:"RSI(6) 強弱 (+6分)",text:`符合「RSI(6) = ${pt.rsi6.toFixed(1)} ≥ 60」多頭強勢區間，買盤推升力道穩健。`});
+  }else if(pt.rsi6<=28){
+   score+=4;tags.push({txt:`RSI(6) 超賣浮現 (${pt.rsi6.toFixed(1)})`,cls:"purple"});
+   indicatorMatches.push({type:"etf-buy",label:"RSI(6) 強弱 (+4分)",text:`符合 ETF「RSI(6) = ${pt.rsi6.toFixed(1)} ≤ 28 超賣區」條件，短線超跌反彈機率升高。`});
+  }else{
+   indicatorMatches.push({type:"neutral",label:"RSI(6) 強弱 (0分)",text:`目前 RSI(6) = ${pt.rsi6.toFixed(1)}，位於 28～60 中性常態波動區間。`});
+  }
 
   // ETF MACD 評估
   const isMacdStable=pt.dif>0||pt.osc>0;
-  if(pt.dif>0&&pt.osc>0){score+=8;tags.push({txt:"MACD 零軸上紅柱助漲",cls:"red"})}
-  else if(pt.osc>0){score+=5;tags.push({txt:"MACD 綠柱收斂翻紅",cls:"red"})}
-  else if(pt.dif<0&&pt.osc<0){score-=6;tags.push({txt:"MACD 零軸下調整中",cls:"green"})}
+  if(pt.dif>0&&pt.osc>0){
+   score+=8;tags.push({txt:"MACD 零軸上紅柱助漲",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"MACD 趨勢 (+8分)",text:`符合「DIF (${pt.dif.toFixed(2)}) > 0 且紅柱 (+${pt.osc.toFixed(2)}) 擴張」的中期多頭助漲型態。`});
+  }else if(pt.osc>0){
+   score+=5;tags.push({txt:"MACD 綠柱收斂翻紅",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"MACD 趨勢 (+5分)",text:`符合「MACD 柱狀翻紅 (+${pt.osc.toFixed(2)})」條件，跌勢趨緩並開始轉強。`});
+  }else if(pt.dif<0&&pt.osc<0){
+   score-=6;tags.push({txt:"MACD 零軸下調整中",cls:"green"});
+   indicatorMatches.push({type:"bear",label:"MACD 趨勢 (-6分)",text:`處於「DIF (${pt.dif.toFixed(2)}) < 0 且綠柱 (${pt.osc.toFixed(2)})」零軸下整理格局。`});
+  }else{
+   indicatorMatches.push({type:"neutral",label:"MACD 趨勢 (0分)",text:`DIF 仍於零軸之上但紅柱收斂 (${pt.osc.toFixed(2)})，屬多頭高檔震盪消化賣壓。`});
+  }
 
-  // ETF 量能評估：爆量上攻加分，爆量急跌視為逢低承接買盤湧現（不扣重分）
+  // ETF 量能評估
   if(pt.close>=pt.prevClose&&volRatio>=1.3){
    score+=6;tags.push({txt:`🚀 帶量推升 (量比 ${volRatio.toFixed(1)}x)`,cls:"red"});
+   indicatorMatches.push({type:"bull",label:"成交量能 (+6分)",text:`符合「價漲量增」（量比 ${volRatio.toFixed(2)} 倍 ≥ 1.3 倍），市場申購與追價買盤積極。`});
   }else if(pt.close<pt.prevClose&&volRatio>=1.5){
    score+=2;tags.push({txt:`💰 急跌爆量低接買盤 (${volRatio.toFixed(1)}x)`,cls:"purple"});
+   indicatorMatches.push({type:"etf-buy",label:"成交量能 (+2分)",text:`符合 ETF「急跌爆量承接」（量比 ${volRatio.toFixed(2)} 倍 ≥ 1.5 倍），大跌或除息日湧現逢低承接買盤。`});
+  }else{
+   indicatorMatches.push({type:"neutral",label:"成交量能 (0分)",text:`今日量比為 ${volRatio.toFixed(2)} 倍，成交量維持平日溫和水準。`});
   }
 
   score=Math.max(5,Math.min(98,Math.round(score)));
@@ -823,7 +1093,7 @@ function evaluateTechStrength(pt,isEtf){
    summary="目前跌破中長期均線仍在尋求底部支撐，可耐心等待 KD 黃金交叉或站回月線後再行加碼。";
   }
 
-  return {score,grade,colorClass,tags,maText,kdText,volRatio,checks,badge,summary,isEtf:true};
+  return {score,grade,colorClass,tags,indicatorMatches,maText,kdText,volRatio,checks,badge,summary,isEtf:true};
  }else{
   // ================= 模式 A：一般個股攻擊動能評分模型 =================
   let maText="均線糾結";
@@ -831,44 +1101,84 @@ function evaluateTechStrength(pt,isEtf){
   if(pt.ma5&&pt.ma10&&pt.ma20){
    if(isMaBull){
     score+=22;maText="多頭排列 (5>10>20)";tags.push({txt:"🔥 均線多頭排列",cls:"red"});
+    indicatorMatches.push({type:"bull",label:"均線排列 (+22分)",text:`符合「MA5 (${fmt(pt.ma5)}) > MA10 (${fmt(pt.ma10)}) > MA20 (${fmt(pt.ma20)})」標準短中期多頭發散排列。`});
    }else if(pt.close<pt.ma5&&pt.ma5<pt.ma10&&pt.ma10<pt.ma20){
     score-=22;maText="空頭排列 (5<10<20)";tags.push({txt:"❄️ 均線空頭排列",cls:"green"});
+    indicatorMatches.push({type:"bear",label:"均線排列 (-22分)",text:`符合「MA5 (${fmt(pt.ma5)}) < MA10 (${fmt(pt.ma10)}) < MA20 (${fmt(pt.ma20)})」空頭蓋頭反壓排列。`});
    }else if(pt.close>pt.ma5&&pt.close>pt.ma20){
     score+=10;maText="站上月線與5日線";tags.push({txt:"📈 站穩短中期均線",cls:"red"});
+    indicatorMatches.push({type:"bull",label:"均線排列 (+10分)",text:`股價同時站穩 5 日線 (${fmt(pt.ma5)}) 與月線 (${fmt(pt.ma20)}) 之上，短中期架構偏多。`});
    }else if(pt.close<pt.ma20){
     score-=10;maText="跌破月線 (MA20)";tags.push({txt:"⚠️ 處於月線之下",cls:"green"});
+    indicatorMatches.push({type:"bear",label:"均線排列 (-10分)",text:`目前股價位於月線 (${fmt(pt.ma20)}) 之下，上方仍具中期均線反壓。`});
+   }else{
+    indicatorMatches.push({type:"neutral",label:"均線排列 (0分)",text:`股價介於 5 日線 (${fmt(pt.ma5)}) 與月線 (${fmt(pt.ma20)}) 之間，均線處於糾結整理。`});
    }
   }else if(pt.ma5){
-   if(pt.close>pt.ma5){score+=8;maText="站上 5 日線"}else{score-=8;maText="跌破 5 日線"}
+   if(pt.close>pt.ma5){
+    score+=8;maText="站上 5 日線";
+    indicatorMatches.push({type:"bull",label:"均線排列 (+8分)",text:`股價站穩 5 日線 (${fmt(pt.ma5)}) 之上，短線走勢偏強。`});
+   }else{
+    score-=8;maText="跌破 5 日線";
+    indicatorMatches.push({type:"bear",label:"均線排列 (-8分)",text:`股價跌破 5 日線 (${fmt(pt.ma5)})，短線動能轉弱。`});
+   }
   }
 
+  // 個股 KD 評估
   const isKdBull=(pt.prevK<=pt.prevD&&pt.k9>pt.d9)||(pt.k9>pt.d9&&pt.k9>=50);
   if(pt.prevK<=pt.prevD&&pt.k9>pt.d9){
    score+=15;tags.push({txt:"✨ 日 KD 黃金交叉",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"日 KD 指標 (+15分)",text:`符合「日 KD 黃金交叉」（K9=${pt.k9.toFixed(1)} 由下往上突破 D9=${pt.d9.toFixed(1)}），短線攻擊訊號啟動。`});
   }else if(pt.prevK>=pt.prevD&&pt.k9<pt.d9){
    score-=15;tags.push({txt:"📉 日 KD 死亡交叉",cls:"green"});
+   indicatorMatches.push({type:"bear",label:"日 KD 指標 (-15分)",text:`符合「日 KD 死亡交叉」（K9=${pt.k9.toFixed(1)} 由上往下跌破 D9=${pt.d9.toFixed(1)}），短線轉入回檔修正。`});
   }else if(pt.k9>pt.d9){
    score+=7;tags.push({txt:"KD 偏多向上 (K>D)",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"日 KD 指標 (+7分)",text:`符合「K9 (${pt.k9.toFixed(1)}) > D9 (${pt.d9.toFixed(1)})」多方趨勢，${pt.k9>=80?"且進入 80 以上高檔強勢鈍化區。":"指標維持向上發散。"}`});
   }else{
    score-=7;tags.push({txt:"KD 偏空向下 (K<D)",cls:"green"});
+   indicatorMatches.push({type:"bear",label:"日 KD 指標 (-7分)",text:`處於「K9 (${pt.k9.toFixed(1)}) < D9 (${pt.d9.toFixed(1)})」空方修正趨勢，${pt.k9<=20?"已落入 20 以下超賣區醞釀反彈。":"尚未出現黃金交叉。"}`});
   }
   if(pt.k9>=80&&pt.d9>=80)tags.push({txt:"⚡ 高檔強勢鈍化區 (≥80)",cls:"amber"});
   else if(pt.k9<=20&&pt.d9<=20)tags.push({txt:"💎 低檔超賣醞釀反彈 (≤20)",cls:"blue"});
 
-  if(pt.rsi6>=65){score+=8;tags.push({txt:`RSI(6) 強勢 (${pt.rsi6.toFixed(1)})`,cls:"red"})}
-  else if(pt.rsi6<=35){score-=8;tags.push({txt:`RSI(6) 偏弱 (${pt.rsi6.toFixed(1)})`,cls:"green"})}
+  // 個股 RSI 評估
+  if(pt.rsi6>=65){
+   score+=8;tags.push({txt:`RSI(6) 強勢 (${pt.rsi6.toFixed(1)})`,cls:"red"});
+   indicatorMatches.push({type:"bull",label:"RSI(6) 強弱 (+8分)",text:`符合「RSI(6) = ${pt.rsi6.toFixed(1)} ≥ 65」強勢多頭區間，短線買盤追價力道強勁。`});
+  }else if(pt.rsi6<=35){
+   score-=8;tags.push({txt:`RSI(6) 偏弱 (${pt.rsi6.toFixed(1)})`,cls:"green"});
+   indicatorMatches.push({type:"bear",label:"RSI(6) 強弱 (-8分)",text:`符合「RSI(6) = ${pt.rsi6.toFixed(1)} ≤ 35」弱勢區間，短線賣壓較重。`});
+  }else{
+   indicatorMatches.push({type:"neutral",label:"RSI(6) 強弱 (0分)",text:`目前 RSI(6) = ${pt.rsi6.toFixed(1)}，處於 35～65 中性震盪區間。`});
+  }
 
+  // 個股 MACD 評估
   const isMacdBull=(pt.dif>0&&pt.osc>0)||pt.osc>0;
-  if(pt.dif>0&&pt.osc>0){score+=8;tags.push({txt:"MACD 零軸上紅柱擴大",cls:"red"})}
-  else if(pt.osc>0){score+=4;tags.push({txt:"MACD 翻紅轉強",cls:"red"})}
-  else if(pt.dif<0&&pt.osc<0){score-=8;tags.push({txt:"MACD 零軸下綠柱擴張",cls:"green"})}
-  else{score-=4}
+  if(pt.dif>0&&pt.osc>0){
+   score+=8;tags.push({txt:"MACD 零軸上紅柱擴大",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"MACD 趨勢 (+8分)",text:`符合「DIF (${pt.dif.toFixed(2)}) > 0 且紅柱 (+${pt.osc.toFixed(2)}) 擴張」，具備主升段趨勢助漲動能。`});
+  }else if(pt.osc>0){
+   score+=4;tags.push({txt:"MACD 翻紅轉強",cls:"red"});
+   indicatorMatches.push({type:"bull",label:"MACD 趨勢 (+4分)",text:`符合「MACD 柱狀翻紅 (+${pt.osc.toFixed(2)})」，短中期動能開始由弱轉強。`});
+  }else if(pt.dif<0&&pt.osc<0){
+   score-=8;tags.push({txt:"MACD 零軸下綠柱擴張",cls:"green"});
+   indicatorMatches.push({type:"bear",label:"MACD 趨勢 (-8分)",text:`符合「DIF (${pt.dif.toFixed(2)}) < 0 且綠柱 (${pt.osc.toFixed(2)}) 擴張」，中期趨勢仍處空方主導。`});
+  }else{
+   score-=4;
+   indicatorMatches.push({type:"neutral",label:"MACD 趨勢 (-4分)",text:`DIF 位於零軸之上但柱狀體轉為負值 (${pt.osc.toFixed(2)})，短線漲多拉回整理。`});
+  }
 
+  // 個股量能評估
   const isVolAttack=pt.close>=pt.open&&volRatio>=1.3;
   if(pt.close>pt.prevClose&&volRatio>=1.3){
    score+=7;tags.push({txt:`🚀 帶量上攻 (量比 ${volRatio.toFixed(1)}x)`,cls:"red"});
+   indicatorMatches.push({type:"bull",label:"成交量能 (+7分)",text:`符合「帶量上攻」（量比 ${volRatio.toFixed(2)} 倍 ≥ 1.3 倍且收漲），主力或法人攻擊量能湧現。`});
   }else if(pt.close<pt.prevClose&&volRatio>=1.3){
    score-=6;tags.push({txt:`⚠️ 帶量下殺 (量比 ${volRatio.toFixed(1)}x)`,cls:"green"});
+   indicatorMatches.push({type:"bear",label:"成交量能 (-6分)",text:`符合「帶量下殺」（量比 ${volRatio.toFixed(2)} 倍 ≥ 1.3 倍且收跌），高檔出現籌碼鬆動賣壓。`});
+  }else{
+   indicatorMatches.push({type:"neutral",label:"成交量能 (0分)",text:`今日量比為 ${volRatio.toFixed(2)} 倍，尚未達到 1.3 倍以上的明顯攻擊或出貨量能門檻。`});
   }
 
   score=Math.max(5,Math.min(98,Math.round(score)));
@@ -901,7 +1211,7 @@ function evaluateTechStrength(pt,isEtf){
    summary="目前尚未具備馬克紅／紅牛股的連續攻擊動能，宜等待均線重新收斂翻揚與 KD 黃金交叉訊號。";
   }
 
-  return {score,grade,colorClass,tags,maText,kdText,volRatio,checks,badge,summary,isEtf:false};
+  return {score,grade,colorClass,tags,indicatorMatches,maText,kdText,volRatio,checks,badge,summary,isEtf:false};
  }
 }
 
@@ -1579,7 +1889,6 @@ $("runBtn").addEventListener("click",async()=>{
   const market=(liveBar&&liveBar.market)||(stockInfo?(stockInfo.type==="twse"?"上市":stockInfo.type==="tpex"?"上櫃":stockInfo.type):"");
   stockNameCache=name;
 
-  // 自動判定為 ETF 或個股
   isEtfAsset=detectIsEtf(code,stockInfo,name);
 
   $("sbMarket").textContent=market||"台股";
@@ -1607,8 +1916,11 @@ $("runBtn").addEventListener("click",async()=>{
   if(series.length){
    const lastPt=series[series.length-1];
 
-   // 執行個股／ETF 雙軌評分
+   // 執行個股／ETF 雙軌評分與指標符合明細
    const st=evaluateTechStrength(lastPt,isEtfAsset);
+
+   // 執行趨勢反轉訊號偵測
+   const rev=detectReversalSignals(series,isEtfAsset);
 
    const modeChip=$("assetModeChip");
    if(isEtfAsset){
@@ -1651,6 +1963,37 @@ $("runBtn").addEventListener("click",async()=>{
    setMetric("indMacd",(lastPt.osc>0?"+":"")+lastPt.osc.toFixed(2),lastPt.osc>0?"red":"green");
    setMetric("indVolRatio",st.volRatio.toFixed(2)+" 倍",st.volRatio>=1.3?"amber":"");
 
+   // 渲染技術分析指標符合項目逐項說明
+   $("indMatchCount").textContent=`基礎 50 分 → 實得 ${st.score} 分`;
+   const matchList=$("indMatchList");matchList.innerHTML="";
+   st.indicatorMatches.forEach(m=>{
+    const row=document.createElement("div");
+    row.className="ind-match-item "+m.type;
+    row.innerHTML=`<span class="ind-badge">${m.label}</span><span>${m.text}</span>`;
+    matchList.appendChild(row);
+   });
+
+   // 渲染反轉訊號偵測專區
+   const revBox=$("reversalBox");
+   revBox.className="reversal-box"+(rev.status!=="none"?" "+rev.status:"");
+   $("revBadge").textContent=rev.badge;
+   $("revSummary").textContent=rev.summary;
+   const revList=$("revList");revList.innerHTML="";
+   if(rev.signals.length){
+    rev.signals.forEach(s=>{
+     const item=document.createElement("div");
+     item.className="rev-item";
+     item.innerHTML=`<span>${s.icon}</span><div><b style="color:${s.dir==="bull"?"#ff8091":"#34d399"}">${s.name}</b>：<span>${s.desc}</span></div>`;
+     revList.appendChild(item);
+    });
+   }else{
+    const empty=document.createElement("div");
+    empty.className="rev-item";
+    empty.innerHTML=`<span>✅</span><span style="color:#9fb2ca">今日未偵測到 KD 極端交叉、MACD 零軸翻轉、吞噬／長影線 K 棒或指標頂底背離訊號。</span>`;
+    revList.appendChild(empty);
+   }
+
+   // 渲染專屬策略檢核箱
    $("rbGrade").textContent=st.badge;
    $("rbSummary").textContent=st.summary;
    const rbGrid=$("rbChecklist");rbGrid.innerHTML="";
