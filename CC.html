@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與損益計算器</title>
+<style>
+:root{
+ --bg:#0b1220;--panel:#142137;--line:#2d425e;--txt:#f1f6ff;--muted:#9fb2ca;
+ --green:#2ee0a1;--red:#ff5e74;--blue:#75b5ff;--amber:#fbbf24;--purple:#c084fc;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{
+ padding:14px 12px env(safe-area-inset-bottom,24px);
+ background:radial-gradient(circle at 15% 0,#1b3455 0,#0b1220 55%);
+ color:var(--txt);
+ font-family:system-ui,-apple-system,"Noto Sans TC","Segoe UI",sans-serif;
+ font-size:15px;
+ line-height:1.5;
+}
+main{max-width:860px;margin:auto}
+
+/* 手機優先頂部標題與股票看板 */
+header{text-align:center;margin:4px 0 16px}
+.logo{font-size:26px;margin-bottom:4px}
+h1{font-size:clamp(20px,5.2vw,28px);margin:0 0 6px;line-height:1.3;letter-spacing:-0.2px}
+.sub{font-size:13px;color:var(--muted);line-height:1.5}
+
+.stock-banner{
+ display:flex;align-items:center;justify-content:center;gap:8px 10px;flex-wrap:wrap;
+ margin-top:12px;padding:10px 14px;border-radius:14px;
+ background:linear-gradient(135deg,#182c49,#0f1d33);
+ border:1.5px solid #4c74a8;box-shadow:0 8px 22px rgba(0,0,0,0.35);
+}
+.sb-tag{font-size:12px;font-weight:800;padding:3px 8px;border-radius:6px;background:#264573;color:#a8d0ff}
+.sb-tag.etf{background:#3b2663;color:#e9d5ff;border:1px solid #8b5cf6}
+.sb-name{font-size:clamp(20px,5.2vw,26px);font-weight:900;color:#ffffff}
+.sb-code{font-size:clamp(18px,4.5vw,23px);font-weight:800;color:#78b5ff;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sb-price{
+ width:100%;margin-top:2px;padding-top:6px;border-top:1px solid #2b4363;
+ font-size:clamp(22px,5.8vw,27px);font-weight:900;font-variant-numeric:tabular-nums;
+}
+
+/* 卡片與手機單欄大觸控輸入區 */
+.card{
+ background:linear-gradient(160deg,#182943,#111d30);
+ border:1px solid var(--line);border-radius:18px;
+ padding:16px 14px;margin-bottom:14px;
+ box-shadow:0 12px 30px rgba(0,0,0,0.28);
+}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.grid-2col-mobile{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field label{display:block;font-size:13.5px;font-weight:700;color:#d2e0f2;margin:0 0 6px}
+input{
+ width:100%;min-height:48px;border:1.5px solid #3b526f;border-radius:12px;
+ background:#0b1727;color:white;padding:11px 13px;
+ font-size:17px;font-weight:600;outline:none;
+}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #78b5ff28}
+.hint{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+
+.actions{margin-top:14px}
+button.main-btn{
+ width:100%;min-height:52px;border:0;border-radius:13px;padding:14px;
+ font-size:17px;font-weight:900;cursor:pointer;color:#061a1a;
+ background:linear-gradient(90deg,#43d6a2,#78b5ff);
+ box-shadow:0 6px 18px rgba(67,214,162,0.25);transition:transform .1s,opacity .15s;
+}
+button.main-btn:active{transform:scale(0.985)}
+button.main-btn:disabled{opacity:.55;cursor:wait}
+
+/* 產生 PDF 報表按鈕區 */
+.pdf-action-bar{
+ margin-top:14px;padding-top:14px;border-top:1px dashed #324a6b;
+ display:flex;flex-direction:column;gap:8px;
+}
+button.pdf-btn{
+ width:100%;min-height:48px;border:1.5px solid #fbbf24;border-radius:12px;padding:12px 16px;
+ font-size:15.5px;font-weight:800;cursor:pointer;color:#fffbeb;
+ background:linear-gradient(135deg,#b45309,#d97706);
+ box-shadow:0 5px 15px rgba(217,119,6,0.3);
+ display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.pdf-tip{font-size:12px;color:#cbd5e1;line-height:1.5}
+
+.status{font-size:12.5px;color:#b8cae0;margin-top:12px;min-height:18px;line-height:1.6}
+.section{font-size:16.5px;font-weight:800;margin:0 0 10px;line-height:1.35}
+
+/* 手機友善 2 欄數據格 */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.metrics-5{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.metrics-5 .metric:last-child,.metrics .metric.span-full{grid-column:1/-1}
+.metric{background:#0b1727;border:1px solid #2a3d56;border-radius:12px;padding:11px 12px;min-width:0}
+.metric small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:4px}
+.metric strong{font-size:clamp(16px,4.3vw,20px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.amber{color:var(--amber)}.purple{color:var(--purple)}
+.pill{display:inline-block;border:1px solid #405b7a;background:#1d304a;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700;color:#c9def5}
+
+/* 手機可橫向滑動並凍結首欄的表格 */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #2c405a;border-radius:12px;position:relative}
+table{width:100%;border-collapse:collapse;min-width:520px;font-size:12.5px}
+th,td{padding:9px 9px;text-align:right;border-bottom:1px solid #263951;font-variant-numeric:tabular-nums;white-space:nowrap}
+th{background:#20324a;color:#c6d8ed;position:sticky;top:0;z-index:2}
+th:first-child,td:first-child{text-align:center;position:sticky;left:0;background:#132136;z-index:1;border-right:1px solid #2c405a}
+th:first-child{background:#20324a;z-index:3}
+tr:last-child td{border:0}
+
+.note{font-size:13px;color:#c2d1e3;line-height:1.75}
+.subhead{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.hidden{display:none!important}
+
+/* 雙軌技術面強勢度綜合指數面板 */
+.mode-chip{
+ display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;
+ padding:4px 10px;border-radius:8px;margin-bottom:8px;
+}
+.mode-chip.stock{background:rgba(255,94,116,0.14);border:1px solid rgba(255,94,116,0.45);color:#ff8fa0}
+.mode-chip.etf{background:rgba(192,132,252,0.16);border:1px solid rgba(192,132,252,0.5);color:#e9d5ff}
+
+.grade-pill-lg{
+ display:inline-block;border:1.5px solid #4e6f96;background:#162842;
+ border-radius:99px;padding:6px 14px;font-size:14.5px;font-weight:900;
+}
+.grade-pill-lg.red{border-color:#ff5c72;background:rgba(255,92,114,0.14);color:#ff7588}
+.grade-pill-lg.green{border-color:#30d39a;background:rgba(48,211,154,0.14);color:#42e6ad}
+.grade-pill-lg.amber{border-color:#fbbf24;background:rgba(251,191,36,0.14);color:#fcd34d}
+.grade-pill-lg.purple{border-color:#c084fc;background:rgba(192,132,252,0.16);color:#e9d5ff}
+
+.score-hero{
+ display:flex;flex-direction:column;gap:12px;
+ background:#0b1727;border:1px solid #2a3d56;border-radius:14px;padding:14px;margin-bottom:10px;
+}
+.score-circle{display:flex;align-items:baseline;gap:6px}
+.score-num{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.score-bar-bg{width:100%;height:10px;background:#1b293d;border-radius:99px;overflow:hidden;margin-top:8px}
+.score-bar-fill{height:100%;border-radius:99px;transition:width .4s ease}
+.signal-title-lg{font-size:14px;font-weight:800;color:#e2eeff;margin-bottom:6px}
+.tag-list{display:flex;flex-wrap:wrap;gap:7px}
+.tech-tag{font-size:13px;font-weight:700;padding:5px 10px;border-radius:8px;background:#132338;border:1px solid #355278;color:#e6f0ff}
+.tech-tag.red{border-color:rgba(255,92,114,0.55);color:#ff8091;background:rgba(255,92,114,0.1)}
+.tech-tag.green{border-color:rgba(48,211,154,0.55);color:#4be8b0;background:rgba(48,211,154,0.1)}
+.tech-tag.amber{border-color:rgba(251,191,36,0.55);color:#fcd34d;background:rgba(251,191,36,0.1)}
+.tech-tag.blue{border-color:rgba(120,181,255,0.55);color:#93c5fd;background:rgba(120,181,255,0.1)}
+.tech-tag.purple{border-color:rgba(192,132,252,0.55);color:#e9d5ff;background:rgba(192,132,252,0.12)}
+
+/* 專屬策略檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） */
+.strategy-box{
+ background:linear-gradient(145deg,#1d1626,#10192b);
+ border:1px solid #593652;border-radius:14px;padding:14px;margin-top:12px;
+}
+.strategy-box.etf-mode{
+ background:linear-gradient(145deg,#191932,#0f192b);
+ border-color:#5b428a;
+}
+.rb-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.rb-title{font-size:15px;font-weight:900;color:#ff8596}
+.strategy-box.etf-mode .rb-title{color:#d8b4fe}
+.rb-badge{font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:rgba(255,92,114,0.18);border:1px solid #ff5c72;color:#ff94a3}
+.strategy-box.etf-mode .rb-badge{background:rgba(192,132,252,0.2);border-color:#c084fc;color:#f3e8ff}
+.rb-grid{display:grid;grid-template-columns:1fr;gap:7px;margin-top:9px}
+.rb-item{font-size:13px;padding:8px 10px;border-radius:9px;background:#0b1322;border:1px solid #26344d;display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+
+/* 手機橫向可滑動均線按鈕列 + 大觸控縮放按鈕 */
+.ma-toggles{display:flex;flex-direction:column;gap:8px;padding:8px 4px;border-bottom:1px solid #1c2430}
+.ma-group{
+ display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+ padding-bottom:2px;scrollbar-width:none;
+}
+.ma-group::-webkit-scrollbar{display:none}
+.ma-btn{
+ flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+ min-height:34px;padding:5px 10px;border-radius:8px;
+ font-size:12.5px;font-weight:800;cursor:pointer;
+ border:1px solid #354761;background:#101824;color:#8fa3bd;user-select:none;
+}
+.ma-btn .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.ma-btn.active{background:#1b293d;color:#ffffff;border-color:#5b7ba6}
+.ma-btn:not(.active){opacity:0.48}
+
+.zoom-bar-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.zoom-controls{display:inline-flex;align-items:center;gap:6px;background:#0e1622;border:1px solid #2d4059;border-radius:9px;padding:4px 7px}
+.zoom-btn{
+ min-height:32px;min-width:44px;background:#1b2b42;color:#cfe3ff;
+ border:1px solid #3b5578;border-radius:7px;padding:4px 10px;
+ font-size:13px;font-weight:800;cursor:pointer;user-select:none;
+}
+.zoom-btn:active{background:#2c466b}
+.zoom-btn:disabled{opacity:0.38;cursor:not-allowed}
+.zoom-info{font-size:12px;color:#9fc7ff;font-family:ui-monospace,SFMono-Regular,monospace;padding:0 4px;font-weight:700}
+
+/* 仿看盤軟體黑底圖表終端 */
+.terminal{background:#05070a;border:1px solid #283548;border-radius:14px;padding:10px 8px 8px;margin-top:8px}
+.ohlc-bar{
+ display:flex;flex-direction:column;gap:4px;
+ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ font-size:12.5px;font-weight:700;padding:0 4px 8px;border-bottom:1px solid #1c2430;
+}
+.ohlc-items{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.chart-subbar{
+ display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
+ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ font-size:12.5px;font-weight:800;padding:8px 4px 4px;border-top:1px solid #1c2430;margin-top:6px;
+}
+.c-rsv{color:#7c7aff}.c-k9{color:#ff4747}.c-d9{color:#26de81}
+.canvas-box{position:relative;width:100%;touch-action:none;user-select:none}
+canvas{width:100%;height:100%;display:block;cursor:crosshair}
+.kd-toggle{min-height:36px;background:#182436;color:#9fc7ff;border:1px solid #304766;padding:6px 12px;font-size:12.5px;border-radius:9px;font-weight:700;cursor:pointer}
+
+.guide-block h3{font-size:15px;color:#93c5fd;margin:14px 0 6px}
+.guide-block ul{margin:4px 0 12px;padding-left:18px}
+.guide-block li{margin-bottom:6px}
+
+/* 桌面平板自適應放大版面 */
+@media(min-width:680px){
+ body{padding:22px 16px}
+ .card{padding:20px}
+ .grid{grid-template-columns:1fr 1fr}
+ .stock-banner .sb-price{width:auto;margin-top:0;padding-top:0;border-top:0;padding-left:10px;border-left:1px solid #355075}
+ .pdf-action-bar{flex-direction:row;align-items:center}
+ button.pdf-btn{width:auto;flex:1}
+ .pdf-tip{flex:1.5}
+ .score-hero{flex-direction:row;align-items:center}
+ .metrics{grid-template-columns:repeat(3,1fr)}
+ .metrics-5{grid-template-columns:repeat(5,1fr)}
+ .metrics-5 .metric:last-child{grid-column:auto}
+ .rb-grid{grid-template-columns:1fr 1fr}
+ .ohlc-bar{flex-direction:row;justify-content:space-between;align-items:center}
+ .ohlc-items{display:flex;gap:12px}
+}
+
+/* 全白底省墨 PDF 匯出／列印專用樣式 */
+.print-meta{display:none}
+@media print{
+ @page{size:A4 portrait;margin:10mm}
+ html,body{background:#ffffff!important;color:#0f172a!important;padding:0!important;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ main{max-width:100%!important}
+ header{margin:0 0 10px!important;padding-bottom:8px;border-bottom:2px solid #1e293b}
+ h1{color:#0f172a!important;font-size:18px!important}
+ .logo,.sub,#inputCard,.kd-toggle,.pdf-action-bar,.zoom-controls,.zoom-hint-txt{display:none!important}
+ .print-meta{display:block!important;font-size:11.5px;color:#334155;margin-top:4px;font-weight:700}
+ .stock-banner{background:#ffffff!important;border:1.5px solid #334155!important;box-shadow:none!important;margin-top:6px!important;padding:6px 14px!important}
+ .sb-tag{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #cbd5e1!important}
+ .stock-banner .sb-name{color:#0f172a!important;font-size:20px!important}
+ .stock-banner .sb-code{color:#1d4ed8!important;font-size:18px!important}
+ .stock-banner .sb-price{width:auto!important;border-top:0!important;border-left:1px solid #cbd5e1!important;padding-left:10px!important;font-size:19px!important}
+ .card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:13px!important;margin-bottom:10px!important;break-inside:avoid;page-break-inside:avoid;border-radius:10px!important}
+ .section{color:#0f172a!important;font-size:15px!important}
+ .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
+ .score-hero,.metric,.rb-item,.tech-tag,.pill{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
+ .score-hero{flex-direction:row!important}
+ .metrics{grid-template-columns:repeat(3,1fr)!important}
+ .metrics-5{grid-template-columns:repeat(5,1fr)!important}
+ .metrics-5 .metric:last-child{grid-column:auto!important}
+ .rb-grid{grid-template-columns:1fr 1fr!important}
+ .score-bar-bg{background:#e2e8f0!important}
+ .signal-title-lg{color:#0f172a!important}
+ .metric small{color:#475569!important}
+ .red{color:#dc2626!important}.green{color:#059669!important}.blue{color:#1d4ed8!important}.amber{color:#b45309!important}.purple{color:#7e22ce!important}
+ .strategy-box{background:#ffffff!important;border:1.5px solid #f43f5e!important}
+ .strategy-box.etf-mode{border-color:#8b5cf6!important}
+ .rb-title{color:#be123c!important}
+ .strategy-box.etf-mode .rb-title{color:#6d28d9!important}
+ .rb-badge{background:#fff1f2!important;color:#be123c!important;border:1px solid #fb7185!important}
+ .strategy-box.etf-mode .rb-badge{background:#f5f3ff!important;color:#6d28d9!important;border-color:#a78bfa!important}
+ #rbSummary,.rb-item span{color:#0f172a!important}
+ .terminal{background:#ffffff!important;border:1px solid #94a3b8!important;color:#0f172a!important}
+ .ohlc-bar{flex-direction:row!important;border-color:#cbd5e1!important}
+ .ohlc-items{display:flex!important;gap:12px!important}
+ .ma-toggles,.chart-subbar{border-color:#cbd5e1!important;color:#0f172a!important}
+ .ohlc-bar span,#barDate,#barVol,#instHoverText{color:#0f172a!important}
+ #barVolMa5{color:#b45309!important}
+ .ma-btn{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#334155!important}
+ .ma-btn.active{background:#f8fafc!important;border-color:#475569!important;color:#0f172a!important}
+ .c-rsv{color:#4338ca!important}.c-k9{color:#dc2626!important}.c-d9{color:#059669!important}
+ .note{color:#1e293b!important;font-size:11.5px!important}
+ .guide-block{display:block!important;background:#ffffff!important;border:1px solid #cbd5e1!important;break-inside:auto}
+ .guide-block h3{color:#0f172a!important;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+ .guide-block li,.guide-block p{color:#1e293b!important}
+ .tablewrap{max-height:none!important;overflow:visible!important;border-color:#cbd5e1!important}
+ th{background:#f1f5f9!important;color:#0f172a!important;border-bottom:1px solid #94a3b8!important}
+ td,td:first-child{background:#ffffff!important;color:#1e293b!important;border-bottom:1px solid #e2e8f0!important}
+ th:first-child{background:#f1f5f9!important}
+ footer{color:#475569!important}
+}
+</style>
+</head>
+<body><main>
+<header>
+ <div class="logo">📊</div>
+ <h1>台股即時行情、KD走勢、個股/ETF雙軌評分與損益計算器</h1>
+ <div class="sub">自動辨識個股與 ETF 切換專屬評分模型｜支援手機觸控縮放與全白底 PDF 報表</div>
+ <div class="print-meta" id="printMeta">報表產出時間：—</div>
+
+ <div id="stockBanner" class="stock-banner hidden">
+  <span class="sb-tag" id="sbMarket">上市</span>
+  <span class="sb-tag" id="sbAssetType">個股</span>
+  <span class="sb-name" id="sbName">—</span>
+  <span class="sb-code" id="sbCode">—</span>
+  <div class="sb-price" id="sbPrice">—</div>
+ </div>
+</header>
+
+<section class="card" id="inputCard">
+ <div class="grid">
+  <div class="grid-2col-mobile">
+   <div class="field">
+    <label for="code">股票／ETF 代號</label>
+    <input id="code" maxlength="6" inputmode="text" autocapitalize="characters" placeholder="如 2330、00919">
+   </div>
+   <div class="field">
+    <label for="shares">持有股數</label>
+    <input id="shares" type="number" inputmode="numeric" min="1" step="1" value="1000">
+   </div>
+  </div>
+
+  <div class="grid-2col-mobile">
+   <div class="field">
+    <label for="buy">買入價格（選填）</label>
+    <input id="buy" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="略過則不計損益">
+   </div>
+   <div class="field">
+    <label for="current">目前股價（自動）</label>
+    <input id="current" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="查詢自動帶入">
+   </div>
+  </div>
+
+  <div class="field" style="grid-column:1/-1">
+   <label for="target">目標價格（選填）</label>
+   <input id="target" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="輸入目標價自動算連續漲跌停次數">
+   <div class="hint">系統會自動判斷輸入代號為「個股」或「ETF」，並套用專屬技術評分標準。</div>
+  </div>
+ </div>
+
+ <div class="actions">
+  <button class="main-btn" id="runBtn">查詢股價並自動計算</button>
+ </div>
+ <div class="status" id="status">輸入股票或 ETF 代號（如 5314、2330、00919、0050）按下按鈕即可查詢。</div>
+
+ <div class="pdf-action-bar hidden" id="pdfActionBar">
+  <button type="button" class="pdf-btn" id="exportPdfBtn">📄 產生 PDF 報表（全白底省墨版）</button>
+  <span class="pdf-tip">自動轉換為<b>全白底高對比圖表</b>（含文末雙軌評分說明），檔名預設為「<b>名稱_代號_當天日期</b>」。</span>
+ </div>
+</section>
+
+<!-- 技術面強勢度綜合指數卡（自動切換個股／ETF 雙軌評分） -->
+<section class="card hidden" id="strengthCard">
+ <div id="assetModeChip" class="mode-chip stock">📌 目前套用：一般個股攻擊動能評分模型</div>
+ <div class="subhead" style="margin-bottom:10px">
+  <div class="section" id="strengthTitle" style="margin:0">技術面強勢度綜合指數</div>
+  <span class="grade-pill-lg" id="strengthBadge">—</span>
+ </div>
+
+ <div class="score-hero">
+  <div style="flex:1;min-width:200px">
+   <div style="font-size:12.5px;font-weight:700;color:#9dafc6;margin-bottom:4px" id="scoreSubLabel">綜合技術強勢總分（0～100 分）</div>
+   <div class="score-circle">
+    <span class="score-num" id="scoreNum">—</span>
+    <span style="font-size:15px;color:#9dafc6">/ 100 分</span>
+   </div>
+   <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
+  </div>
+  <div style="flex:1.5;min-width:220px">
+   <div class="signal-title-lg">多空訊號拆解：</div>
+   <div class="tag-list" id="strengthTags"></div>
+  </div>
+ </div>
+
+ <div class="metrics-5">
+  <div class="metric"><small id="lblMaMetric">均線排列 (MA5/10/20)</small><strong id="indMaStatus" style="font-size:14.5px">—</strong></div>
+  <div class="metric"><small>日 KD (9,3,3) 位階</small><strong id="indKdStatus" style="font-size:14.5px">—</strong></div>
+  <div class="metric"><small>RSI (6) 相對強弱</small><strong id="indRsi">—</strong></div>
+  <div class="metric"><small>MACD (12,26,9) 柱狀</small><strong id="indMacd">—</strong></div>
+  <div class="metric"><small>量比 (當日量 / 5日均量)</small><strong id="indVolRatio">—</strong></div>
+ </div>
+
+ <!-- 專屬檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） -->
+ <div class="strategy-box" id="strategyBox">
+  <div class="rb-head">
+   <span class="rb-title" id="rbTitle">🐂 馬克紅／紅牛股強勢動能檢核</span>
+   <span class="rb-badge" id="rbGrade">—</span>
+  </div>
+  <div style="font-size:12.5px;color:#d6e2f0;line-height:1.55" id="rbSummary">—</div>
+  <div class="rb-grid" id="rbChecklist"></div>
+ </div>
+</section>
+
+<!-- 仿看盤軟體三層技術分析圖表區塊 -->
+<section class="card hidden" id="kdCard">
+ <div class="subhead" style="margin-bottom:8px">
+  <div class="section" id="kdTitle" style="margin:0">技術走勢｜日 K 線・量能・KD</div>
+  <div style="display:flex;gap:8px;align-items:center">
+   <span class="pill" id="rKdSignal">—</span>
+   <button type="button" class="kd-toggle" id="toggleKdTable">展開數據表</button>
+  </div>
+ </div>
+
+ <div class="terminal">
+  <div class="ohlc-bar">
+   <div style="display:flex;justify-content:space-between;align-items:center">
+    <span id="barDate" style="color:#9fc7ff">—</span>
+    <span class="zoom-hint-txt" style="font-size:11px;color:#8a9bb2">雙指捏合／滾輪縮放・左右滑動平移</span>
+   </div>
+   <div class="ohlc-items">
+    <span id="barOpen">開:—</span>
+    <span id="barHigh">高:—</span>
+    <span id="barLow">低:—</span>
+    <span id="barClose">收:—</span>
+   </div>
+  </div>
+
+  <!-- 手機橫向可滑動均線按鈕列 + 同步縮放工具列 -->
+  <div class="ma-toggles">
+   <div class="ma-group" id="maToggleBar">
+    <button type="button" class="ma-btn active" data-ma="ma5"><span class="dot" style="background:#ffd166"></span>5日 <span id="valMa5">—</span></button>
+    <button type="button" class="ma-btn active" data-ma="ma10"><span class="dot" style="background:#e066ff"></span>10日 <span id="valMa10">—</span></button>
+    <button type="button" class="ma-btn active" data-ma="ma20"><span class="dot" style="background:#38bdf8"></span>月線 <span id="valMa20">—</span></button>
+    <button type="button" class="ma-btn active" data-ma="ma60"><span class="dot" style="background:#fb923c"></span>季線 <span id="valMa60">—</span></button>
+    <button type="button" class="ma-btn" data-ma="ma120"><span class="dot" style="background:#a3e635"></span>半年 <span id="valMa120">—</span></button>
+    <button type="button" class="ma-btn" data-ma="ma240"><span class="dot" style="background:#f472b6"></span>年線 <span id="valMa240">—</span></button>
+   </div>
+   <div class="zoom-bar-row">
+    <span style="font-size:11px;color:#7d8fa6">左右滑動均線列可切換長均線</span>
+    <div class="zoom-controls" title="K線、成交量、KD三圖同步縮放">
+     <button type="button" class="zoom-btn" id="zoomInBtn">＋</button>
+     <span class="zoom-info" id="zoomRangeLabel">75日</span>
+     <button type="button" class="zoom-btn" id="zoomOutBtn">－</button>
+     <button type="button" class="zoom-btn" id="zoomResetBtn">重置</button>
+    </div>
+   </div>
+  </div>
+
+  <div class="canvas-box" style="height:210px">
+   <canvas id="klineChart"></canvas>
+  </div>
+
+  <!-- 第二層：每日成交量柱狀圖 -->
+  <div class="chart-subbar">
+   <div style="display:flex;gap:12px">
+    <span id="barVol" style="color:#edf4ff">成交量: —</span>
+    <span style="color:#ffd166" id="barVolMa5">均量5: —</span>
+   </div>
+   <span style="font-size:11px;color:#7d8fa6">單位：張</span>
+  </div>
+  <div class="canvas-box" style="height:95px">
+   <canvas id="volChart"></canvas>
+  </div>
+
+  <!-- 第三層：KD 指標走勢圖 -->
+  <div class="chart-subbar">
+   <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <span class="c-rsv" id="legRsv">━ RSV:—</span>
+    <span class="c-k9" id="legK9">━ K9:—</span>
+    <span class="c-d9" id="legD9">━ D9:—</span>
+   </div>
+   <span style="font-size:11px;color:#7d8fa6">日 KD (9,3,3)</span>
+  </div>
+  <div class="canvas-box" style="height:175px">
+   <canvas id="kdChart"></canvas>
+  </div>
+ </div>
+
+ <div class="note" id="kdNote" style="margin-top:10px"></div>
+
+ <div class="tablewrap hidden" id="kdTableWrap" style="margin-top:12px;max-height:280px">
+  <table>
+   <thead>
+    <tr><th>日期</th><th>開盤</th><th>最高</th><th>最低</th><th>收盤</th><th>量(張)</th><th>RSV</th><th>K9</th><th>D9</th></tr>
+   </thead>
+   <tbody id="kdRows"></tbody>
+  </table>
+ </div>
+</section>
+
+<!-- 三大法人買賣超統計區塊 -->
+<section class="card hidden" id="instCard">
+ <div class="subhead" style="margin-bottom:8px">
+  <div class="section" id="instTitle" style="margin:0">三大法人買賣超統計（張）</div>
+  <div style="display:flex;gap:8px;align-items:center">
+   <span class="pill" id="instDatePill">最新統計日：—</span>
+   <button type="button" class="kd-toggle" id="toggleInstTable">展開法人明細</button>
+  </div>
+ </div>
+
+ <div class="metrics-5">
+  <div class="metric"><small>外資買賣超</small><strong id="instForeign">—</strong></div>
+  <div class="metric"><small>投信買賣超</small><strong id="instTrust">—</strong></div>
+  <div class="metric"><small>自營商買賣超</small><strong id="instDealer">—</strong></div>
+  <div class="metric"><small>當日三大法人合計</small><strong id="instTotal">—</strong></div>
+  <div class="metric"><small>近 5 日法人累計</small><strong id="inst5dTotal">—</strong></div>
+ </div>
+
+ <div class="terminal" style="margin-top:12px;padding-top:10px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9dafc6;padding:0 4px 6px">
+   <span id="instHoverText">三大法人每日合計買賣超（紅買超／綠賣超）</span>
+   <span>單位：張</span>
+  </div>
+  <div class="canvas-box" style="height:125px">
+   <canvas id="instChart"></canvas>
+  </div>
+ </div>
+
+ <div class="note" id="instNote" style="margin-top:9px"></div>
+
+ <div class="tablewrap hidden" id="instTableWrap" style="margin-top:12px;max-height:260px">
+  <table>
+   <thead>
+    <tr><th>日期</th><th>外資(張)</th><th>投信(張)</th><th>自營商(張)</th><th>三大法人合計(張)</th></tr>
+   </thead>
+   <tbody id="instRows"></tbody>
+  </table>
+ </div>
+</section>
+
+<!-- 損益與漲跌停計算結果區塊 -->
+<section class="card hidden" id="result">
+ <div class="subhead"><div class="section" id="resultTitle" style="margin:0">計算結果</div><span class="pill" id="limitPill">一般股票每日 ±10% 試算</span></div>
+
+ <div id="buyResultBlock" class="hidden">
+  <div class="section">買入成本與目前損益</div>
+  <div class="metrics">
+   <div class="metric"><small>買入成本</small><strong id="rBuy">—</strong></div>
+   <div class="metric"><small>目前股價</small><strong id="rCurrent">—</strong></div>
+   <div class="metric"><small>目前每股損益</small><strong id="rNowDiff">—</strong></div>
+   <div class="metric"><small>目前報酬率</small><strong id="rNowPct">—</strong></div>
+   <div class="metric span-full"><small>目前總損益（未扣費稅）</small><strong id="rNowProfit">—</strong></div>
+  </div>
+ </div>
+
+ <div id="targetResultBlock" class="hidden" style="margin-top:18px">
+  <div class="section">到達目標價與連續漲跌停試算</div>
+  <div class="metrics">
+   <div class="metric"><small>目前股價</small><strong id="rCurrent2">—</strong></div>
+   <div class="metric"><small>目標價格</small><strong id="rTarget">—</strong></div>
+   <div class="metric"><small>所需漲／跌停次數</small><strong id="rCount">—</strong></div>
+   <div class="metric"><small>逐次漲跌停後價格</small><strong id="rFinal">—</strong></div>
+   <div class="metric"><small>相對現價總變動</small><strong id="rMove">—</strong></div>
+   <div class="metric"><small>目標總損益（未扣費稅）</small><strong id="rTargetProfit">—</strong></div>
+  </div>
+  <div class="section" style="margin-top:18px" id="pathHeading">逐次價格明細</div>
+  <div class="tablewrap"><table><thead><tr><th>次數</th><th>前一日參考價</th><th>漲停／跌停價</th><th>單次變動</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="note" id="pathNote" style="margin-top:10px"></div>
+ </div>
+</section>
+
+<!-- 完整使用說明與雙軌評分規則說明（PDF 匯出時完整保留於報表最末） -->
+<section class="card guide-block" id="guideCard">
+ <div class="section">📖 使用說明與個股／ETF 雙軌評分標準</div>
+ <div class="note">
+  <h3>一、為什麼個股與 ETF 採用不同的技術評分模型？</h3>
+  <p style="margin:4px 0 8px">系統會根據輸入代號（如 <code>00</code> 開頭的 00919、0050、00878、00991A 等）與證交所分類自動辨識標的屬性，套用最適合的評分邏輯：</p>
+  <ul>
+   <li><b>模式 A｜一般個股（攻擊動能與紅牛股模型）</b>：個股追求主升段爆發力，評分側重 <b>MA5 &gt; MA10 &gt; MA20 多頭發散（±22 分）</b>、<b>日 KD 黃金交叉或高檔鈍化（±15 分）</b>、<b>RSI(6) 強弱（±8 分）</b>、<b>MACD 紅柱擴大（±8 分）</b> 與 <b>1.3 倍以上帶量上攻（+7/-6 分）</b>。</li>
+   <li><b>模式 B｜ETF（波段趨勢與超賣低接模型）</b>：ETF 由一籃子成分股組成，波動較穩健，評分改以 <b>月線（MA20）與季線（MA60）中長線多頭保護（±24 分）</b> 為核心；日 KD 黃金交叉加 14 分，若 <b>KD 跌破 25 進入低檔超賣區</b>不給予重罰，反而標記為「<b>低檔超賣分批低接觀察區（+6 分）</b>」；遇到除息或大盤急跌爆量下殺時，亦解讀為低接承接量而非主力出貨。</li>
+  </ul>
+
+  <h3>二、綜合技術強勢總分（0～100 分）等級對照</h3>
+  <ul>
+   <li><b>75 分以上</b>：🔥 極強勢多頭格局（個股主升段噴發／ETF 強勢多頭波段）</li>
+   <li><b>60～74 分</b>：📈 偏多震盪走強（均線有撐、趨勢偏多操作）</li>
+   <li><b>45～59 分</b>：⚖️ 中性區間整理（均線糾結或回測支撐尋求方向）</li>
+   <li><b>30～44 分</b>：📉 偏弱整理格局（跌破月線，ETF 可留意 KD 超賣低接時機）</li>
+   <li><b>29 分以下</b>：❄️ 弱勢空頭格局（短中期均線空頭排列，宜保守觀望）</li>
+  </ul>
+
+  <h3>三、手機操作與全白底 PDF 報表說明</h3>
+  <ul>
+   <li><b>三圖同步縮放與平移</b>：K 線、成交量與 KD 走勢圖共用同步時間軸，在手機上可用<b>雙指捏合放大縮小、單指左右滑動檢視歷史區間</b>，或點擊圖表右上角「<b>＋ / － / 重置</b>」按鈕。</li>
+   <li><b>全白底省墨 PDF 報表</b>：查詢後點擊「<b>產生 PDF 報表</b>」，系統會將所有圖表自動轉為純白底高對比配色以節省列印油墨，預設檔名為「<b>股票名稱_代號_當天日期</b>」，並完整附帶本評分標準供分享或上傳給 AI 分析。</li>
+   <li><i>註：以上指標與評分均由歷史與即時成交數據客觀運算得出，僅供技術分析與試算參考，不構成投資買賣建議；損益試算亦未扣除手續費與證交稅。</i></li>
+  </ul>
+ </div>
+</section>
+<footer class="note" style="text-align:center;padding:5px 0 20px">台股即時行情、六均線K線、KD走勢、個股/ETF雙軌評分與損益計算器</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id),v=id=>Number($(id).value);
+const fmt=n=>Number(n).toLocaleString("zh-TW",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtInt=n=>Math.round(Number(n)).toLocaleString("zh-TW");
+const fmtSignedInt=n=>{const val=Math.round(Number(n));return (val>0?"+":"")+val.toLocaleString("zh-TW")};
+
+let stockNameCache="";
+let isEtfAsset=false; // 自動判定為 ETF 或個股
+let fullChartSeries=[];
+let instSeriesCache=[];
+let activeIdx=-1;
+let isPrintMode=false;
+
+// 同步縮放與平移狀態（K線、成交量、KD 三圖共用）
+let viewStart=0;
+let viewCount=75;
+const MIN_BARS=15;
+const DEFAULT_BARS=75;
+
+function detectIsEtf(code,stockInfo,name){
+ const c=String(code||"").trim().toUpperCase();
+ const ind=stockInfo?String(stockInfo.industry_category||"").toUpperCase():"";
+ const nm=String(name||"").toUpperCase();
+ if(/^00\d{2,4}[A-Z]?$/.test(c))return true;
+ if(ind.includes("ETF")||ind.includes("ETN")||ind.includes("指數股票"))return true;
+ if(nm.includes("ETF")||nm.includes("正2")||nm.includes("反1"))return true;
+ return false;
+}
+
+function getVisibleSeries(){
+ if(!fullChartSeries.length)return [];
+ const total=fullChartSeries.length;
+ const count=Math.max(Math.min(MIN_BARS,total),Math.min(viewCount,total));
+ const start=Math.max(0,Math.min(total-count,viewStart));
+ return fullChartSeries.slice(start,start+count);
+}
+
+function updateZoomControlsUI(){
+ const total=fullChartSeries.length;
+ if(!total)return;
+ const vis=getVisibleSeries();
+ $("zoomRangeLabel").textContent=`${vis.length}/${total}日`;
+ $("zoomInBtn").disabled=vis.length<=Math.min(MIN_BARS,total);
+ $("zoomOutBtn").disabled=vis.length>=total;
+}
+
+function applyZoom(newCount,anchorRatio=0.5){
+ const total=fullChartSeries.length;
+ if(!total)return;
+ const oldCount=Math.max(Math.min(MIN_BARS,total),Math.min(viewCount,total));
+ const clampedCount=Math.max(Math.min(MIN_BARS,total),Math.min(total,Math.round(newCount)));
+ const anchorIdx=viewStart+oldCount*anchorRatio;
+ let nextStart=Math.round(anchorIdx-clampedCount*anchorRatio);
+ nextStart=Math.max(0,Math.min(total-clampedCount,nextStart));
+ viewCount=clampedCount;
+ viewStart=nextStart;
+ activeIdx=-1;
+ updateZoomControlsUI();
+ renderAllCharts(-1);
+}
+
+const MA_CONFIG=[
+ {key:"ma5",label:"5日線",color:"#ffd166",printColor:"#d97706",active:true},
+ {key:"ma10",label:"10日線",color:"#e066ff",printColor:"#9333ea",active:true},
+ {key:"ma20",label:"月線",color:"#38bdf8",printColor:"#0284c7",active:true},
+ {key:"ma60",label:"季線",color:"#fb923c",printColor:"#ea580c",active:true},
+ {key:"ma120",label:"半年線",color:"#a3e635",printColor:"#4d7c0f",active:false},
+ {key:"ma240",label:"年線",color:"#f472b6",printColor:"#db2777",active:false}
+];
+
+function tick(p){if(p<10)return .01;if(p<50)return .05;if(p<100)return .1;if(p<500)return .5;if(p<1000)return 1;return 5}
+function nextLimit(p,dir){const raw=p*(dir==="up"?1.1:.9),unit=tick(p);return Number((Math.round(raw/unit+1e-8)*unit).toFixed(2))}
+function pathFromCurrent(current,target){
+ const up=target>current,dir=up?"up":"down",items=[];let price=current,n=0;
+ while((up?price<target:price>target)&&n<100){
+  const next=nextLimit(price,dir);if(next<=0||Math.abs(next-price)<1e-8)break;
+  items.push({n:n+1,prev:price,next,change:next-price});price=next;n++;
+ }
+ return {up,items,last:price,done:up?price>=target:price<=target};
+}
+function setMetric(id,value,signClass=""){const el=$(id);el.textContent=value;el.className=signClass}
+
+function buildIndicatorSeries(rawList){
+ if(!rawList||rawList.length<2)return [];
+ const sorted=[...rawList]
+  .filter(r=>Number(r.close)>0)
+  .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+
+ let kVal=50,dVal=50,prevRsvVal=50;
+ let ema12=Number(sorted[0].close),ema26=Number(sorted[0].close),dea=0;
+ const out=[];
+
+ for(let i=0;i<sorted.length;i++){
+  const row=sorted[i];
+  const close=Number(row.close);
+  const open=Number(row.open)>0?Number(row.open):close;
+  const high=Number(row.max)>0?Math.max(Number(row.max),open,close):Math.max(open,close);
+  const low=Number(row.min)>0?Math.min(Number(row.min),open,close):Math.min(open,close);
+  const volLots=Math.round(Number(row.Trading_Volume||0)/1000);
+  const prevClose=i>0?Number(sorted[i-1].close):open;
+
+  const avgClose=n=>i>=n-1?sorted.slice(i-n+1,i+1).reduce((s,x)=>s+Number(x.close),0)/n:null;
+  const ma5=avgClose(5),ma10=avgClose(10),ma20=avgClose(20),ma60=avgClose(60),ma120=avgClose(120),ma240=avgClose(240);
+
+  let vma5=null;
+  if(i>=4){
+   let sumV=0;
+   for(let j=i-4;j<=i;j++)sumV+=Math.round(Number(sorted[j].Trading_Volume||0)/1000);
+   vma5=sumV/5;
+  }
+
+  const winStart=Math.max(0,i-8);
+  const slice=sorted.slice(winStart,i+1);
+  const high9=Math.max(...slice.map(x=>Number(x.max)>0?Number(x.max):Number(x.close)));
+  const low9=Math.min(...slice.map(x=>Number(x.min)>0?Number(x.min):Number(x.close)));
+  const prevK=kVal,prevD=dVal;
+  const rsvVal=(high9===low9)?50:((close-low9)/(high9-low9))*100;
+  kVal=(2/3)*prevK+(1/3)*rsvVal;
+  dVal=(2/3)*prevD+(1/3)*kVal;
+
+  let rsi6=50;
+  if(i>=6){
+   let gain=0,loss=0;
+   for(let j=i-5;j<=i;j++){
+    const diff=Number(sorted[j].close)-Number(sorted[j-1].close);
+    if(diff>0)gain+=diff;else loss-=diff;
+   }
+   rsi6=(gain+loss)===0?50:(gain/(gain+loss))*100;
+  }
+
+  if(i>0){
+   ema12=ema12*(11/13)+close*(2/13);
+   ema26=ema26*(25/27)+close*(2/27);
+  }
+  const dif=ema12-ema26;
+  dea=i===0?dif:dea*(8/10)+dif*(2/10);
+  const osc=dif-dea;
+
+  out.push({
+   date:row.date,
+   shortDate:row.date.slice(5).replace("-","/"),
+   open,high,low,close,prevClose,
+   volLots,ma5,ma10,ma20,ma60,ma120,ma240,vma5,
+   high9,low9,
+   rsv:Number(rsvVal),
+   k9:Number(kVal),
+   d9:Number(dVal),
+   prevRsv:i===0?Number(rsvVal):Number(prevRsvVal),
+   prevK:Number(prevK),
+   prevD:Number(prevD),
+   rsi6,dif,dea,osc,
+   isLive:Boolean(row.isLive)
+  });
+  prevRsvVal=rsvVal;
+ }
+ return out.length>180?out.slice(-180):(out.length>15?out.slice(8):out);
+}
+
+// 雙軌技術評分引擎：自動區分 ETF（波段趨勢與超賣低接）與 個股（攻擊動能與紅牛股）
+function evaluateTechStrength(pt,isEtf){
+ let score=50;
+ const tags=[];
+ const volRatio=pt.vma5>0?(pt.volLots/pt.vma5):1;
+ const kdText=`K:${pt.k9.toFixed(1)} / D:${pt.d9.toFixed(1)}`;
+
+ if(isEtf){
+  // ================= 模式 B：ETF 專屬評分模型 =================
+  let maText="月季線盤整";
+  const aboveSeason=pt.ma60?pt.close>pt.ma60:true;
+  const aboveMonth=pt.ma20?pt.close>pt.ma20:pt.close>pt.ma5;
+  const monthOverSeason=(pt.ma20&&pt.ma60)?pt.ma20>pt.ma60:aboveMonth;
+
+  if(pt.ma20&&pt.ma60){
+   if(pt.close>pt.ma20&&pt.ma20>pt.ma60){
+    score+=24;maText="月線>季線多頭排列";tags.push({txt:"🛡️ 站穩月線與季線多頭",cls:"purple"});
+   }else if(pt.close>pt.ma60){
+    score+=12;maText="季線之上有撐";tags.push({txt:"📈 季線 (MA60) 長線保護",cls:"blue"});
+   }else if(pt.close<pt.ma20&&pt.ma20<pt.ma60){
+    score-=16;maText="跌破月季線整理";tags.push({txt:"⚠️ 處於月季線之下",cls:"green"});
+   }else{
+    score-=6;maText="回測季線支撐";
+   }
+  }else if(pt.ma20){
+   if(pt.close>pt.ma20){score+=14;maText="站穩月線 (MA20)"}else{score-=10;maText="跌破月線 (MA20)"}
+  }
+
+  // ETF KD 評估：低檔超賣 (<25) 視為分批低接黃金觀察區，給予正向加分而非重罰
+  const isKdFavorable=(pt.prevK<=pt.prevD&&pt.k9>pt.d9)||pt.k9<=25||(pt.k9>pt.d9&&pt.k9>=50);
+  if(pt.prevK<=pt.prevD&&pt.k9>pt.d9){
+   score+=14;tags.push({txt:"✨ 日 KD 黃金交叉轉強",cls:"red"});
+  }else if(pt.k9<=25){
+   score+=6;tags.push({txt:"💎 KD 低檔超賣低接區 (≤25)",cls:"purple"});
+  }else if(pt.k9>pt.d9){
+   score+=8;tags.push({txt:"KD 偏多向上 (K>D)",cls:"red"});
+  }else if(pt.prevK>=pt.prevD&&pt.k9<pt.d9){
+   score-=8;tags.push({txt:"📉 日 KD 高檔拉回交叉",cls:"amber"});
+  }else{
+   score-=4;tags.push({txt:"KD 修正整理中 (K<D)",cls:"green"});
+  }
+  if(pt.k9>=80&&pt.d9>=80)tags.push({txt:"⚡ 波段高檔強勢鈍化 (≥80)",cls:"amber"});
+
+  // ETF RSI 評估
+  if(pt.rsi6>=60){score+=6;tags.push({txt:`RSI(6) 偏多 (${pt.rsi6.toFixed(1)})`,cls:"red"})}
+  else if(pt.rsi6<=28){score+=4;tags.push({txt:`RSI(6) 超賣浮現 (${pt.rsi6.toFixed(1)})`,cls:"purple"})}
+
+  // ETF MACD 評估
+  const isMacdStable=pt.dif>0||pt.osc>0;
+  if(pt.dif>0&&pt.osc>0){score+=8;tags.push({txt:"MACD 零軸上紅柱助漲",cls:"red"})}
+  else if(pt.osc>0){score+=5;tags.push({txt:"MACD 綠柱收斂翻紅",cls:"red"})}
+  else if(pt.dif<0&&pt.osc<0){score-=6;tags.push({txt:"MACD 零軸下調整中",cls:"green"})}
+
+  // ETF 量能評估：爆量上攻加分，爆量急跌視為逢低承接買盤湧現（不扣重分）
+  if(pt.close>=pt.prevClose&&volRatio>=1.3){
+   score+=6;tags.push({txt:`🚀 帶量推升 (量比 ${volRatio.toFixed(1)}x)`,cls:"red"});
+  }else if(pt.close<pt.prevClose&&volRatio>=1.5){
+   score+=2;tags.push({txt:`💰 急跌爆量低接買盤 (${volRatio.toFixed(1)}x)`,cls:"purple"});
+  }
+
+  score=Math.max(5,Math.min(98,Math.round(score)));
+  let grade="",colorClass="";
+  if(score>=75){grade="🔥 ETF 強勢多頭波段";colorClass="red"}
+  else if(score>=60){grade="📈 ETF 偏多穩健上行";colorClass="purple"}
+  else if(score>=45){grade="⚖️ ETF 區間震盪／低接觀察";colorClass="amber"}
+  else if(score>=30){grade="📉 ETF 回測支撐整理";colorClass="green"}
+  else{grade="❄️ ETF 中期偏弱修正";colorClass="green"}
+
+  const checks=[
+   {ok:aboveSeason,text:"長線保護短線（股價站穩季線 MA60 之上）"},
+   {ok:monthOverSeason,text:"波段架構偏多（月線 MA20 位於季線之上）"},
+   {ok:isKdFavorable,text:"KD 黃金交叉向上，或處於 ≤25 超賣低接區"},
+   {ok:isMacdStable,text:"MACD 位於零軸之上或柱狀翻紅轉強"}
+  ];
+  const passCount=checks.filter(c=>c.ok).length;
+  let badge="",summary="";
+  if(passCount===4){
+   badge="🛡️ 滿分多頭波段 ETF (4/4)";
+   summary="中長期均線與技術動能全數站在多方！適合順勢抱牢或沿月線分批布局，享受波段趨勢與配息雙重優勢。";
+  }else if(passCount===3){
+   badge="✨ 偏多穩健型態 (3/4)";
+   summary="符合三項 ETF 多頭條件，整體趨勢穩健，若遇短線拉回不破季線可視為分批承接良機。";
+  }else if(passCount===2){
+   badge="⚖️ 區間整理／觀察低點 (2/4)";
+   summary="處於均線整理或除息後填息階段，建議搭配日 KD 落入 25 以下超賣區時分批布局。";
+  }else{
+   badge=`💤 修正打底階段 (${passCount}/4)`;
+   summary="目前跌破中長期均線仍在尋求底部支撐，可耐心等待 KD 黃金交叉或站回月線後再行加碼。";
+  }
+
+  return {score,grade,colorClass,tags,maText,kdText,volRatio,checks,badge,summary,isEtf:true};
+ }else{
+  // ================= 模式 A：一般個股攻擊動能評分模型 =================
+  let maText="均線糾結";
+  const isMaBull=pt.ma5&&pt.ma10&&pt.ma20&&pt.close>pt.ma5&&pt.ma5>pt.ma10&&pt.ma10>pt.ma20;
+  if(pt.ma5&&pt.ma10&&pt.ma20){
+   if(isMaBull){
+    score+=22;maText="多頭排列 (5>10>20)";tags.push({txt:"🔥 均線多頭排列",cls:"red"});
+   }else if(pt.close<pt.ma5&&pt.ma5<pt.ma10&&pt.ma10<pt.ma20){
+    score-=22;maText="空頭排列 (5<10<20)";tags.push({txt:"❄️ 均線空頭排列",cls:"green"});
+   }else if(pt.close>pt.ma5&&pt.close>pt.ma20){
+    score+=10;maText="站上月線與5日線";tags.push({txt:"📈 站穩短中期均線",cls:"red"});
+   }else if(pt.close<pt.ma20){
+    score-=10;maText="跌破月線 (MA20)";tags.push({txt:"⚠️ 處於月線之下",cls:"green"});
+   }
+  }else if(pt.ma5){
+   if(pt.close>pt.ma5){score+=8;maText="站上 5 日線"}else{score-=8;maText="跌破 5 日線"}
+  }
+
+  const isKdBull=(pt.prevK<=pt.prevD&&pt.k9>pt.d9)||(pt.k9>pt.d9&&pt.k9>=50);
+  if(pt.prevK<=pt.prevD&&pt.k9>pt.d9){
+   score+=15;tags.push({txt:"✨ 日 KD 黃金交叉",cls:"red"});
+  }else if(pt.prevK>=pt.prevD&&pt.k9<pt.d9){
+   score-=15;tags.push({txt:"📉 日 KD 死亡交叉",cls:"green"});
+  }else if(pt.k9>pt.d9){
+   score+=7;tags.push({txt:"KD 偏多向上 (K>D)",cls:"red"});
+  }else{
+   score-=7;tags.push({txt:"KD 偏空向下 (K<D)",cls:"green"});
+  }
+  if(pt.k9>=80&&pt.d9>=80)tags.push({txt:"⚡ 高檔強勢鈍化區 (≥80)",cls:"amber"});
+  else if(pt.k9<=20&&pt.d9<=20)tags.push({txt:"💎 低檔超賣醞釀反彈 (≤20)",cls:"blue"});
+
+  if(pt.rsi6>=65){score+=8;tags.push({txt:`RSI(6) 強勢 (${pt.rsi6.toFixed(1)})`,cls:"red"})}
+  else if(pt.rsi6<=35){score-=8;tags.push({txt:`RSI(6) 偏弱 (${pt.rsi6.toFixed(1)})`,cls:"green"})}
+
+  const isMacdBull=(pt.dif>0&&pt.osc>0)||pt.osc>0;
+  if(pt.dif>0&&pt.osc>0){score+=8;tags.push({txt:"MACD 零軸上紅柱擴大",cls:"red"})}
+  else if(pt.osc>0){score+=4;tags.push({txt:"MACD 翻紅轉強",cls:"red"})}
+  else if(pt.dif<0&&pt.osc<0){score-=8;tags.push({txt:"MACD 零軸下綠柱擴張",cls:"green"})}
+  else{score-=4}
+
+  const isVolAttack=pt.close>=pt.open&&volRatio>=1.3;
+  if(pt.close>pt.prevClose&&volRatio>=1.3){
+   score+=7;tags.push({txt:`🚀 帶量上攻 (量比 ${volRatio.toFixed(1)}x)`,cls:"red"});
+  }else if(pt.close<pt.prevClose&&volRatio>=1.3){
+   score-=6;tags.push({txt:`⚠️ 帶量下殺 (量比 ${volRatio.toFixed(1)}x)`,cls:"green"});
+  }
+
+  score=Math.max(5,Math.min(98,Math.round(score)));
+  let grade="",colorClass="";
+  if(score>=75){grade="🔥 極強勢多頭格局";colorClass="red"}
+  else if(score>=60){grade="📈 偏多震盪走強";colorClass="red"}
+  else if(score>=45){grade="⚖️ 中性區間整理";colorClass="amber"}
+  else if(score>=30){grade="📉 偏弱整理格局";colorClass="green"}
+  else{grade="❄️ 弱勢空頭格局";colorClass="green"}
+
+  const checks=[
+   {ok:isMaBull,text:"均線多頭發散（MA5 > MA10 > MA20）"},
+   {ok:isKdBull,text:"KD 黃金交叉或位於 50 以上多方區"},
+   {ok:isVolAttack,text:`攻擊量能湧現（量比 ${volRatio.toFixed(1)}x ≥ 1.3x 且收紅）`},
+   {ok:isMacdBull,text:"MACD 紅柱動能擴張（趨勢助漲）"}
+  ];
+  const passCount=checks.filter(c=>c.ok).length;
+  let badge="",summary="";
+  if(passCount===4){
+   badge="🐂 滿分紅牛股型態 (4/4)";
+   summary="四項強勢動能全數達標！均線、量能與技術指標同步共振向上，具備典型「馬克紅／紅牛股」主升段噴發特徵。";
+  }else if(passCount===3){
+   badge="🔥 準紅牛強勢股 (3/4)";
+   summary="符合三項核心多頭條件，短線動能強勁，若補齊剩餘一項條件（如量能放大或均線全面發散）將更具爆發力。";
+  }else if(passCount===2){
+   badge="⚡ 蓄勢轉強觀察 (2/4)";
+   summary="具備部分轉強訊號，處於打底或突破前夕，建議觀察能否站穩月線並帶量確認方向。";
+  }else{
+   badge=`💤 尚未成形 (${passCount}/4)`;
+   summary="目前尚未具備馬克紅／紅牛股的連續攻擊動能，宜等待均線重新收斂翻揚與 KD 黃金交叉訊號。";
+  }
+
+  return {score,grade,colorClass,tags,maText,kdText,volRatio,checks,badge,summary,isEtf:false};
+ }
+}
+
+function updateChartLegends(item){
+ if(!item)return;
+ const pColor=val=>val>item.prevClose?"#ff5252":val<item.prevClose?"#29d978":"#edf4ff";
+ $("barDate").textContent=item.date+(item.isLive?" (盤中)":"");
+ $("barOpen").innerHTML=`開:<span style="color:${pColor(item.open)}">${fmt(item.open)}</span>`;
+ $("barHigh").innerHTML=`高:<span style="color:${pColor(item.high)}">${fmt(item.high)}</span>`;
+ $("barLow").innerHTML=`低:<span style="color:${pColor(item.low)}">${fmt(item.low)}</span>`;
+ $("barClose").innerHTML=`收:<span style="color:${pColor(item.close)}">${fmt(item.close)}</span>`;
+
+ $("valMa5").textContent=item.ma5?fmt(item.ma5):"—";
+ $("valMa10").textContent=item.ma10?fmt(item.ma10):"—";
+ $("valMa20").textContent=item.ma20?fmt(item.ma20):"—";
+ $("valMa60").textContent=item.ma60?fmt(item.ma60):"—";
+ $("valMa120").textContent=item.ma120?fmt(item.ma120):"—";
+ $("valMa240").textContent=item.ma240?fmt(item.ma240):"—";
+
+ const vCol=item.close>=item.open?"#ff5252":"#29d978";
+ $("barVol").innerHTML=`成交量: <span style="color:${vCol}">${fmtInt(item.volLots)} 張</span>`;
+ $("barVolMa5").textContent=`均量5: ${item.vma5?fmtInt(item.vma5)+" 張":"—"}`;
+
+ const arrow=(cur,prev)=>cur>prev?"↑":cur<prev?"↓":"";
+ $("legRsv").textContent=`━ RSV:${item.rsv.toFixed(1)}${arrow(item.rsv,item.prevRsv)}`;
+ $("legK9").textContent=`━ K9:${item.k9.toFixed(1)}${arrow(item.k9,item.prevK)}`;
+ $("legD9").textContent=`━ D9:${item.d9.toFixed(1)}${arrow(item.d9,item.prevD)}`;
+}
+
+function setupCanvas(canvas,fallbackH=170){
+ const dpr=window.devicePixelRatio||1;
+ const box=canvas.parentElement;
+ const w=Math.max(280,box.clientWidth||box.getBoundingClientRect().width||360);
+ const h=Math.max(85,box.clientHeight||box.getBoundingClientRect().height||fallbackH);
+ canvas.width=Math.round(w*dpr);
+ canvas.height=Math.round(h*dpr);
+ const ctx=canvas.getContext("2d");
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.fillStyle=isPrintMode?"#ffffff":"#05070a";
+ ctx.fillRect(0,0,w,h);
+ return {ctx,w,h,padL:42,padR:10};
+}
+
+function drawKlineChart(series,hoverIdx=-1){
+ const canvas=$("klineChart");if(!canvas||!series.length)return;
+ const {ctx,w,h,padL,padR}=setupCanvas(canvas,210);
+ const padT=10,padB=8,plotW=w-padL-padR,plotH=h-padT-padB;
+
+ const activeMas=MA_CONFIG.filter(m=>m.active);
+ let minP=Infinity,maxP=-Infinity;
+ series.forEach(s=>{
+  minP=Math.min(minP,s.low);
+  maxP=Math.max(maxP,s.high);
+  activeMas.forEach(m=>{
+   if(s[m.key]!=null){
+    minP=Math.min(minP,s[m.key]);
+    maxP=Math.max(maxP,s[m.key]);
+   }
+  });
+ });
+ const margin=(maxP-minP)*0.08||0.5;
+ minP-=margin;maxP+=margin;
+ const yOf=val=>padT+plotH*(1-(val-minP)/(maxP-minP));
+ const stepW=plotW/series.length;
+ const xOf=i=>padL+stepW*(i+0.5);
+
+ ctx.font="10px ui-monospace, SFMono-Regular, monospace";
+ ctx.textAlign="right";ctx.textBaseline="middle";
+ for(let g=0;g<=3;g++){
+  const val=minP+(maxP-minP)*(g/3);
+  const y=Math.round(yOf(val))+0.5;
+  ctx.save();ctx.strokeStyle=isPrintMode?"#e2e8f0":"#1f2937";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();ctx.restore();
+  ctx.fillStyle=isPrintMode?"#475569":"#8b9bb0";
+  ctx.fillText(val>=100?val.toFixed(1):val.toFixed(2),padL-4,y);
+ }
+
+ const barW=Math.max(2,Math.min(18,stepW*0.66));
+ series.forEach((s,i)=>{
+  const x=xOf(i);
+  const isUp=s.close>=s.open;
+  const col=isUp?(isPrintMode?"#dc2626":"#ff4747"):(isPrintMode?"#059669":"#26de81");
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.2;
+
+  ctx.beginPath();ctx.moveTo(x,yOf(s.high));ctx.lineTo(x,yOf(s.low));ctx.stroke();
+  const yO=yOf(s.open),yC=yOf(s.close);
+  const top=Math.min(yO,yC),bodyH=Math.max(1.8,Math.abs(yC-yO));
+  ctx.fillRect(x-barW/2,top,barW,bodyH);
+ });
+
+ activeMas.forEach(m=>{
+  ctx.save();
+  ctx.strokeStyle=isPrintMode?m.printColor:m.color;
+  ctx.lineWidth=1.55;
+  ctx.lineJoin="round";
+  ctx.beginPath();
+  let started=false;
+  series.forEach((s,i)=>{
+   if(s[m.key]==null)return;
+   const x=xOf(i),y=yOf(s[m.key]);
+   if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.restore();
+ });
+
+ if(hoverIdx>=0&&hoverIdx<series.length&&!isPrintMode){
+  const hx=xOf(hoverIdx);
+  ctx.save();ctx.strokeStyle="rgba(255,255,255,0.45)";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(hx,padT);ctx.lineTo(hx,padT+plotH);ctx.stroke();ctx.restore();
+ }
+}
+
+function drawVolChart(series,hoverIdx=-1){
+ const canvas=$("volChart");if(!canvas||!series.length)return;
+ const {ctx,w,h,padL,padR}=setupCanvas(canvas,95);
+ const padT=6,padB=6,plotW=w-padL-padR,plotH=h-padT-padB;
+
+ const maxV=Math.max(...series.map(s=>Math.max(s.volLots,s.vma5||0)),1)*1.12;
+ const yOf=val=>padT+plotH*(1-val/maxV);
+ const stepW=plotW/series.length;
+ const xOf=i=>padL+stepW*(i+0.5);
+
+ ctx.font="9.5px ui-monospace, SFMono-Regular, monospace";
+ ctx.textAlign="right";ctx.textBaseline="middle";
+ [maxV*0.85,maxV*0.42].forEach(val=>{
+  const y=Math.round(yOf(val))+0.5;
+  ctx.save();ctx.strokeStyle=isPrintMode?"#e2e8f0":"#1f2937";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();ctx.restore();
+  ctx.fillStyle=isPrintMode?"#475569":"#8b9bb0";
+  const label=val>=1000?(val/1000).toFixed(1)+"K":Math.round(val);
+  ctx.fillText(label,padL-4,y);
+ });
+
+ const barW=Math.max(2,Math.min(18,stepW*0.66));
+ series.forEach((s,i)=>{
+  const x=xOf(i),y=yOf(s.volLots);
+  const isUp=s.close>=s.open;
+  ctx.fillStyle=isUp?(isPrintMode?"#dc2626":"#ff4747"):(isPrintMode?"#059669":"#26de81");
+  ctx.fillRect(x-barW/2,y,barW,Math.max(1.5,padT+plotH-y));
+ });
+
+ ctx.save();ctx.strokeStyle=isPrintMode?"#d97706":"#ffd166";ctx.lineWidth=1.4;ctx.beginPath();
+ let started=false;
+ series.forEach((s,i)=>{
+  if(s.vma5==null)return;
+  const x=xOf(i),y=yOf(s.vma5);
+  if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y);
+ });
+ ctx.stroke();ctx.restore();
+
+ if(hoverIdx>=0&&hoverIdx<series.length&&!isPrintMode){
+  const hx=xOf(hoverIdx);
+  ctx.save();ctx.strokeStyle="rgba(255,255,255,0.45)";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(hx,padT);ctx.lineTo(hx,padT+plotH);ctx.stroke();ctx.restore();
+ }
+}
+
+function drawKdChart(series,hoverIdx=-1){
+ const canvas=$("kdChart");if(!canvas||!series.length)return;
+ const {ctx,w,h,padL,padR}=setupCanvas(canvas,175);
+ const padT=10,padB=22,plotW=w-padL-padR,plotH=h-padT-padB;
+
+ const yOf=val=>padT+plotH*(1-Math.max(0,Math.min(100,Number(val)||0))/100);
+ const stepW=plotW/series.length;
+ const xOf=i=>padL+stepW*(i+0.5);
+
+ ctx.font="10.5px ui-monospace, SFMono-Regular, monospace";
+ ctx.textAlign="right";ctx.textBaseline="middle";
+ [80,50,20].forEach(level=>{
+  const y=Math.round(yOf(level))+0.5;
+  ctx.save();ctx.strokeStyle=isPrintMode?"#cbd5e1":"#2d3a4b";ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();ctx.restore();
+  ctx.fillStyle=isPrintMode?"#334155":"#9dafc6";
+  ctx.fillText(String(level),padL-4,y);
+ });
+
+ const baseY=Math.round(padT+plotH)+0.5;
+ ctx.strokeStyle=isPrintMode?"#94a3b8":"#2d3a4b";ctx.beginPath();ctx.moveTo(padL,baseY);ctx.lineTo(w-padR,baseY);ctx.stroke();
+
+ ctx.textAlign="center";ctx.textBaseline="top";ctx.fillStyle=isPrintMode?"#334155":"#9dafc6";
+ const maxLabels=w<450?4:7;
+ const step=Math.max(1,Math.floor((series.length-1)/(maxLabels-1)));
+ for(let i=0;i<series.length;i+=step){
+  ctx.fillText(series[i].shortDate,xOf(i),baseY+5);
+ }
+ if((series.length-1)%step>step*0.4){
+  ctx.fillText(series[series.length-1].shortDate,xOf(series.length-1),baseY+5);
+ }
+
+ const drawLine=(key,color,width)=>{
+  ctx.save();
+  ctx.strokeStyle=color;
+  ctx.fillStyle=color;
+  ctx.lineWidth=width;
+  ctx.lineJoin="round";
+  ctx.lineCap="round";
+  ctx.beginPath();
+  series.forEach((pt,i)=>{
+   const x=xOf(i),y=yOf(pt[key]);
+   if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.restore();
+ };
+
+ const rsvCol=isPrintMode?"#4338ca":"#7c7aff";
+ const d9Col=isPrintMode?"#059669":"#26de81";
+ const k9Col=isPrintMode?"#dc2626":"#ff4747";
+
+ drawLine("rsv",rsvCol,1.5);
+ drawLine("d9",d9Col,2.2);
+ drawLine("k9",k9Col,2.4);
+
+ const focusIdx=(hoverIdx>=0&&hoverIdx<series.length)?hoverIdx:series.length-1;
+ if(hoverIdx>=0&&!isPrintMode){
+  const hx=xOf(focusIdx);
+  ctx.save();ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(hx,padT);ctx.lineTo(hx,padT+plotH);ctx.stroke();ctx.restore();
+ }
+ [["rsv",rsvCol],["d9",d9Col],["k9",k9Col]].forEach(([key,col])=>{
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(xOf(focusIdx),yOf(series[focusIdx][key]),3.6,0,Math.PI*2);ctx.fill();
+ });
+}
+
+function drawInstChart(list,hoverIdx=-1){
+ const canvas=$("instChart");if(!canvas||!list.length)return;
+ const {ctx,w,h,padL,padR}=setupCanvas(canvas,125);
+ const padT=10,padB=22,plotW=w-padL-padR,plotH=h-padT-padB;
+
+ const maxAbs=Math.max(...list.map(x=>Math.abs(x.total)),10)*1.15;
+ const midY=padT+plotH/2;
+ const yOf=val=>midY-(val/maxAbs)*(plotH/2);
+ const stepW=plotW/list.length;
+ const xOf=i=>padL+stepW*(i+0.5);
+
+ ctx.font="9.5px ui-monospace, SFMono-Regular, monospace";
+ ctx.textAlign="right";ctx.textBaseline="middle";
+ [maxAbs*0.8,0,-maxAbs*0.8].forEach(val=>{
+  const y=Math.round(yOf(val))+0.5;
+  ctx.save();
+  ctx.strokeStyle=val===0?(isPrintMode?"#64748b":"#3b4c63"):(isPrintMode?"#e2e8f0":"#1f2937");
+  if(val!==0)ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();ctx.restore();
+  ctx.fillStyle=isPrintMode?"#475569":"#8b9bb0";
+  const lbl=Math.abs(val)>=1000?(val/1000).toFixed(1)+"K":Math.round(val);
+  ctx.fillText(String(lbl),padL-4,y);
+ });
+
+ const barW=Math.max(3,Math.min(14,stepW*0.6));
+ list.forEach((item,i)=>{
+  const x=xOf(i),y=yOf(item.total);
+  ctx.fillStyle=item.total>=0?(isPrintMode?"#dc2626":"#ff4747"):(isPrintMode?"#059669":"#26de81");
+  const top=Math.min(midY,y),barH=Math.max(1.5,Math.abs(y-midY));
+  ctx.fillRect(x-barW/2,top,barW,barH);
+ });
+
+ ctx.textAlign="center";ctx.textBaseline="top";ctx.fillStyle=isPrintMode?"#334155":"#8b9bb0";
+ const maxLabels=w<450?4:7;
+ const step=Math.max(1,Math.floor((list.length-1)/(maxLabels-1)));
+ for(let i=0;i<list.length;i+=step){
+  ctx.fillText(list[i].shortDate,xOf(i),padT+plotH+5);
+ }
+
+ if(hoverIdx>=0&&hoverIdx<list.length&&!isPrintMode){
+  const hx=xOf(hoverIdx);
+  ctx.save();ctx.strokeStyle="rgba(255,255,255,0.45)";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(hx,padT);ctx.lineTo(hx,padT+plotH);ctx.stroke();ctx.restore();
+ }
+}
+
+function renderAllCharts(idx=-1){
+ const vis=getVisibleSeries();
+ if(!vis.length)return;
+ const targetIdx=(idx>=0&&idx<vis.length)?idx:vis.length-1;
+ updateChartLegends(vis[targetIdx]);
+ drawKlineChart(vis,idx);
+ drawVolChart(vis,idx);
+ drawKdChart(vis,idx);
+}
+
+$("zoomInBtn").addEventListener("click",()=>applyZoom(Math.round(viewCount*0.72),0.85));
+$("zoomOutBtn").addEventListener("click",()=>applyZoom(Math.round(viewCount*1.38),0.85));
+$("zoomResetBtn").addEventListener("click",()=>{
+ if(!fullChartSeries.length)return;
+ viewCount=Math.min(DEFAULT_BARS,fullChartSeries.length);
+ viewStart=Math.max(0,fullChartSeries.length-viewCount);
+ activeIdx=-1;
+ updateZoomControlsUI();
+ renderAllCharts(-1);
+});
+
+$("maToggleBar").addEventListener("click",e=>{
+ const btn=e.target.closest(".ma-btn");
+ if(!btn)return;
+ const key=btn.dataset.ma;
+ const item=MA_CONFIG.find(m=>m.key===key);
+ if(!item)return;
+ item.active=!item.active;
+ btn.classList.toggle("active",item.active);
+ const vis=getVisibleSeries();
+ if(vis.length)drawKlineChart(vis,activeIdx);
+});
+
+function bindSyncInteractions(canvas){
+ let isDragging=false;
+ let dragStartX=0;
+ let dragStartView=0;
+ let pinchStartDist=0;
+ let pinchStartCount=0;
+
+ const getRatio=clientX=>{
+  const rect=canvas.getBoundingClientRect();
+  const padL=42,padR=10,plotW=Math.max(1,rect.width-padL-padR);
+  return Math.max(0,Math.min(1,(clientX-rect.left-padL)/plotW));
+ };
+
+ const handleHover=clientX=>{
+  const vis=getVisibleSeries();
+  if(!vis.length)return;
+  const ratio=getRatio(clientX);
+  const idx=Math.min(vis.length-1,Math.floor(ratio*vis.length));
+  if(idx!==activeIdx){activeIdx=idx;renderAllCharts(idx)}
+ };
+
+ canvas.addEventListener("wheel",e=>{
+  if(!fullChartSeries.length)return;
+  e.preventDefault();
+  const factor=e.deltaY<0?0.84:1.18;
+  applyZoom(viewCount*factor,getRatio(e.clientX));
+ },{passive:false});
+
+ canvas.addEventListener("mousedown",e=>{
+  if(e.button!==0||!fullChartSeries.length)return;
+  isDragging=true;
+  dragStartX=e.clientX;
+  dragStartView=viewStart;
+  canvas.classList.add("grabbing");
+ });
+
+ window.addEventListener("mousemove",e=>{
+  if(!isDragging)return;
+  const rect=canvas.getBoundingClientRect();
+  const plotW=Math.max(60,rect.width-52);
+  const visLen=getVisibleSeries().length||1;
+  const barPx=plotW/visLen;
+  const deltaBars=Math.round((dragStartX-e.clientX)/barPx);
+  const nextStart=Math.max(0,Math.min(fullChartSeries.length-visLen,dragStartView+deltaBars));
+  if(nextStart!==viewStart){
+   viewStart=nextStart;
+   activeIdx=-1;
+   renderAllCharts(-1);
+  }
+ });
+
+ window.addEventListener("mouseup",()=>{
+  if(isDragging){
+   isDragging=false;
+   canvas.classList.remove("grabbing");
+  }
+ });
+
+ canvas.addEventListener("mousemove",e=>{
+  if(!isDragging)handleHover(e.clientX);
+ });
+
+ canvas.addEventListener("mouseleave",()=>{
+  if(!isDragging){activeIdx=-1;renderAllCharts(-1)}
+ });
+
+ canvas.addEventListener("touchstart",e=>{
+  if(!fullChartSeries.length)return;
+  if(e.touches.length===2){
+   pinchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+   pinchStartCount=viewCount;
+  }else if(e.touches.length===1){
+   dragStartX=e.touches[0].clientX;
+   dragStartView=viewStart;
+   handleHover(e.touches[0].clientX);
+  }
+ },{passive:true});
+
+ canvas.addEventListener("touchmove",e=>{
+  if(!fullChartSeries.length)return;
+  if(e.touches.length===2&&pinchStartDist>0){
+   e.preventDefault();
+   const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+   const midX=(e.touches[0].clientX+e.touches[1].clientX)/2;
+   applyZoom(pinchStartCount*(pinchStartDist/Math.max(10,dist)),getRatio(midX));
+  }else if(e.touches.length===1){
+   const rect=canvas.getBoundingClientRect();
+   const plotW=Math.max(60,rect.width-52);
+   const visLen=getVisibleSeries().length||1;
+   const deltaBars=Math.round((dragStartX-e.touches[0].clientX)/(plotW/visLen));
+   if(Math.abs(deltaBars)>=1){
+    const nextStart=Math.max(0,Math.min(fullChartSeries.length-visLen,dragStartView+deltaBars));
+    if(nextStart!==viewStart){
+     viewStart=nextStart;
+     renderAllCharts(-1);
+    }
+   }else{
+    handleHover(e.touches[0].clientX);
+   }
+  }
+ },{passive:false});
+}
+["klineChart","volChart","kdChart"].forEach(id=>bindSyncInteractions($(id)));
+
+$("instChart").addEventListener("mousemove",e=>{
+ if(!instSeriesCache.length)return;
+ const rect=$("instChart").getBoundingClientRect();
+ const padL=42,padR=10,plotW=rect.width-padL-padR;
+ const relX=Math.max(0,Math.min(plotW,e.clientX-rect.left-padL));
+ const idx=Math.min(instSeriesCache.length-1,Math.floor((relX/plotW)*instSeriesCache.length));
+ const item=instSeriesCache[idx];
+ $("instHoverText").textContent=`${item.date}｜外 ${fmtSignedInt(item.foreign)}・投 ${fmtSignedInt(item.trust)}・自 ${fmtSignedInt(item.dealer)}・合 ${fmtSignedInt(item.total)} 張`;
+ drawInstChart(instSeriesCache,idx);
+});
+$("instChart").addEventListener("mouseleave",()=>{
+ $("instHoverText").textContent="三大法人每日合計買賣超（紅買超／綠賣超）";
+ if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+});
+
+const ro=new ResizeObserver(()=>{
+ if(fullChartSeries.length&&!$("kdCard").classList.contains("hidden"))renderAllCharts(activeIdx);
+ if(instSeriesCache.length&&!$("instCard").classList.contains("hidden"))drawInstChart(instSeriesCache,-1);
+});
+ro.observe($("kdCard"));
+ro.observe($("instCard"));
+
+$("toggleKdTable").addEventListener("click",()=>{
+ const wrap=$("kdTableWrap");
+ const isHidden=wrap.classList.toggle("hidden");
+ $("toggleKdTable").textContent=isHidden?"展開數據表":"收合數據表";
+});
+$("toggleInstTable").addEventListener("click",()=>{
+ const wrap=$("instTableWrap");
+ const isHidden=wrap.classList.toggle("hidden");
+ $("toggleInstTable").textContent=isHidden?"展開法人明細":"收合法人明細";
+});
+
+const origDocTitle=document.title;
+function enterPrintMode(){
+ isPrintMode=true;
+ activeIdx=-1;
+ const now=new Date();
+ const dateStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+ const timeStr=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+ const code=$("code").value.trim().toUpperCase();
+ const sName=stockNameCache||"個股";
+ const typeLabel=isEtfAsset?"ETF 波段趨勢模型":"個股攻擊動能模型";
+ $("printMeta").textContent=`分析標的：${sName} (${code}) [${typeLabel}] ｜ 報表產出時間：${dateStr} ${timeStr}`;
+ document.title=`${sName}_${code}_${dateStr}`;
+ renderAllCharts(-1);
+ if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+}
+function exitPrintMode(){
+ if(!isPrintMode)return;
+ isPrintMode=false;
+ document.title=origDocTitle;
+ renderAllCharts(-1);
+ if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+}
+window.addEventListener("beforeprint",enterPrintMode);
+window.addEventListener("afterprint",exitPrintMode);
+
+$("exportPdfBtn").addEventListener("click",()=>{
+ enterPrintMode();
+ setTimeout(()=>{
+  window.print();
+  setTimeout(exitPrintMode,300);
+ },150);
+});
+
+function getDateStr(daysAgo){
+ const d=new Date();d.setDate(d.getDate()-daysAgo);
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
+ return `${y}-${m}-${day}`;
+}
+
+async function fetchFinMind(dataset,dataId,startDate=""){
+ const params=new URLSearchParams({dataset,data_id:dataId});
+ if(startDate)params.append("start_date",startDate);
+ const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),10000);
+ try{
+  const r=await fetch("https://api.finmindtrade.com/api/v4/data?"+params.toString(),{signal:ctl.signal});
+  if(!r.ok)throw Error("HTTP "+r.status);
+  const j=await r.json();
+  if(j.status!==200||!Array.isArray(j.data))throw Error(j.msg||"資料格式異常");
+  return j.data;
+ }finally{clearTimeout(timer)}
+}
+
+function buildInstitutionalSeries(rawRows){
+ if(!rawRows||!rawRows.length)return [];
+ const map=new Map();
+ rawRows.forEach(r=>{
+  const dt=r.date;
+  if(!map.has(dt))map.set(dt,{date:dt,shortDate:dt.slice(5).replace("-","/"),foreign:0,trust:0,dealer:0,total:0});
+  const entry=map.get(dt);
+  const netLots=(Number(r.buy||0)-Number(r.sell||0))/1000;
+  const name=String(r.name||"");
+  if(name.includes("Foreign"))entry.foreign+=netLots;
+  else if(name.includes("Investment_Trust"))entry.trust+=netLots;
+  else if(name.includes("Dealer"))entry.dealer+=netLots;
+ });
+ const arr=Array.from(map.values()).sort((a,b)=>a.date.localeCompare(b.date));
+ arr.forEach(x=>{
+  x.foreign=Math.round(x.foreign);
+  x.trust=Math.round(x.trust);
+  x.dealer=Math.round(x.dealer);
+  x.total=x.foreign+x.trust+x.dealer;
+ });
+ return arr;
+}
+
+async function fetchRealtimeTwse(code){
+ const exCh=`tse_${code}.tw|otc_${code}.tw`;
+ const targetUrl=`https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${encodeURIComponent(exCh)}&json=1&delay=0&_=${Date.now()}`;
+ const proxies=[
+  "https://api.allorigins.win/raw?url="+encodeURIComponent(targetUrl),
+  "https://corsproxy.io/?"+encodeURIComponent(targetUrl)
+ ];
+ for(const u of proxies){
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6000);
+  try{
+   const r=await fetch(u,{cache:"no-store",signal:ctl.signal});
+   if(!r.ok)continue;
+   const j=await r.json();
+   if(!j||!Array.isArray(j.msgArray))continue;
+   const hit=j.msgArray.find(m=>m.c===code&&(Number(m.z)>0||Number(m.y)>0));
+   if(hit){
+    const parseNum=val=>{const n=Number(String(val||"").replace(/,/g,""));return n>0?n:null};
+    let price=parseNum(hit.z);
+    if(!price&&hit.b){const b0=parseNum(hit.b.split("_")[0]);if(b0)price=b0}
+    if(!price&&hit.a){const a0=parseNum(hit.a.split("_")[0]);if(a0)price=a0}
+    if(!price)price=parseNum(hit.y);
+
+    const open=parseNum(hit.o)||price;
+    const high=parseNum(hit.h)||price;
+    const low=parseNum(hit.l)||price;
+    const volLots=Number(String(hit.v||"0").replace(/,/g,""))||0;
+    let dateStr=getDateStr(0);
+    if(hit.d&&hit.d.length===7){
+     const yyyy=Number(hit.d.slice(0,3))+1911;
+     dateStr=`${yyyy}-${hit.d.slice(3,5)}-${hit.d.slice(5,7)}`;
+    }
+    if(price>0){
+     return {
+      date:dateStr,
+      name:hit.n||"",
+      market:hit.ex==="tse"?"上市":"上櫃",
+      open,max:high,min:low,close:price,
+      Trading_Volume:volLots*1000,
+      isLive:true
+     };
+    }
+   }
+  }catch(e){}
+  finally{clearTimeout(timer)}
+ }
+ return null;
+}
+
+function runOptionalCalculation(silent=false){
+ const code=$("code").value.trim().toUpperCase();
+ const shares=v("shares");
+ const buyRaw=$("buy").value.trim(),targetRaw=$("target").value.trim(),curRaw=$("current").value.trim();
+ const buy=Number(buyRaw),target=Number(targetRaw),current=Number(curRaw);
+
+ const hasBuy=buyRaw!==""&&buy>0;
+ const hasTarget=targetRaw!==""&&target>0;
+ const hasCurrent=curRaw!==""&&current>0;
+
+ if(!hasCurrent||(!hasBuy&&!hasTarget)){
+  $("result").classList.add("hidden");
+  return false;
+ }
+ if(!(shares>0&&Number.isInteger(shares))){
+  if(!silent)$("status").textContent="持有股數請輸入大於 0 的整數。";
+  return false;
+ }
+
+ const titlePrefix=code?(stockNameCache?`${code} ${stockNameCache}｜`:`${code}｜`):"";
+ $("resultTitle").textContent=titlePrefix+"損益與漲跌停試算結果";
+ $("limitPill").textContent=isEtfAsset?"國內成分 ETF ±10% 試算":"一般股票每日 ±10% 試算";
+
+ if(hasBuy){
+  const nowDiff=current-buy,nowPct=nowDiff/buy*100,nowProfit=nowDiff*shares;
+  setMetric("rBuy",fmt(buy)+" 元");
+  setMetric("rCurrent",fmt(current)+" 元");
+  setMetric("rNowDiff",(nowDiff>0?"+":"")+fmt(nowDiff),nowDiff>0?"red":nowDiff<0?"green":"");
+  setMetric("rNowPct",(nowPct>0?"+":"")+nowPct.toFixed(2)+"%",nowPct>0?"red":nowPct<0?"green":"");
+  setMetric("rNowProfit",(nowProfit>0?"+":"")+fmt(nowProfit)+" 元",nowProfit>0?"red":nowProfit<0?"green":"");
+  $("buyResultBlock").classList.remove("hidden");
+ }else{
+  $("buyResultBlock").classList.add("hidden");
+ }
+
+ if(hasTarget){
+  const basePrice=hasBuy?buy:current;
+  const targetProfit=(target-basePrice)*shares;
+  const path=pathFromCurrent(current,target),move=path.last-current;
+
+  setMetric("rCurrent2",fmt(current)+" 元");
+  setMetric("rTarget",fmt(target)+" 元");
+  setMetric("rCount",path.items.length+" 次",path.up?"red":path.items.length?"green":"");
+  setMetric("rFinal",fmt(path.last)+" 元",path.up?"red":path.items.length?"green":"");
+  setMetric("rMove",(move>0?"+":"")+fmt(move)+" 元",move>0?"red":move<0?"green":"");
+  setMetric("rTargetProfit",(targetProfit>0?"+":"")+fmt(targetProfit)+" 元",targetProfit>0?"red":targetProfit<0?"green":"");
+
+  $("pathHeading").textContent=path.items.length?(path.up?"連續漲停價格明細":"連續跌停價格明細"):"目前股價與目標價格相同";
+  const tbody=$("rows");tbody.innerHTML="";
+  if(!path.items.length){
+   const tr=document.createElement("tr");tr.innerHTML='<td colspan="4" style="text-align:center">目前股價已等於目標價格，無須漲跌停。</td>';tbody.appendChild(tr);
+  }
+  for(const x of path.items){
+   const tr=document.createElement("tr");tr.innerHTML=`<td>${x.n}</td><td>${fmt(x.prev)}</td><td>${fmt(x.next)}</td><td>${x.change>0?"+":""}${fmt(x.change)}</td>`;tbody.appendChild(tr);
+  }
+  $("pathNote").textContent=`漲跌停次數從目前股價 ${fmt(current)} 元起算；${path.done?"第 "+path.items.length+" 次後達到或超過目標價。":"未能在 100 次內到達目標。"}持有 ${shares.toLocaleString("zh-TW")} 股（未扣交易成本）。`;
+  $("targetResultBlock").classList.remove("hidden");
+ }else{
+  $("targetResultBlock").classList.add("hidden");
+ }
+
+ $("result").classList.remove("hidden");
+ return true;
+}
+
+$("code").addEventListener("input",()=>{stockNameCache=""});
+
+$("runBtn").addEventListener("click",async()=>{
+ const code=$("code").value.trim().toUpperCase();
+ if(!/^[0-9A-Z]{4,6}$/.test(code)){
+  if(runOptionalCalculation(false)){
+   $("status").textContent="已完成手動輸入價格之試算。";
+  }else{
+   $("status").textContent="請輸入 4 至 6 碼股票或 ETF 代號（例如 5314、2330、00919）。";
+   $("code").focus();
+  }
+  return;
+ }
+
+ $("runBtn").disabled=true;$("runBtn").textContent="查詢行情與計算中…";
+ $("status").textContent="正在同步抓取最新股價、六均線K線、KD 走勢與三大法人資料…";
+
+ try{
+  const [liveBar,histPrices,info,instRaw]=await Promise.all([
+   fetchRealtimeTwse(code).catch(()=>null),
+   fetchFinMind("TaiwanStockPrice",code,getDateStr(400))
+    .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(110)))
+    .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(50))),
+   fetchFinMind("TaiwanStockInfo",code).catch(()=>[]),
+   fetchFinMind("TaiwanStockInstitutionalInvestorsBuySell",code,getDateStr(45)).catch(()=>[])
+  ]);
+
+  let mergedPrices=Array.isArray(histPrices)?[...histPrices]:[];
+  if(liveBar){
+   const lastHist=mergedPrices.length?mergedPrices[mergedPrices.length-1]:null;
+   if(lastHist&&lastHist.date===liveBar.date){
+    mergedPrices[mergedPrices.length-1]={...lastHist,...liveBar};
+   }else{
+    mergedPrices.push(liveBar);
+   }
+  }
+
+  if(!mergedPrices.length)throw Error("查無交易資料，請確認股票代號是否正確。");
+
+  const latest=mergedPrices[mergedPrices.length-1];
+  const close=Number(latest.close);
+  if(!(close>0))throw Error("無法取得有效股價。");
+
+  const stockInfo=info.length?info[info.length-1]:null;
+  const name=(liveBar&&liveBar.name)||(stockInfo?stockInfo.stock_name:"");
+  const market=(liveBar&&liveBar.market)||(stockInfo?(stockInfo.type==="twse"?"上市":stockInfo.type==="tpex"?"上櫃":stockInfo.type):"");
+  stockNameCache=name;
+
+  // 自動判定為 ETF 或個股
+  isEtfAsset=detectIsEtf(code,stockInfo,name);
+
+  $("sbMarket").textContent=market||"台股";
+  const assetTag=$("sbAssetType");
+  assetTag.textContent=isEtfAsset?"ETF 基金":"個股";
+  assetTag.className="sb-tag"+(isEtfAsset?" etf":"");
+
+  $("sbName").textContent=name||"個股行情";
+  $("sbCode").textContent=code;
+  const prevC=mergedPrices.length>=2?Number(mergedPrices[mergedPrices.length-2].close):close;
+  const priceEl=$("sbPrice");
+  priceEl.textContent=`${fmt(close)} 元`;
+  priceEl.className="sb-price "+(close>prevC?"red":close<prevC?"green":"");
+  $("stockBanner").classList.remove("hidden");
+
+  $("current").value=close.toFixed(2);
+
+  const series=buildIndicatorSeries(mergedPrices);
+  fullChartSeries=series;
+  viewCount=Math.min(DEFAULT_BARS,series.length);
+  viewStart=Math.max(0,series.length-viewCount);
+  activeIdx=-1;
+  updateZoomControlsUI();
+
+  if(series.length){
+   const lastPt=series[series.length-1];
+
+   // 執行個股／ETF 雙軌評分
+   const st=evaluateTechStrength(lastPt,isEtfAsset);
+
+   const modeChip=$("assetModeChip");
+   if(isEtfAsset){
+    modeChip.textContent="🛡️ 自動偵測為 ETF｜套用「波段趨勢與超賣低接」評分模型";
+    modeChip.className="mode-chip etf";
+    $("scoreSubLabel").textContent="ETF 波段與位階綜合總分（0～100 分）";
+    $("lblMaMetric").textContent="月季線架構 (MA20/60)";
+    $("strategyBox").className="strategy-box etf-mode";
+    $("rbTitle").textContent="🛡️ ETF 波段趨勢與低接買點檢核";
+   }else{
+    modeChip.textContent="🔥 自動偵測為個股｜套用「攻擊動能與紅牛股」評分模型";
+    modeChip.className="mode-chip stock";
+    $("scoreSubLabel").textContent="個股技術強勢總分（0～100 分）";
+    $("lblMaMetric").textContent="均線排列 (MA5/10/20)";
+    $("strategyBox").className="strategy-box";
+    $("rbTitle").textContent="🐂 馬克紅／紅牛股強勢動能檢核";
+   }
+
+   $("strengthTitle").textContent=`${code} ${name}｜技術面綜合評分`;
+   $("strengthBadge").textContent=st.grade;
+   $("strengthBadge").className="grade-pill-lg "+st.colorClass;
+   $("scoreNum").textContent=st.score;
+   $("scoreNum").className="score-num "+st.colorClass;
+   const barFill=$("scoreBar");
+   barFill.style.width=st.score+"%";
+   barFill.style.background=isEtfAsset
+    ?(st.score>=60?"linear-gradient(90deg,#a855f7,#ec4899)":st.score>=45?"#fbbf24":"#26de81")
+    :(st.score>=60?"linear-gradient(90deg,#ff7182,#ff4747)":st.score>=45?"#fbbf24":"#26de81");
+
+   const tagsBox=$("strengthTags");tagsBox.innerHTML="";
+   st.tags.forEach(t=>{
+    const sp=document.createElement("span");
+    sp.className="tech-tag "+t.cls;
+    sp.textContent=t.txt;
+    tagsBox.appendChild(sp);
+   });
+   setMetric("indMaStatus",st.maText,(isEtfAsset?(lastPt.ma60&&lastPt.close>lastPt.ma60):(lastPt.ma5&&lastPt.close>lastPt.ma5))?"red":"green");
+   setMetric("indKdStatus",st.kdText,lastPt.k9>lastPt.d9?"red":"green");
+   setMetric("indRsi",lastPt.rsi6.toFixed(1),lastPt.rsi6>=60?"red":lastPt.rsi6<=40?"green":"");
+   setMetric("indMacd",(lastPt.osc>0?"+":"")+lastPt.osc.toFixed(2),lastPt.osc>0?"red":"green");
+   setMetric("indVolRatio",st.volRatio.toFixed(2)+" 倍",st.volRatio>=1.3?"amber":"");
+
+   $("rbGrade").textContent=st.badge;
+   $("rbSummary").textContent=st.summary;
+   const rbGrid=$("rbChecklist");rbGrid.innerHTML="";
+   st.checks.forEach(chk=>{
+    const div=document.createElement("div");
+    div.className="rb-item";
+    const okBorder=isEtfAsset?"rgba(192,132,252,0.55)":"rgba(255,92,114,0.45)";
+    const okColor=isEtfAsset?"#f3e8ff":"#ffd6dc";
+    div.style.borderColor=chk.ok?okBorder:"#26344d";
+    div.innerHTML=`<span>${chk.ok?"✅":"⬜"}</span><span style="color:${chk.ok?okColor:"#8fa3bd"};font-weight:${chk.ok?"700":"400"}">${chk.text}</span>`;
+    rbGrid.appendChild(div);
+   });
+
+   $("strengthCard").classList.remove("hidden");
+
+   $("kdTitle").textContent=`${code} ${name}｜日 K 線・量能・KD (9,3,3)`;
+   $("rKdSignal").textContent=lastPt.k9>lastPt.d9?"K9 > D9 偏多":"K9 < D9 偏空";
+   $("kdCard").classList.remove("hidden");
+
+   requestAnimationFrame(()=>{
+    renderAllCharts(-1);
+    setTimeout(()=>renderAllCharts(-1),80);
+   });
+
+   const kdTbody=$("kdRows");kdTbody.innerHTML="";
+   [...series].reverse().slice(0,60).forEach(row=>{
+    const pCol=row.close>=row.open?"#ff5c72":"#30d39a";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${row.date}${row.isLive?"*":""}</td><td>${fmt(row.open)}</td><td>${fmt(row.high)}</td><td>${fmt(row.low)}</td><td style="color:${pCol};font-weight:700">${fmt(row.close)}</td><td>${fmtInt(row.volLots)}</td><td class="c-rsv">${row.rsv.toFixed(2)}</td><td class="c-k9" style="font-weight:700">${row.k9.toFixed(2)}</td><td class="c-d9" style="font-weight:700">${row.d9.toFixed(2)}</td>`;
+    kdTbody.appendChild(tr);
+   });
+   $("kdNote").textContent=`共載入 ${series.length} 個交易日資料（紫藍線 RSV、紅線 K9、綠線 D9）；在圖表上雙指捏合、滾輪縮放或左右拖曳可同步檢視三圖。`;
+  }else{
+   $("strengthCard").classList.add("hidden");
+   $("kdCard").classList.add("hidden");
+  }
+
+  const instList=buildInstitutionalSeries(instRaw);
+  instSeriesCache=instList;
+  if(instList.length){
+   const lastInst=instList[instList.length-1];
+   const sum5d=instList.slice(-5).reduce((s,x)=>s+x.total,0);
+   const colorOf=n=>n>0?"red":n<0?"green":"";
+
+   $("instTitle").textContent=`${code} ${name}｜三大法人買賣超統計（張）`;
+   $("instDatePill").textContent=`最新統計日：${lastInst.date}`;
+   setMetric("instForeign",fmtSignedInt(lastInst.foreign)+" 張",colorOf(lastInst.foreign));
+   setMetric("instTrust",fmtSignedInt(lastInst.trust)+" 張",colorOf(lastInst.trust));
+   setMetric("instDealer",fmtSignedInt(lastInst.dealer)+" 張",colorOf(lastInst.dealer));
+   setMetric("instTotal",fmtSignedInt(lastInst.total)+" 張",colorOf(lastInst.total));
+   setMetric("inst5dTotal",fmtSignedInt(sum5d)+" 張",colorOf(sum5d));
+
+   $("instCard").classList.remove("hidden");
+   requestAnimationFrame(()=>{
+    drawInstChart(instList,-1);
+    setTimeout(()=>drawInstChart(instList,-1),80);
+   });
+
+   const instTbody=$("instRows");instTbody.innerHTML="";
+   [...instList].reverse().forEach(r=>{
+    const c=v=>v>0?"#ff5c72":v<0?"#30d39a":"#edf4ff";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${r.date}</td><td style="color:${c(r.foreign)}">${fmtSignedInt(r.foreign)}</td><td style="color:${c(r.trust)}">${fmtSignedInt(r.trust)}</td><td style="color:${c(r.dealer)}">${fmtSignedInt(r.dealer)}</td><td style="color:${c(r.total)};font-weight:700">${fmtSignedInt(r.total)}</td>`;
+    instTbody.appendChild(tr);
+   });
+   $("instNote").textContent=isEtfAsset
+    ?`統計近 ${instList.length} 個交易日三大法人買賣超（註：ETF 自營商買賣超常含造市避險與申贖調節，建議重點觀察外資與波段趨勢）。`
+    :`統計近 ${instList.length} 個交易日三大法人買賣超張數（盤後證交所／櫃買中心公布資料）；紅色代表買超、綠色代表賣超。`;
+  }else{
+   $("instCard").classList.add("hidden");
+  }
+
+  const didCalc=runOptionalCalculation(true);
+  const sourceTag=liveBar?"盤中即時報價":"最新收盤價";
+  const assetText=isEtfAsset?"ETF 基金":"個股";
+  const calcMsg=didCalc?"並已完成損益／目標價試算。":"（買入價與目標價未填寫，已略過損益試算）";
+  $("status").textContent=`查詢成功：${code} ${name} [${assetText}${market?"・"+market:""}]｜${latest.date} ${sourceTag} ${fmt(close)} 元，${calcMsg}`;
+
+  $("pdfActionBar").classList.remove("hidden");
+ }catch(e){
+  $("status").textContent="行情查詢失敗："+e.message+"。";
+ }finally{
+  $("runBtn").disabled=false;$("runBtn").textContent="查詢股價並自動計算";
+ }
+});
+
+["buy","current","target","shares"].forEach(id=>{
+ $(id).addEventListener("input",()=>runOptionalCalculation(true));
+ $(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
+});
+$("code").addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
+</script>
+</body>
+</html>
