@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>台股漲跌停與損益計算器</title>
+<style>
+:root{--bg:#0b1220;--panel:#142137;--line:#30445f;--txt:#edf4ff;--muted:#9dafc6;--green:#30d39a;--red:#ff7182;--blue:#78b5ff}
+*{box-sizing:border-box}body{margin:0;padding:24px 13px;background:radial-gradient(circle at 20% 0,#1b3455 0,#0b1220 48%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:900px;margin:auto}header{text-align:center;margin:6px 0 23px}.logo{font-size:28px;margin-bottom:7px}h1{font-size:clamp(25px,5vw,34px);margin:0 0 7px}.sub{font-size:13px;color:var(--muted)}
+.card{background:linear-gradient(160deg,#182943,#111d30);border:1px solid var(--line);border-radius:19px;padding:21px;margin-bottom:15px;box-shadow:0 15px 38px #0003}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-size:13px;font-weight:700;color:#c9d8ea;margin:0 0 7px}
+input{width:100%;border:1px solid #3b526f;border-radius:11px;background:#0b1727;color:white;padding:13px;font-size:19px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #78b5ff22}
+.hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+button{width:100%;margin-top:17px;border:0;border-radius:11px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;color:#071a1a;background:linear-gradient(90deg,#43d6a2,#78b5ff)}
+.status{font-size:12px;color:var(--muted);margin-top:12px;min-height:18px;line-height:1.6}
+.section{font-size:17px;font-weight:800;margin:0 0 12px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.metric{background:#0b1727;border:1px solid #2a3d56;border-radius:13px;padding:13px;min-width:0}
+.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.metric strong{font-size:clamp(18px,4vw,24px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}
+.pill{display:inline-block;border:1px solid #405b7a;background:#1d304a;border-radius:99px;padding:5px 9px;font-size:11px;color:#c9def5}
+.tablewrap{overflow:auto;border:1px solid #2c405a;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:430px;font-size:12px}
+th,td{padding:10px;text-align:right;border-bottom:1px solid #263951;font-variant-numeric:tabular-nums}th{background:#20324a;color:#c6d8ed}th:first-child,td:first-child{text-align:center}tr:last-child td{border:0}
+.note{font-size:12px;color:var(--muted);line-height:1.8}.subhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.hidden{display:none}
+@media(max-width:560px){body{padding:15px 9px}.card{padding:16px}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:span 2}}
+</style>
+</head>
+<body><main>
+<header><div class="logo">📊</div><h1>台股漲跌停與損益計算器</h1><div class="sub">分開計算買入成本、目前股價與目標價格</div></header>
+
+<section class="card">
+ <div class="grid">
+  <div class="field"><label for="code">股票代號</label><input id="code" inputmode="numeric" maxlength="6" placeholder="例如：2330"><div class="hint">僅供辨識股票，不影響計算</div></div>
+  <div class="field"><label for="shares">持有股數</label><input id="shares" type="number" min="1" step="1" value="1000"><div class="hint">預設 1 張＝1,000 股</div></div>
+  <div class="field"><label for="buy">買入價格（元）</label><input id="buy" type="number" min="0.01" step="0.01" placeholder="例如：1000"><div class="hint">你的實際買進成本</div></div>
+  <div class="field"><label for="current">目前股價（元）</label><input id="current" type="number" min="0.01" step="0.01" placeholder="例如：1200"><div class="hint">請填入目前市場價格／最新成交價</div></div>
+  <div class="field"><label for="target">目標價格（元）</label><input id="target" type="number" min="0.01" step="0.01" placeholder="例如：1500"><div class="hint">你希望股價到達的價格</div></div>
+ </div>
+ <button id="calc">開始計算</button>
+ <div class="status" id="status">本版計算完全離線，不會因行情 API 或跨網域問題而無法計算。請自行填入最新目前股價。</div>
+</section>
+
+<section class="card hidden" id="result">
+ <div class="subhead"><div class="section" id="resultTitle">計算結果</div><span class="pill">一般股票每日 ±10% 試算</span></div>
+ <div class="section">價格與損益</div>
+ <div class="metrics">
+  <div class="metric"><small>買入成本</small><strong id="rBuy">—</strong></div>
+  <div class="metric"><small>目前股價</small><strong id="rCurrent">—</strong></div>
+  <div class="metric"><small>目標價格</small><strong id="rTarget">—</strong></div>
+  <div class="metric"><small>目前每股損益</small><strong id="rNowDiff">—</strong></div>
+  <div class="metric"><small>目前報酬率</small><strong id="rNowPct">—</strong></div>
+  <div class="metric"><small>目前總損益（未扣費稅）</small><strong id="rNowProfit">—</strong></div>
+ </div>
+ <div class="section" style="margin-top:22px">到達目標價的試算</div>
+ <div class="metrics">
+  <div class="metric"><small>目標每股價差（相對買入）</small><strong id="rTargetDiff">—</strong></div>
+  <div class="metric"><small>目標報酬率（相對買入）</small><strong id="rTargetPct">—</strong></div>
+  <div class="metric"><small>目標總損益（未扣費稅）</small><strong id="rTargetProfit">—</strong></div>
+  <div class="metric"><small>從目前股價所需漲／跌停</small><strong id="rCount">—</strong></div>
+  <div class="metric"><small>逐次漲跌停後價格</small><strong id="rFinal">—</strong></div>
+  <div class="metric"><small>相對目前股價總變動</small><strong id="rMove">—</strong></div>
+ </div>
+ <div class="section" style="margin-top:22px" id="pathHeading">逐次價格明細</div>
+ <div class="tablewrap"><table><thead><tr><th>次數</th><th>前一日參考價</th><th>漲停／跌停價</th><th>單次變動</th></tr></thead><tbody id="rows"></tbody></table></div>
+ <div class="note" id="pathNote" style="margin-top:11px"></div>
+</section>
+
+<section class="card">
+ <div class="section">重要說明</div>
+ <div class="note">
+  1. 本版將「目前股價」設為獨立輸入欄位，連續漲停／跌停次數從目前股價起算。<br>
+  2. 本版計算功能完全離線；不會自動取得行情，避免本機 HTML 的跨網域限制再次造成整個計算器故障。<br>
+  3. 官方行情仍可從<a style="color:#9fc7ff" href="https://openapi.twse.com.tw/" target="_blank" rel="noopener">證交所 OpenAPI</a>或<a style="color:#9fc7ff" href="https://www.tpex.org.tw/openapi/" target="_blank" rel="noopener">櫃買中心 OpenAPI</a>查詢，請將最新價格填入「目前股價」。<br>
+  4. 台股普通股升降單位：未滿 10 元 0.01；10–未滿 50 元 0.05；50–未滿 100 元 0.1；100–未滿 500 元 0.5；500–未滿 1,000 元 1；1,000 元以上 5 元。<br>
+  5. 漲跌停價按每一交易日參考價及價格級距逐次試算。特殊處置、除權息、初次上市櫃、無漲跌幅限制等情況可能不適用。<br>
+  6. 損益未扣手續費、證交稅及其他成本，不構成投資建議。
+ </div>
+</section>
+<footer class="note" style="text-align:center;padding:5px 0 20px">台股漲跌停與損益計算器｜離線計算版</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id),v=id=>Number($(id).value);
+const fmt=n=>Number(n).toLocaleString("zh-TW",{minimumFractionDigits:2,maximumFractionDigits:2});
+function tick(p){if(p<10)return .01;if(p<50)return .05;if(p<100)return .1;if(p<500)return .5;if(p<1000)return 1;return 5}
+function nextLimit(p,dir){const raw=p*(dir==="up"?1.1:.9),unit=tick(p);return Number((Math.round(raw/unit+1e-8)*unit).toFixed(2))}
+function pathFromCurrent(current,target){
+ const up=target>current,dir=up?"up":"down",items=[];let price=current,n=0;
+ while((up?price<target:price>target)&&n<100){
+  const next=nextLimit(price,dir);if(next<=0||Math.abs(next-price)<1e-8)break;
+  items.push({n:n+1,prev:price,next,change:next-price});price=next;n++;
+ }
+ return {up,items,last:price,done:up?price>=target:price<=target};
+}
+function setMetric(id,value,signClass=""){const el=$(id);el.textContent=value;el.className=signClass}
+$("calc").addEventListener("click",()=>{
+ const code=$("code").value.trim(),shares=v("shares"),buy=v("buy"),current=v("current"),target=v("target");
+ if(!(shares>0&&Number.isInteger(shares))){$("status").textContent="持有股數請輸入大於 0 的整數。";$("shares").focus();return}
+ for(const [id,label,val] of [["buy","買入價格",buy],["current","目前股價",current],["target","目標價格",target]]){
+  if(!(val>0)){ $("status").textContent="請輸入有效的「"+label+"」。";$(id).focus();return}
+ }
+ const nowDiff=current-buy,nowPct=nowDiff/buy*100,nowProfit=nowDiff*shares;
+ const targetDiff=target-buy,targetPct=targetDiff/buy*100,targetProfit=targetDiff*shares;
+ const path=pathFromCurrent(current,target),move=path.last-current;
+ $("resultTitle").textContent=(code?code+"｜":"")+"股票計算結果";
+ setMetric("rBuy",fmt(buy)+" 元");setMetric("rCurrent",fmt(current)+" 元");setMetric("rTarget",fmt(target)+" 元");
+ setMetric("rNowDiff",(nowDiff>0?"+":"")+fmt(nowDiff),nowDiff>0?"green":nowDiff<0?"red":"");
+ setMetric("rNowPct",(nowPct>0?"+":"")+nowPct.toFixed(2)+"%",nowPct>0?"green":nowPct<0?"red":"");
+ setMetric("rNowProfit",(nowProfit>0?"+":"")+fmt(nowProfit)+" 元",nowProfit>0?"green":nowProfit<0?"red":"");
+ setMetric("rTargetDiff",(targetDiff>0?"+":"")+fmt(targetDiff),targetDiff>0?"green":targetDiff<0?"red":"");
+ setMetric("rTargetPct",(targetPct>0?"+":"")+targetPct.toFixed(2)+"%",targetPct>0?"green":targetPct<0?"red":"");
+ setMetric("rTargetProfit",(targetProfit>0?"+":"")+fmt(targetProfit)+" 元",targetProfit>0?"green":targetProfit<0?"red":"");
+ setMetric("rCount",path.items.length+" 次",path.up?"green":path.items.length?"red":"");
+ setMetric("rFinal",fmt(path.last)+" 元",path.up?"green":path.items.length?"red":"");
+ setMetric("rMove",(move>0?"+":"")+fmt(move)+" 元",move>0?"green":move<0?"red":"");
+ $("pathHeading").textContent=path.items.length?(path.up?"連續漲停價格明細":"連續跌停價格明細"):"目前股價與目標價格相同";
+ const tbody=$("rows");tbody.innerHTML="";
+ if(!path.items.length){const tr=document.createElement("tr");tr.innerHTML='<td colspan="4" style="text-align:center">目前股價已等於目標價格，無須漲跌停。</td>';tbody.appendChild(tr)}
+ for(const x of path.items){const tr=document.createElement("tr");tr.innerHTML=`<td>${x.n}</td><td>${fmt(x.prev)}</td><td>${fmt(x.next)}</td><td>${x.change>0?"+":""}${fmt(x.change)}</td>`;tbody.appendChild(tr)}
+ $("pathNote").textContent=`漲跌停次數從目前股價 ${fmt(current)} 元起算；每次依前一日參考價重新計算。${path.done?"第 "+path.items.length+" 次後達到或超過目標價。":"未能在 100 次內到達目標，請檢查價格。"}持有 ${shares.toLocaleString("zh-TW")} 股；損益未扣手續費及證交稅。`;
+ $("result").classList.remove("hidden");$("status").textContent="計算完成（離線模式，不需連線）。";$("result").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("target").addEventListener("keydown",e=>{if(e.key==="Enter")$("calc").click()});
+</script></body></html>
