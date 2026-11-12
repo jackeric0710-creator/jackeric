@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>台股漲跌停計算器</title>
+<style>
+:root{--bg:#0b1220;--panel:#131e30;--panel2:#1a2940;--line:#2a3a52;--text:#edf3fb;--muted:#9aabc2;--green:#28c78a;--red:#ff6577;--blue:#69a9ff;--gold:#f5c76b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0%,#1c3150 0,#0b1220 45%);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding:26px 14px}
+.wrap{max-width:850px;margin:auto}
+header{text-align:center;margin:8px 0 24px}
+.logo{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#1b9c76,#2677d8);font-size:26px;margin-bottom:10px}
+h1{font-size:clamp(25px,5vw,34px);margin:0 0 7px;letter-spacing:1px}
+.sub{color:var(--muted);font-size:14px}
+.card{background:linear-gradient(180deg,rgba(24,38,59,.98),rgba(17,28,44,.98));border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 16px 45px #0003}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+label{display:block;color:#c4d2e4;font-size:14px;font-weight:650;margin:0 0 8px}
+input{width:100%;background:#0d1726;border:1px solid #354963;border-radius:12px;color:white;font-size:20px;padding:14px 15px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #69a9ff20}
+.hint{font-size:12px;color:var(--muted);margin-top:7px}
+button{width:100%;margin-top:18px;border:0;border-radius:13px;padding:15px;font-size:17px;font-weight:800;color:#071521;background:linear-gradient(90deg,#45d6a0,#72b5ff);cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.status{margin-top:13px;color:var(--muted);font-size:13px;min-height:18px;text-align:center}
+.hidden{display:none!important}
+.stockhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.stockname{font-size:21px;font-weight:800}
+.stockmeta{color:var(--muted);font-size:12px;margin-top:4px}
+.tag{border:1px solid #405775;background:#1c2d45;border-radius:999px;padding:6px 10px;color:#c5d8f1;font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.metric{background:#0d1726;border:1px solid #263950;border-radius:14px;padding:14px}
+.metric small{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+.metric strong{font-size:clamp(19px,4vw,25px);font-variant-numeric:tabular-nums}
+.pos{color:var(--green)}.neg{color:var(--red)}.neutral{color:var(--blue)}
+.sectiontitle{font-size:17px;font-weight:800;margin:22px 0 10px}
+.explain{color:var(--muted);font-size:12px;line-height:1.7;margin-top:12px}
+.tablewrap{overflow-x:auto;border:1px solid #293b53;border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:390px;font-size:13px}
+th,td{text-align:right;padding:11px 12px;border-bottom:1px solid #26374d;font-variant-numeric:tabular-nums}
+th{background:#1b2a40;color:#b9cbe0;font-weight:700}
+th:first-child,td:first-child{text-align:center}
+tr:last-child td{border-bottom:0}
+.uprow td:nth-child(3){color:var(--green)}.downrow td:nth-child(3){color:var(--red)}
+.note{font-size:12px;color:#9aabc2;line-height:1.75}
+footer{text-align:center;color:#71849e;font-size:11px;padding:8px 10px 20px}
+@media(max-width:560px){body{padding:16px 10px}.card{padding:17px}.formgrid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:span 2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">📈</div>
+  <h1>台股漲跌停計算器</h1>
+  <div class="sub">輸入股票代號與目標價格，試算連續漲停／跌停次數</div>
+</header>
+
+<section class="card">
+  <div class="formgrid">
+    <div>
+      <label for="stockCode">股票代號</label>
+      <input id="stockCode" inputmode="numeric" maxlength="6" placeholder="例如：2330" value="2330">
+      <div class="hint">支援上市、上櫃股票代號</div>
+    </div>
+    <div>
+      <label for="targetPrice">目標價格（元）</label>
+      <input id="targetPrice" inputmode="decimal" type="number" min="0.01" step="0.01" placeholder="例如：1500">
+      <div class="hint">輸入想要到達的股價</div>
+    </div>
+  </div>
+  <button id="calcBtn" type="button">開始計算</button>
+  <div class="status" id="status" role="status">行情來源：證交所／櫃買中心官方公開資料</div>
+</section>
+
+<section class="card hidden" id="result">
+  <div class="stockhead">
+    <div>
+      <div class="stockname" id="stockTitle">—</div>
+      <div class="stockmeta" id="stockMeta">—</div>
+    </div>
+    <span class="tag" id="marketTag">官方行情</span>
+  </div>
+  <div class="metrics">
+    <div class="metric"><small>最新收盤價</small><strong id="currentPrice">—</strong></div>
+    <div class="metric"><small>目標價格</small><strong id="goalPrice">—</strong></div>
+    <div class="metric"><small>價差／報酬率</small><strong id="difference">—</strong><div class="hint" id="percent">—</div></div>
+  </div>
+  <div class="sectiontitle" id="pathTitle">連續漲停試算</div>
+  <div class="metrics" style="grid-template-columns:1fr 1fr">
+    <div class="metric"><small id="countLabel">到達目標所需漲停</small><strong id="countValue">—</strong></div>
+    <div class="metric"><small>試算最後價格</small><strong id="finalValue">—</strong></div>
+  </div>
+  <div class="sectiontitle">逐次價格明細</div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>次數</th><th>參考價格</th><th>漲跌停價格</th><th>單次變動</th></tr></thead>
+      <tbody id="detailRows"></tbody>
+    </table>
+  </div>
+  <div class="explain" id="roundingNote"></div>
+</section>
+
+<section class="card">
+  <div class="sectiontitle" style="margin-top:0">計算方式與注意事項</div>
+  <div class="note">
+    1. 目前股價使用交易所最新公布的<strong>收盤行情</strong>，不是盤中即時成交價。<br>
+    2. 以一般適用每日 ±10% 漲跌幅的普通股試算，並依台股價格級距處理升降單位。<br>
+    3. 漲停次數以股價首次達到或超過目標價為準；跌停則以首次低於或等於目標價為準。<br>
+    4. 新上市初期、除權息、處置或其他特殊漲跌幅規則可能不同，本工具第一版尚未涵蓋。<br>
+    5. 官方資料若因瀏覽器跨網域限制或交易所暫時無法連線，請稍後重試。
+  </div>
+</section>
+<footer>資料來源：臺灣證券交易所 OpenAPI、證券櫃檯買賣中心 OpenAPI<br>本工具僅供試算參考，不構成投資建議。</footer>
+</div>
+
+<script>
+const TWSE_URL = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL";
+const TPEX_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes";
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString("zh-TW",{minimumFractionDigits:2,maximumFractionDigits:2});
+const clean = v => String(v ?? "").trim().replace(/,/g,"").replace(/％/g,"%");
+
+function getValue(row, keys) {
+  for (const key of keys) if (row[key] !== undefined && row[key] !== null && clean(row[key]) !== "") return row[key];
+  return "";
+}
+function parseNum(v) {
+  const n = Number(clean(v));
+  return Number.isFinite(n) ? n : NaN;
+}
+async function fetchJson(url) {
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(),15000);
+  try {
+    const response = await fetch(url,{cache:"no-store",signal:controller.signal});
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const data = await response.json();
+    if(!Array.isArray(data)) throw new Error("行情格式異常");
+    return data;
+  } finally { clearTimeout(timer); }
+}
+async function getStock(code) {
+  const results = await Promise.allSettled([fetchJson(TWSE_URL),fetchJson(TPEX_URL)]);
+  // TWSE: Code / Name / ClosingPrice; TPEx: SecuritiesCompanyCode / CompanyName / Close
+  if(results[0].status==="fulfilled"){
+    const row=results[0].value.find(x=>String(getValue(x,["Code","證券代號","股票代號"])).trim()===code);
+    if(row){
+      const price=parseNum(getValue(row,["ClosingPrice","收盤價","收盤"]));
+      if(price>0) return {code,name:getValue(row,["Name","證券名稱","名稱"])||code,price,date:getValue(row,["Date","日期"])||"最新交易日",market:"上市｜證交所"};
+    }
+  }
+  if(results[1].status==="fulfilled"){
+    const row=results[1].value.find(x=>String(getValue(x,["SecuritiesCompanyCode","代號","證券代號"])).trim()===code);
+    if(row){
+      const price=parseNum(getValue(row,["Close","ClosingPrice","收盤價","收盤"]));
+      if(price>0) return {code,name:getValue(row,["CompanyName","名稱","證券名稱"])||code,price,date:getValue(row,["Date","資料日期"])||"最新交易日",market:"上櫃｜櫃買中心"};
+    }
+  }
+  const errors=results.filter(x=>x.status==="rejected");
+  if(errors.length===2) throw new Error("目前無法連線至交易所官方行情。若直接開啟本機 HTML 遭瀏覽器跨網域限制，請上傳至 GitHub Pages 後再測試。");
+  throw new Error("官方行情中找不到此代號，請確認股票代號，或確認該股票是否為一般上市／上櫃股票。");
+}
+
+// 台股一般股票升降單位
+function tickSize(price){
+  if(price<10) return 0.01;
+  if(price<50) return 0.05;
+  if(price<100) return 0.1;
+  if(price<500) return 0.5;
+  if(price<1000) return 1;
+  return 5;
+}
+// 漲跌停價按當時價格級距四捨五入至合法升降單位
+function roundToTick(value){
+  const tick=tickSize(value);
+  return Math.round((value/tick)+1e-8)*tick;
+}
+function nextLimit(price,direction){
+  const raw=price*(direction==="up"?1.10:0.90);
+  return Number(roundToTick(raw).toFixed(2));
+}
+function calculatePath(start,target){
+  const up=target>start;
+  const direction=up?"up":"down";
+  const rows=[];
+  let price=start, count=0;
+  // 防止異常資料造成無限迴圈
+  while((up?price<target:price>target) && count<100){
+    const next=nextLimit(price,direction);
+    if(next<=0 || Math.abs(next-price)<0.000001) break;
+    rows.push({count:count+1,reference:price,next,change:next-price});
+    price=next; count++;
+  }
+  return {up,rows,count,final:price,reached:up?price>=target:price<=target};
+}
+function showResult(stock,target){
+  const diff=target-stock.price;
+  const pct=diff/stock.price*100;
+  const path=calculatePath(stock.price,target);
+  $("stockTitle").textContent=stock.code+" "+stock.name;
+  $("stockMeta").textContent="資料日期："+stock.date+"｜資料為最新公布收盤行情";
+  $("marketTag").textContent=stock.market;
+  $("currentPrice").textContent=fmt(stock.price);
+  $("goalPrice").textContent=fmt(target);
+  $("difference").textContent=(diff>0?"+":"")+fmt(diff);
+  $("difference").className=diff>0?"pos":diff<0?"neg":"neutral";
+  $("percent").textContent=(pct>0?"+":"")+pct.toFixed(2)+"%";
+  $("percent").className=diff>0?"pos":diff<0?"neg":"";
+  $("pathTitle").textContent=path.up?"連續漲停試算":"連續跌停試算";
+  $("countLabel").textContent=path.up?"到達／超過目標所需漲停":"到達／低於目標所需跌停";
+  $("countValue").textContent=path.count+" 次";
+  $("countValue").className=path.up?"pos":"neg";
+  $("finalValue").textContent=fmt(path.final)+" 元";
+  $("finalValue").className=path.up?"pos":"neg";
+  const tbody=$("detailRows"); tbody.innerHTML="";
+  if(path.rows.length===0){
+    const tr=document.createElement("tr");
+    tr.innerHTML='<td colspan="4" style="text-align:center;color:#9aabc2">目標價格與目前價格相同，無須漲停或跌停。</td>';
+    tbody.appendChild(tr);
+  } else {
+    path.rows.forEach(r=>{
+      const tr=document.createElement("tr");
+      tr.className=path.up?"uprow":"downrow";
+      tr.innerHTML=`<td>${r.count}</td><td>${fmt(r.reference)}</td><td>${fmt(r.next)}</td><td>${r.change>0?"+":""}${fmt(r.change)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  $("roundingNote").textContent=path.reached
+    ? `依每次漲跌停後的新價格重新計算下一交易日漲跌停價；本次試算共 ${path.count} 次。`
+    : "試算未能在 100 次內達到目標，請檢查輸入價格。";
+  $("result").classList.remove("hidden");
+}
+$("calcBtn").addEventListener("click",async()=>{
+  const code=$("stockCode").value.trim();
+  const target=parseNum($("targetPrice").value);
+  if(!/^\d{4,6}$/.test(code)){ $("status").textContent="請輸入 4 至 6 碼股票代號。"; $("stockCode").focus(); return; }
+  if(!(target>0)){ $("status").textContent="請輸入大於 0 的目標價格。"; $("targetPrice").focus(); return; }
+  $("calcBtn").disabled=true; $("calcBtn").textContent="正在取得官方行情…";
+  $("status").textContent="正在查詢證交所與櫃買中心最新收盤資料，請稍候。";
+  $("result").classList.add("hidden");
+  try{
+    const stock=await getStock(code);
+    showResult(stock,target);
+    $("status").textContent="計算完成。行情為官方最新公布收盤價，非盤中即時報價。";
+    $("result").scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(err){
+    $("status").textContent=err.message||"查詢失敗，請稍後再試。";
+  }finally{
+    $("calcBtn").disabled=false; $("calcBtn").textContent="開始計算";
+  }
+});
+$("targetPrice").addEventListener("keydown",e=>{if(e.key==="Enter")$("calcBtn").click()});
+$("stockCode").addEventListener("keydown",e=>{if(e.key==="Enter")$("targetPrice").focus()});
+</script>
+</body>
+</html>
