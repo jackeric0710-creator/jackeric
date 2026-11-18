@@ -22,6 +22,54 @@ body{
 }
 main{max-width:860px;margin:auto}
 
+
+/* 頂部大盤籌碼總覽（大盤融資動向 + 三大法人個別買賣超近5日明細與統計） */
+.taiex-top-section{
+ display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px;
+}
+@media(min-width:760px){
+ .taiex-top-section{grid-template-columns:1fr 1.15fr}
+}
+.taiex-card{
+ background:linear-gradient(160deg,#182943,#111d30);
+ border:1px solid #355075;border-radius:18px;
+ padding:15px 14px;box-shadow:0 12px 30px rgba(0,0,0,0.32);
+ display:flex;flex-direction:column;justify-content:space-between;
+}
+.taiex-head{
+ display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+ margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #263b57;
+}
+.taiex-title{font-size:15.5px;font-weight:900;color:#f1f6ff;display:flex;align-items:center;gap:6px}
+.taiex-date-tag{font-size:11.5px;color:#9fb2ca;background:#0d192b;border:1px solid #2b4263;padding:2px 8px;border-radius:99px}
+.taiex-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #283d59;border-radius:11px;background:#0b1626}
+.taiex-table{width:100%;border-collapse:collapse;min-width:0;font-size:12.5px}
+.taiex-table th,.taiex-table td{
+ padding:7px 8px;text-align:right;border-bottom:1px solid #1d2f47;
+ font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.taiex-table th{background:#182a44;color:#bfd4ed;font-weight:700;font-size:11.5px;position:static}
+.taiex-table th:first-child,.taiex-table td:first-child{
+ text-align:center;position:static;background:transparent;border-right:1px solid #1d2f47;color:#cbd5e1;font-weight:700;
+}
+.taiex-table th:first-child{background:#182a44}
+.taiex-table tr:last-child td{border-bottom:0}
+.taiex-summary-box{
+ margin-top:10px;padding:10px 11px;border-radius:11px;
+ background:#0b1727;border:1px solid #2b4363;
+}
+.taiex-sum-title{font-size:12px;font-weight:800;color:#93c5fd;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.taiex-sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.taiex-sum-item{
+ background:#112036;border:1px solid #253b59;border-radius:9px;padding:7px 8px;
+}
+.taiex-sum-item small{display:block;font-size:11px;color:#9fb2ca;margin-bottom:2px}
+.taiex-sum-item strong{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.taiex-verdict{
+ margin-top:8px;font-size:12px;color:#d6e4f5;line-height:1.5;
+ padding:6px 9px;border-radius:8px;background:#101e33;border-left:3px solid #75b5ff;
+}
+
 /* 手機優先頂部標題與股票看板 */
 header{text-align:center;margin:4px 0 16px}
 .logo{font-size:26px;margin-bottom:4px}
@@ -331,6 +379,22 @@ tr:last-child td{border:0}
 canvas{width:100%;height:100%;display:block;cursor:crosshair}
 .kd-toggle{min-height:36px;background:#182436;color:#9fc7ff;border:1px solid #304766;padding:6px 12px;font-size:12.5px;border-radius:9px;font-weight:700;cursor:pointer}
 
+/* 本益比估值卡、融資融券籌碼卡、三大法人買賣金額趨勢卡 */
+.chip-trend-banner{
+ display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+ background:#0b1727;border:1px solid #2b4263;border-radius:12px;padding:10px 12px;margin-top:10px;
+}
+.chip-streak-pill{
+ font-size:12.5px;font-weight:800;padding:4px 11px;border-radius:99px;
+ background:#172b47;border:1px solid #3c5f8f;color:#dbeafe;
+}
+.chip-streak-pill.red{background:rgba(255,94,116,0.16);border-color:#ff5e74;color:#ff8fa0}
+.chip-streak-pill.green{background:rgba(46,224,161,0.15);border-color:#2ee0a1;color:#4be8b0}
+.chip-streak-pill.amber{background:rgba(251,191,36,0.16);border-color:#fbbf24;color:#fcd34d}
+
+.pe-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+@media(min-width:680px){.pe-grid{grid-template-columns:repeat(4,1fr)}}
+
 .guide-block h3{font-size:15px;color:#93c5fd;margin:14px 0 6px}
 .guide-block ul{margin:4px 0 12px;padding-left:18px}
 .guide-block li{margin-bottom:6px}
@@ -368,6 +432,18 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  .stock-banner .sb-name{color:#0f172a!important;font-size:20px!important}
  .stock-banner .sb-code{color:#1d4ed8!important;font-size:18px!important}
  .stock-banner .sb-price{width:auto!important;border-top:0!important;border-left:1px solid #cbd5e1!important;padding-left:10px!important;font-size:19px!important}
+
+ .taiex-top-section{grid-template-columns:1fr 1.15fr!important;gap:8px!important;margin-bottom:8px!important}
+ .taiex-card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:9px 10px!important;border-radius:8px!important}
+ .taiex-head{border-color:#cbd5e1!important}
+ .taiex-title{color:#0f172a!important;font-size:14px!important}
+ .taiex-date-tag{background:#f8fafc!important;color:#334155!important;border-color:#cbd5e1!important}
+ .taiex-table-wrap{border-color:#cbd5e1!important;background:#ffffff!important}
+ .taiex-table th{background:#f1f5f9!important;color:#0f172a!important;border-color:#cbd5e1!important}
+ .taiex-table td,.taiex-table td:first-child{color:#1e293b!important;border-color:#e2e8f0!important}
+ .taiex-summary-box,.taiex-sum-item,.taiex-verdict{background:#f8fafc!important;border-color:#cbd5e1!important;color:#0f172a!important}
+ .taiex-sum-title{color:#1d4ed8!important}
+ .taiex-sum-item small{color:#475569!important}
  .card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:10px 12px!important;margin-bottom:8px!important;break-inside:auto!important;page-break-inside:auto!important;border-radius:8px!important}
  .ind-match-box,.reversal-box,.strategy-box,.formula16-box,.terminal,.tablewrap{break-inside:auto!important;page-break-inside:auto!important}
  .ind-match-item,.rev-item,.rb-item,.f16-item,.metric,.score-hero{break-inside:avoid!important;page-break-inside:avoid!important;padding:5px 8px!important}
@@ -395,7 +471,8 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  .canvas-box{break-inside:avoid!important;page-break-inside:avoid!important}
  .section{color:#0f172a!important;font-size:15px!important}
  .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
- .score-hero,.metric,.rb-item,.tech-tag,.pill,.ind-match-box,.ind-match-item,.rev-item{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
+ .score-hero,.metric,.rb-item,.tech-tag,.pill,.ind-match-box,.ind-match-item,.rev-item,.chip-trend-banner,.chip-streak-pill{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
+ .pe-grid{grid-template-columns:repeat(4,1fr)!important}
  .ind-match-item.bull{border-left:4px solid #dc2626!important}
  .ind-match-item.bear{border-left:4px solid #059669!important}
  .ind-match-item.neutral{border-left:4px solid #d97706!important}
@@ -450,6 +527,102 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
 </style>
 </head>
 <body><main>
+<!-- 頂部大盤籌碼總覽：大盤融資動向 (散戶指標) + 三大法人個別買賣超 (主力動向) 近5日明細與統計 -->
+<section class="taiex-top-section" id="taiexTopSection">
+ <!-- 左側：大盤融資動向 (散戶指標) 近5日明細 + 統計 -->
+ <div class="taiex-card">
+  <div>
+   <div class="taiex-head">
+    <div class="taiex-title">💰 大盤融資動向 (散戶指標)</div>
+    <span class="taiex-date-tag" id="topMarginDate">近 5 日資料讀取中…</span>
+   </div>
+   <div class="taiex-table-wrap">
+    <table class="taiex-table">
+     <thead>
+      <tr>
+       <th>日期</th>
+       <th>融資餘額(億)</th>
+       <th>當日增減(億)</th>
+       <th>增減方向</th>
+      </tr>
+     </thead>
+     <tbody id="topMarginRows">
+      <tr><td colspan="4" style="text-align:center;color:#9fb2ca;padding:14px">正在載入大盤近 5 日融資明細…</td></tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
+
+  <div class="taiex-summary-box">
+   <div class="taiex-sum-title">
+    <span>📊 近 5 日大盤融資統計彙總</span>
+    <span id="topMarginStreakBadge" class="pill" style="padding:2px 9px;font-size:11.5px">—</span>
+   </div>
+   <div class="taiex-sum-grid">
+    <div class="taiex-sum-item"><small>最新融資餘額</small><strong id="topMarginBal">—</strong></div>
+    <div class="taiex-sum-item"><small>連續增減累計</small><strong id="topMarginStreakSum">—</strong></div>
+    <div class="taiex-sum-item"><small>近 5 日合計增減</small><strong id="topMargin5dSum">—</strong></div>
+   </div>
+   <div class="taiex-verdict" id="topMarginVerdict">正在分析近 5 個交易日融資籌碼流向…</div>
+  </div>
+ </div>
+
+ <!-- 右側：三大法人個別買賣超 (主力動向) 近5日明細 + 個別統計 -->
+ <div class="taiex-card">
+  <div>
+   <div class="taiex-head">
+    <div class="taiex-title">🏦 三大法人個別買賣超 (主力動向)</div>
+    <span class="taiex-date-tag" id="topInstDate">近 5 日資料讀取中…</span>
+   </div>
+   <div class="taiex-table-wrap">
+    <table class="taiex-table">
+     <thead>
+      <tr>
+       <th>日期</th>
+       <th>外資(億)</th>
+       <th>投信(億)</th>
+       <th>自營商(億)</th>
+       <th>合計(億)</th>
+      </tr>
+     </thead>
+     <tbody id="topInstRows">
+      <tr><td colspan="5" style="text-align:center;color:#9fb2ca;padding:14px">正在載入近 5 日三大法人個別明細…</td></tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
+
+  <div class="taiex-summary-box">
+   <div class="taiex-sum-title">
+    <span>📈 三大法人個別統計（連續趨勢 ／ 連續累計 ／ 近 5 日合計）</span>
+   </div>
+   <div class="taiex-table-wrap">
+    <table class="taiex-table">
+     <thead>
+      <tr>
+       <th>法人別</th>
+       <th>今日買賣超</th>
+       <th>連續趨勢</th>
+       <th>連續累計</th>
+       <th>近5日合計</th>
+      </tr>
+     </thead>
+     <tbody id="topInstStatRows">
+      <tr>
+       <td>外資</td><td id="statF_today">—</td><td id="statF_streak">—</td><td id="statF_streakSum">—</td><td id="statF_5d">—</td>
+      </tr>
+      <tr>
+       <td>投信</td><td id="statT_today">—</td><td id="statT_streak">—</td><td id="statT_streakSum">—</td><td id="statT_5d">—</td>
+      </tr>
+      <tr>
+       <td>自營商</td><td id="statD_today">—</td><td id="statD_streak">—</td><td id="statD_streakSum">—</td><td id="statD_5d">—</td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
+ </div>
+</section>
 <header>
  <div class="logo">📊</div>
  <h1>台股即時行情、KD走勢、個股/ETF雙軌評分與反轉訊號計算器</h1>
@@ -672,28 +845,60 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  </div>
 </section>
 
-<!-- 三大法人買賣超統計區塊 -->
+<!-- 台股本益比（P/E Ratio）與估值計算區塊（僅一般個股顯示） -->
+<section class="card hidden" id="peCard">
+ <div class="subhead" style="margin-bottom:8px">
+  <div class="section" id="peTitle" style="margin:0">📐 台股本益比（P/E Ratio）與估值計算</div>
+  <span class="pill" id="peEvalPill">估值位階：—</span>
+ </div>
+
+ <div class="pe-grid">
+  <div class="metric"><small>目前股價（分子）</small><strong id="pePriceVal">—</strong></div>
+  <div class="metric"><small>近四季累計 EPS（分母）</small><strong id="peEpsVal">—</strong></div>
+  <div class="metric"><small>即時動態本益比 (P/E)</small><strong id="peRatioVal">—</strong></div>
+  <div class="metric"><small>股價淨值比 (PBR)／殖利率</small><strong id="pePbrVal" style="font-size:14.5px">—</strong></div>
+ </div>
+
+ <div class="chip-trend-banner" id="peFormulaBanner">
+  <div style="font-size:12.5px;color:#dbeafe;line-height:1.55" id="peFormulaText">
+   計算公式：<b>本益比 (P/E) = 目前股價 ÷ 近四季每股盈餘 (TTM EPS)</b>
+  </div>
+  <span class="chip-streak-pill" id="peTargetHint">—</span>
+ </div>
+ <div class="note" id="peNote" style="margin-top:8px"></div>
+</section>
+
+<!-- 三大法人買賣超張數、金額增減與連續天數趨勢區塊 -->
 <section class="card hidden" id="instCard">
  <div class="subhead" style="margin-bottom:8px">
-  <div class="section" id="instTitle" style="margin:0">三大法人買賣超統計（張）</div>
+  <div class="section" id="instTitle" style="margin:0">🏦 三大法人買賣張數與金額趨勢</div>
   <div style="display:flex;gap:8px;align-items:center">
    <span class="pill" id="instDatePill">最新統計日：—</span>
    <button type="button" class="kd-toggle" id="toggleInstTable">展開法人明細</button>
   </div>
  </div>
 
+ <!-- 法人買賣金額增減與連續天數趨勢看板 -->
+ <div class="chip-trend-banner">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+   <span class="chip-streak-pill" id="instStreakBadge">連續買賣超：—</span>
+   <span class="chip-streak-pill" id="instAmtChgBadge">當日買賣金額：—</span>
+  </div>
+  <div style="font-size:12.5px;color:#cbd5e1;font-weight:700" id="instTrendVerdict">法人籌碼趨勢：—</div>
+ </div>
+
  <div class="metrics-5">
-  <div class="metric"><small>外資買賣超</small><strong id="instForeign">—</strong></div>
-  <div class="metric"><small>投信買賣超</small><strong id="instTrust">—</strong></div>
-  <div class="metric"><small>自營商買賣超</small><strong id="instDealer">—</strong></div>
-  <div class="metric"><small>當日三大法人合計</small><strong id="instTotal">—</strong></div>
-  <div class="metric"><small>近 5 日法人累計</small><strong id="inst5dTotal">—</strong></div>
+  <div class="metric"><small>外資買賣超（張 / 金額）</small><strong id="instForeign" style="font-size:15px">—</strong></div>
+  <div class="metric"><small>投信買賣超（張 / 金額）</small><strong id="instTrust" style="font-size:15px">—</strong></div>
+  <div class="metric"><small>自營商買賣超（張 / 金額）</small><strong id="instDealer" style="font-size:15px">—</strong></div>
+  <div class="metric"><small>當日合計（張 / 估算金額）</small><strong id="instTotal" style="font-size:15px">—</strong></div>
+  <div class="metric"><small>近 5 日累計（張 / 金額）</small><strong id="inst5dTotal" style="font-size:15px">—</strong></div>
  </div>
 
  <div class="terminal" style="margin-top:12px;padding-top:10px">
-  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9dafc6;padding:0 4px 6px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9dafc6;padding:0 4px 6px;flex-wrap:wrap;gap:4px">
    <span id="instHoverText">三大法人每日合計買賣超（紅買超／綠賣超）</span>
-   <span>單位：張</span>
+   <span>單位：張（括號為估算金額）</span>
   </div>
   <div class="canvas-box" style="height:125px">
    <canvas id="instChart"></canvas>
@@ -705,9 +910,57 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  <div class="tablewrap hidden" id="instTableWrap" style="margin-top:12px;max-height:260px">
   <table>
    <thead>
-    <tr><th>日期</th><th>外資(張)</th><th>投信(張)</th><th>自營商(張)</th><th>三大法人合計(張)</th></tr>
+    <tr><th>日期</th><th>外資(張)</th><th>投信(張)</th><th>自營商(張)</th><th>合計(張)</th><th>估算買賣金額</th></tr>
    </thead>
    <tbody id="instRows"></tbody>
+  </table>
+ </div>
+</section>
+
+<!-- 融資融券增減、連續天數與資券趨勢區塊 -->
+<section class="card hidden" id="marginCard">
+ <div class="subhead" style="margin-bottom:8px">
+  <div class="section" id="marginTitle" style="margin:0">💳 融資融券增減與連續天數趨勢</div>
+  <div style="display:flex;gap:8px;align-items:center">
+   <span class="pill" id="marginDatePill">最新統計日：—</span>
+   <button type="button" class="kd-toggle" id="toggleMarginTable">展開融資明細</button>
+  </div>
+ </div>
+
+ <div class="chip-trend-banner">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+   <span class="chip-streak-pill" id="marginStreakBadge">融資連續狀態：—</span>
+   <span class="chip-streak-pill" id="marginAmtBadge">融資餘額增減：—</span>
+  </div>
+  <div style="font-size:12.5px;color:#cbd5e1;font-weight:700" id="marginTrendVerdict">資券籌碼趨勢：—</div>
+ </div>
+
+ <div class="metrics-5">
+  <div class="metric"><small>當日融資增減（張）</small><strong id="mgDiffLots">—</strong></div>
+  <div class="metric"><small>當日融資增減金額（估算）</small><strong id="mgDiffAmt">—</strong></div>
+  <div class="metric"><small>最新融資餘額（張）</small><strong id="mgBalance">—</strong></div>
+  <div class="metric"><small>融資使用率</small><strong id="mgUtilRate">—</strong></div>
+  <div class="metric"><small>當日融券增減 / 券資比</small><strong id="mgShortInfo" style="font-size:15px">—</strong></div>
+ </div>
+
+ <div class="terminal" style="margin-top:12px;padding-top:10px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9dafc6;padding:0 4px 6px;flex-wrap:wrap;gap:4px">
+   <span id="marginHoverText">每日融資增減張數（紅增／綠減）</span>
+   <span>單位：張</span>
+  </div>
+  <div class="canvas-box" style="height:125px">
+   <canvas id="marginChart"></canvas>
+  </div>
+ </div>
+
+ <div class="note" id="marginNote" style="margin-top:9px"></div>
+
+ <div class="tablewrap hidden" id="marginTableWrap" style="margin-top:12px;max-height:260px">
+  <table>
+   <thead>
+    <tr><th>日期</th><th>融資買進</th><th>融資賣出</th><th>融資增減(張)</th><th>融資餘額(張)</th><th>使用率</th><th>融券增減(張)</th></tr>
+   </thead>
+   <tbody id="marginRows"></tbody>
   </table>
  </div>
 </section>
@@ -815,7 +1068,24 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    </li>
   </ul>
 
-  <h3>五、綜合技術強勢總分（0～100 分）等級對照</h3>
+  <h3>五、台股本益比（P/E Ratio）、融資增減與三大法人金額趨勢判讀</h3>
+  <ul>
+   <li><b>台股本益比（P/E Ratio）計算公式</b>：<code>本益比 (P/E) = 目前股價 ÷ 近四季累計每股盈餘 (TTM EPS)</code>。代表以目前股價買進，若公司每年維持相同獲利水準，大約需要幾年回本：
+    <br>• <b>本益比 &lt; 12 倍</b>：相對低估或景氣循環高點，具備高殖利率防禦價值；
+    <br>• <b>本益比 12～20 倍</b>：合理穩健成長區間；
+    <br>• <b>本益比 20～35 倍</b>：市場給予較高成長預期（如 AI、半導體、高成長題材）；
+    <br>• <b>本益比 &gt; 35 倍或虧損（EPS ≤ 0）</b>：高估值題材股或轉機股，需嚴格搭配技術面均線與量能控管風險。
+   </li>
+   <li><b>融資增減與連續天數趨勢判讀</b>：
+    <br>• <b>股價上漲 + 融資溫和連續增加（資增價漲）</b>：散戶與主力同步偏多追價，短線動能強；
+    <br>• <b>股價下跌 + 融資連續大增（資增價跌）</b>：散戶逢低攤平接刀，籌碼趨於凌亂，需防範融資斷頭賣壓；
+    <br>• <b>股價止跌或上漲 + 融資連續減少（資減價漲／資減籌碼沉澱）</b>：浮額有效清洗、籌碼流向法人大戶，最有利於波段上攻。
+   </li>
+   <li><b>三大法人買賣金額增減與連續天數判讀</b>：系統將每日外資、投信、自營商買賣超張數乘以當日收盤價換算為<b>估算買賣金額（萬元／億元）</b>，並自動統計<b>連續買超或連續賣超天數</b>與近 5 日累計金額，協助判斷法人資金是「連續加碼擴大買超」還是「由買轉賣、賣壓擴大」。
+   </li>
+  </ul>
+
+  <h3>六、綜合技術強勢總分（0～100 分）等級對照</h3>
   <ul>
    <li><b>75 分以上</b>：🔥 極強勢多頭格局（個股主升段噴發／ETF 強勢多頭波段）</li>
    <li><b>60～74 分</b>：📈 偏多震盪走強（均線有撐、趨勢偏多操作）</li>
@@ -824,7 +1094,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    <li><b>29 分以下</b>：❄️ 弱勢空頭格局（短中期均線空頭排列，宜保守觀望）</li>
   </ul>
 
-  <h3>六、手機操作與全白底 PDF 報表說明</h3>
+  <h3>七、手機操作與全白底 PDF 報表說明</h3>
   <ul>
    <li><b>三圖同步縮放與平移</b>：K 線、成交量與 KD 走勢圖共用同步時間軸，在手機上可用<b>雙指捏合放大縮小、單指左右滑動檢視歷史區間</b>，或點擊圖表右上角「<b>＋ / － / 重置</b>」按鈕。</li>
    <li><b>全白底省墨 PDF 報表</b>：查詢後點擊「<b>產生 PDF 報表</b>」，系統會將所有圖表自動轉為純白底高對比配色以節省列印油墨，預設檔名為「<b>股票名稱_代號_當天日期</b>」，並完整附帶反轉訊號、指標符合明細與本評分標準供分享或上傳給 AI 分析。</li>
@@ -989,6 +1259,15 @@ function renderCodeSuggestions(queryText){
 }
 let fullChartSeries=[];
 let instSeriesCache=[];
+let marginSeriesCache=[];
+
+function formatMoneyTWD(yuan){
+ const abs=Math.abs(yuan);
+ const sign=yuan>0?"+":yuan<0?"-":"";
+ if(abs>=1e8)return `${sign}${(abs/1e8).toFixed(2)} 億`;
+ if(abs>=1e4)return `${sign}${Math.round(abs/1e4).toLocaleString("zh-TW")} 萬`;
+ return `${sign}${Math.round(abs).toLocaleString("zh-TW")} 元`;
+}
 let activeIdx=-1;
 let isPrintMode=false;
 
@@ -2193,14 +2472,32 @@ $("instChart").addEventListener("mousemove",e=>{
 $("instChart").addEventListener("mouseleave",()=>{
  $("instHoverText").textContent="三大法人每日合計買賣超（紅買超／綠賣超）";
  if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+ if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
+});
+
+$("marginChart").addEventListener("mousemove",e=>{
+ if(!marginSeriesCache.length)return;
+ const rect=$("marginChart").getBoundingClientRect();
+ const padL=42,padR=10,plotW=rect.width-padL-padR;
+ const relX=Math.max(0,Math.min(plotW,e.clientX-rect.left-padL));
+ const idx=Math.min(marginSeriesCache.length-1,Math.floor((relX/plotW)*marginSeriesCache.length));
+ const item=marginSeriesCache[idx];
+ $("marginHoverText").textContent=`${item.date}｜融資增減 ${fmtSignedInt(item.mDiff)} 張（約 ${formatMoneyTWD(item.mDiffAmt)}）・餘額 ${fmtInt(item.mToday)} 張・融券 ${fmtSignedInt(item.sDiff)} 張`;
+ drawMarginChart(marginSeriesCache,idx);
+});
+$("marginChart").addEventListener("mouseleave",()=>{
+ $("marginHoverText").textContent="每日融資增減張數（紅增／綠減）";
+ if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
 });
 
 const ro=new ResizeObserver(()=>{
  if(fullChartSeries.length&&!$("kdCard").classList.contains("hidden"))renderAllCharts(activeIdx);
  if(instSeriesCache.length&&!$("instCard").classList.contains("hidden"))drawInstChart(instSeriesCache,-1);
+ if(marginSeriesCache.length&&!$("marginCard").classList.contains("hidden"))drawMarginChart(marginSeriesCache,-1);
 });
 ro.observe($("kdCard"));
 ro.observe($("instCard"));
+ro.observe($("marginCard"));
 
 $("toggleKdTable").addEventListener("click",()=>{
  const wrap=$("kdTableWrap");
@@ -2211,6 +2508,11 @@ $("toggleInstTable").addEventListener("click",()=>{
  const wrap=$("instTableWrap");
  const isHidden=wrap.classList.toggle("hidden");
  $("toggleInstTable").textContent=isHidden?"展開法人明細":"收合法人明細";
+});
+$("toggleMarginTable").addEventListener("click",()=>{
+ const wrap=$("marginTableWrap");
+ const isHidden=wrap.classList.toggle("hidden");
+ $("toggleMarginTable").textContent=isHidden?"展開融資明細":"收合融資明細";
 });
 
 const origDocTitle=document.title;
@@ -2227,6 +2529,7 @@ function enterPrintMode(){
  document.title=`${sName}_${code}_${dateStr}`;
  renderAllCharts(-1);
  if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+ if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
 }
 function exitPrintMode(){
  if(!isPrintMode)return;
@@ -2234,6 +2537,7 @@ function exitPrintMode(){
  document.title=origDocTitle;
  renderAllCharts(-1);
  if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+ if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
 }
 window.addEventListener("beforeprint",enterPrintMode);
 window.addEventListener("afterprint",exitPrintMode);
@@ -2265,8 +2569,12 @@ async function fetchFinMind(dataset,dataId,startDate=""){
  }finally{clearTimeout(timer)}
 }
 
-function buildInstitutionalSeries(rawRows){
+function buildInstitutionalSeries(rawRows,priceSeries=[]){
  if(!rawRows||!rawRows.length)return [];
+ const priceMap=new Map();
+ priceSeries.forEach(p=>priceMap.set(p.date,Number(p.close)||0));
+ const fallbackPrice=priceSeries.length?Number(priceSeries[priceSeries.length-1].close)||0:0;
+
  const map=new Map();
  rawRows.forEach(r=>{
   const dt=r.date;
@@ -2284,8 +2592,254 @@ function buildInstitutionalSeries(rawRows){
   x.trust=Math.round(x.trust);
   x.dealer=Math.round(x.dealer);
   x.total=x.foreign+x.trust+x.dealer;
+  const px=priceMap.get(x.date)||fallbackPrice;
+  x.closePrice=px;
+  x.foreignAmt=x.foreign*1000*px;
+  x.trustAmt=x.trust*1000*px;
+  x.dealerAmt=x.dealer*1000*px;
+  x.totalAmt=x.total*1000*px;
  });
  return arr;
+}
+
+function analyzeInstitutionalTrend(instList){
+ if(!instList.length)return null;
+ const last=instList[instList.length-1];
+ const prev=instList.length>=2?instList[instList.length-2]:null;
+
+ // 計算連續買超或連續賣超天數
+ let streak=0;
+ const dir=last.total>0?1:last.total<0?-1:0;
+ if(dir!==0){
+  for(let i=instList.length-1;i>=0;i--){
+   if((dir>0&&instList[i].total>0)||(dir<0&&instList[i].total<0))streak++;
+   else break;
+  }
+ }
+
+ const streakText=dir>0?`🔥 法人連續 ${streak} 日買超`:dir<0?`❄️ 法人連續 ${streak} 日賣超`:"⚖️ 法人買賣超持平 (0 張)";
+ const streakCls=dir>0?"red":dir<0?"green":"amber";
+
+ const amtDiff=prev?(last.totalAmt-prev.totalAmt):0;
+ const amtText=`當日金額 ${formatMoneyTWD(last.totalAmt)}${prev?`（較前日 ${amtDiff>=0?"增":"減"} ${formatMoneyTWD(Math.abs(amtDiff))}）`:""}`;
+
+ const sum5dLots=instList.slice(-5).reduce((s,x)=>s+x.total,0);
+ const sum5dAmt=instList.slice(-5).reduce((s,x)=>s+x.totalAmt,0);
+
+ let verdict="";
+ if(dir>0&&streak>=3&&sum5dLots>0){
+  verdict=`趨勢偏多：法人連續 ${streak} 日買超，近 5 日累計買超 ${fmtSignedInt(sum5dLots)} 張（約 ${formatMoneyTWD(sum5dAmt)}），資金持續進駐推升。`;
+ }else if(dir>0){
+  verdict=`短線轉買：當日法人買超 ${fmtSignedInt(last.total)} 張（約 ${formatMoneyTWD(last.totalAmt)}），觀察是否延續連續買盤。`;
+ }else if(dir<0&&streak>=3&&sum5dLots<0){
+  verdict=`趨勢偏空：法人連續 ${streak} 日賣超，近 5 日累計賣超 ${fmtSignedInt(sum5dLots)} 張（約 ${formatMoneyTWD(sum5dAmt)}），籌碼面臨調節壓力。`;
+ }else if(dir<0){
+  verdict=`短線調節：當日法人賣超 ${fmtSignedInt(last.total)} 張（約 ${formatMoneyTWD(last.totalAmt)}），留意後續賣壓是否收斂。`;
+ }else{
+  verdict="法人買賣力道均衡，觀望氣氛濃厚。";
+ }
+ return {streak,dir,streakText,streakCls,amtText,sum5dLots,sum5dAmt,verdict};
+}
+
+function buildMarginSeries(rawRows,priceSeries=[]){
+ if(!rawRows||!rawRows.length)return [];
+ const priceMap=new Map();
+ priceSeries.forEach(p=>priceMap.set(p.date,Number(p.close)||0));
+ const fallbackPrice=priceSeries.length?Number(priceSeries[priceSeries.length-1].close)||0:0;
+
+ const sorted=[...rawRows].sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ return sorted.map(r=>{
+  const dt=r.date;
+  const mBuy=Math.round(Number(r.MarginPurchaseBuy||0)/1000);
+  const mSell=Math.round(Number(r.MarginPurchaseSell||0)/1000);
+  const mCashRepay=Math.round(Number(r.MarginPurchaseCashRepayment||0)/1000);
+  const mToday=Math.round(Number(r.MarginPurchaseTodayBalance||0)/1000);
+  const mPrev=Math.round(Number(r.MarginPurchaseYesterdayBalance||0)/1000);
+  const mLimit=Math.round(Number(r.MarginPurchaseLimit||0)/1000);
+  const mDiff=(mToday>0||mPrev>0)?(mToday-mPrev):(mBuy-mSell-mCashRepay);
+
+  const sBuy=Math.round(Number(r.ShortSaleBuy||0)/1000);
+  const sSell=Math.round(Number(r.ShortSaleSell||0)/1000);
+  const sCashRepay=Math.round(Number(r.ShortSaleCashRepayment||0)/1000);
+  const sToday=Math.round(Number(r.ShortSaleTodayBalance||0)/1000);
+  const sPrev=Math.round(Number(r.ShortSaleYesterdayBalance||0)/1000);
+  const sDiff=(sToday>0||sPrev>0)?(sToday-sPrev):(sSell-sBuy-sCashRepay);
+
+  const utilRate=mLimit>0?(mToday/mLimit)*100:null;
+  const shortMarginRatio=mToday>0?(sToday/mToday)*100:0;
+  const px=priceMap.get(dt)||fallbackPrice;
+  const mDiffAmt=mDiff*1000*px;
+
+  return {
+   date:dt,
+   shortDate:dt.slice(5).replace("-","/"),
+   mBuy,mSell,mDiff,mToday,mLimit,utilRate,
+   sDiff,sToday,shortMarginRatio,
+   mDiffAmt,closePrice:px
+  };
+ });
+}
+
+function analyzeMarginTrend(mgList,priceSeries=[]){
+ if(!mgList.length)return null;
+ const last=mgList[mgList.length-1];
+ const lastPx=priceSeries.length?priceSeries[priceSeries.length-1]:null;
+ const priceUp=lastPx?(lastPx.close>=lastPx.prevClose):true;
+
+ let streak=0;
+ const dir=last.mDiff>0?1:last.mDiff<0?-1:0;
+ if(dir!==0){
+  for(let i=mgList.length-1;i>=0;i--){
+   if((dir>0&&mgList[i].mDiff>0)||(dir<0&&mgList[i].mDiff<0))streak++;
+   else break;
+  }
+ }
+
+ const sum5dLots=mgList.slice(-5).reduce((s,x)=>s+x.mDiff,0);
+ const streakText=dir>0?`📈 融資連續 ${streak} 日增加`:dir<0?`📉 融資連續 ${streak} 日減少`:"⚖️ 融資餘額持平 (0 張)";
+ const streakCls=dir>0?"red":dir<0?"green":"amber";
+ const amtText=`當日融資${last.mDiff>=0?"增加":"減少"} ${fmtSignedInt(last.mDiff)} 張（約 ${formatMoneyTWD(last.mDiffAmt)}）｜近 5 日 ${fmtSignedInt(sum5dLots)} 張`;
+
+ let verdict="";
+ if(dir>0&&priceUp){
+  verdict=`資增價漲（連續 ${streak} 日增）：散戶與融資買盤積極追價，短線人氣旺盛；若使用率過高需留意高檔震盪。`;
+ }else if(dir>0&&!priceUp){
+  verdict=`⚠️ 資增價跌（連續 ${streak} 日增）：股價下跌但融資逆勢增加，顯示散戶逢低攤平接刀，籌碼趨於凌亂、需防範融資斷頭壓力。`;
+ }else if(dir<0&&priceUp){
+  verdict=`✨ 資減價漲（連續 ${streak} 日減）：股價上漲同時融資退場、浮額有效清洗，籌碼流向大戶法人，屬健康多頭結構。`;
+ }else if(dir<0&&!priceUp){
+  verdict=`資減價跌（連續 ${streak} 日減）：下跌過程中融資持續停損出場，浮額逐步消化，等待融資減肥完成後的止跌訊號。`;
+ }else{
+  verdict="融資餘額變動不大，散戶槓桿觀望。";
+ }
+ return {streak,dir,streakText,streakCls,amtText,sum5dLots,verdict};
+}
+
+function drawMarginChart(list,hoverIdx=-1){
+ const canvas=$("marginChart");if(!canvas||!list.length)return;
+ const {ctx,w,h,padL,padR}=setupCanvas(canvas,125);
+ const padT=10,padB=22,plotW=w-padL-padR,plotH=h-padT-padB;
+
+ const maxAbs=Math.max(...list.map(x=>Math.abs(x.mDiff)),10)*1.15;
+ const midY=padT+plotH/2;
+ const yOf=val=>midY-(val/maxAbs)*(plotH/2);
+ const stepW=plotW/list.length;
+ const xOf=i=>padL+stepW*(i+0.5);
+
+ ctx.font="9.5px ui-monospace, SFMono-Regular, monospace";
+ ctx.textAlign="right";ctx.textBaseline="middle";
+ [maxAbs*0.8,0,-maxAbs*0.8].forEach(val=>{
+  const y=Math.round(yOf(val))+0.5;
+  ctx.save();
+  ctx.strokeStyle=val===0?(isPrintMode?"#64748b":"#3b4c63"):(isPrintMode?"#e2e8f0":"#1f2937");
+  if(val!==0)ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-padR,y);ctx.stroke();ctx.restore();
+  ctx.fillStyle=isPrintMode?"#475569":"#8b9bb0";
+  const lbl=Math.abs(val)>=1000?(val/1000).toFixed(1)+"K":Math.round(val);
+  ctx.fillText(String(lbl),padL-4,y);
+ });
+
+ const barW=Math.max(3,Math.min(14,stepW*0.6));
+ list.forEach((item,i)=>{
+  const x=xOf(i),y=yOf(item.mDiff);
+  ctx.fillStyle=item.mDiff>=0?(isPrintMode?"#dc2626":"#ff4747"):(isPrintMode?"#059669":"#26de81");
+  const top=Math.min(midY,y),barH=Math.max(1.5,Math.abs(y-midY));
+  ctx.fillRect(x-barW/2,top,barW,barH);
+ });
+
+ ctx.textAlign="center";ctx.textBaseline="top";ctx.fillStyle=isPrintMode?"#334155":"#8b9bb0";
+ const maxLabels=w<450?4:7;
+ const step=Math.max(1,Math.floor((list.length-1)/(maxLabels-1)));
+ for(let i=0;i<list.length;i+=step){
+  ctx.fillText(list[i].shortDate,xOf(i),padT+plotH+5);
+ }
+
+ if(hoverIdx>=0&&hoverIdx<list.length&&!isPrintMode){
+  const hx=xOf(hoverIdx);
+  ctx.save();ctx.strokeStyle="rgba(255,255,255,0.45)";ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(hx,padT);ctx.lineTo(hx,padT+plotH);ctx.stroke();ctx.restore();
+ }
+}
+
+// 計算台股本益比（P/E Ratio）：目前股價 ÷ 近四季累計 EPS（TTM EPS）
+function computeTaiwanPeRatio(closePrice,finRows,perRows){
+ // 1. 從財報資料 TaiwanStockFinancialStatements 萃取近 4 季單季 EPS 加總
+ let ttmEps=null;
+ let quarterDetails=[];
+ if(Array.isArray(finRows)&&finRows.length){
+  const epsRows=finRows
+   .filter(r=>String(r.type||"").toUpperCase()==="EPS"||String(r.origin_name||"").includes("每股盈餘"))
+   .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  // 依季度日期去重
+  const byDate=new Map();
+  epsRows.forEach(r=>byDate.set(r.date,Number(r.value)));
+  const uniqueQuarters=Array.from(byDate.entries()).map(([date,val])=>({date,val}));
+  if(uniqueQuarters.length>=4){
+   const last4=uniqueQuarters.slice(-4);
+   ttmEps=last4.reduce((s,x)=>s+x.val,0);
+   quarterDetails=last4.map(q=>`${q.date.slice(0,7)}(${q.val.toFixed(2)})`);
+  }else if(uniqueQuarters.length>0){
+   const sum=uniqueQuarters.reduce((s,x)=>s+x.val,0);
+   ttmEps=sum;
+   quarterDetails=uniqueQuarters.map(q=>`${q.date.slice(0,7)}(${q.val.toFixed(2)})`);
+  }
+ }
+
+ // 2. 取得官方最新本益比、股價淨值比 (PBR) 與殖利率作為輔助對照
+ const latestPer=(Array.isArray(perRows)&&perRows.length)?perRows[perRows.length-1]:null;
+ const officialPe=latestPer&&Number(latestPer.PER)>0?Number(latestPer.PER):null;
+ const pbr=latestPer&&Number(latestPer.PBR)>0?Number(latestPer.PBR):null;
+ const divYield=latestPer&&Number(latestPer.dividend_yield)>=0?Number(latestPer.dividend_yield):null;
+
+ // 若無財報 EPS 則由官方 PER 反推 EPS = 股價 / officialPe
+ if((ttmEps===null||!Number.isFinite(ttmEps))&&officialPe>0){
+  ttmEps=closePrice/officialPe;
+ }
+
+ let peValue=null;
+ let peDisplay="—";
+ let evalPill="資料不足";
+ let evalClass="";
+ let formulaHtml="";
+ let targetHint="—";
+ let noteText="";
+
+ if(ttmEps!==null&&Number.isFinite(ttmEps)){
+  if(ttmEps>0){
+   peValue=closePrice/ttmEps;
+   peDisplay=peValue.toFixed(2)+" 倍";
+   if(peValue<12){
+    evalPill="💎 低本益比價值區 (<12倍)";evalClass="green";
+   }else if(peValue<=20){
+    evalPill="⚖️ 合理穩健估值區 (12~20倍)";evalClass="blue";
+   }else if(peValue<=35){
+    evalPill="🔥 成長溢價估值區 (20~35倍)";evalClass="amber";
+   }else{
+    evalPill="🚨 高本益比題材區 (>35倍)";evalClass="red";
+   }
+   formulaHtml=`計算公式：<b>目前股價 ${fmt(closePrice)} 元 ÷ 近四季累計 EPS ${ttmEps.toFixed(2)} 元 ＝ ${peValue.toFixed(2)} 倍</b>${officialPe?`（證交所前日收盤公告本益比：${officialPe.toFixed(2)} 倍）`:""}`;
+   targetHint=`15倍合理價 ${fmt(ttmEps*15)} 元 ｜ 20倍成長價 ${fmt(ttmEps*20)} 元`;
+   noteText=quarterDetails.length
+    ?`近四季單季 EPS 明細：${quarterDetails.join(" + ")} ＝ <b>${ttmEps.toFixed(2)} 元</b>。依目前股價 ${fmt(closePrice)} 元換算，約需 <b>${peValue.toFixed(1)} 年</b>獲利回本。`
+    :`依最新公開財務數據換算近四季 EPS 為 <b>${ttmEps.toFixed(2)} 元</b>，目前即時動態本益比為 <b>${peValue.toFixed(2)} 倍</b>。`;
+  }else{
+   peDisplay="虧損（不適用）";
+   evalPill="⚠️ 近四季累計虧損 (EPS ≤ 0)";evalClass="amber";
+   formulaHtml=`計算公式：<b>目前股價 ${fmt(closePrice)} 元 ÷ 近四季累計 EPS ${ttmEps.toFixed(2)} 元</b>（因近四季累計虧損，本益比不適用，建議改參考股價淨值比 PBR）`;
+   targetHint=pbr?`股價淨值比 PBR：${pbr.toFixed(2)} 倍`:"改以 PBR 淨值比評估";
+   noteText=quarterDetails.length
+    ?`近四季單季 EPS 明細：${quarterDetails.join(" + ")} ＝ <b>${ttmEps.toFixed(2)} 元</b>（累計為負值，屬轉機或虧損階段）。`
+    :"近四季累計每股盈餘為負值，傳統本益比指標不適用。";
+  }
+ }else{
+  formulaHtml="暫無近四季公開 EPS 財報數據，無法計算本益比。";
+  noteText="若為新掛牌公司或剛完成轉型，請待公開資訊觀測站公布完整季報後即可自動換算。";
+ }
+
+ return {
+  ttmEps,peValue,peDisplay,evalPill,evalClass,formulaHtml,targetHint,noteText,
+  pbrText:`${pbr?pbr.toFixed(2)+" 倍":"—"} / ${divYield!==null?divYield.toFixed(2)+"%":"—"}`
+ };
 }
 
 async function fetchRealtimeTwse(code){
@@ -2448,14 +3002,17 @@ $("runBtn").addEventListener("click",async()=>{
  $("status").textContent=`已鎖定 ${code}${resolved.matchedName?" "+resolved.matchedName:""}，正在同步抓取最新股價、六均線K線、KD 走勢與三大法人資料…`;
 
  try{
-  const [liveBar,histPrices,info,instRaw,issuedInfo]=await Promise.all([
+  const [liveBar,histPrices,info,instRaw,issuedInfo,marginRaw,finRaw,perRaw]=await Promise.all([
    fetchRealtimeTwse(code).catch(()=>null),
    fetchFinMind("TaiwanStockPrice",code,getDateStr(400))
     .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(110)))
     .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(50))),
    fetchFinMind("TaiwanStockInfo",code).catch(()=>[]),
    fetchFinMind("TaiwanStockInstitutionalInvestorsBuySell",code,getDateStr(45)).catch(()=>[]),
-   fetchIssuedShares(code).catch(()=>({shares:0,source:"查無發行股數"}))
+   fetchIssuedShares(code).catch(()=>({shares:0,source:"查無發行股數"})),
+   fetchFinMind("TaiwanStockMarginPurchaseShortSale",code,getDateStr(45)).catch(()=>[]),
+   fetchFinMind("TaiwanStockFinancialStatements",code,getDateStr(480)).catch(()=>[]),
+   fetchFinMind("TaiwanStockPER",code,getDateStr(30)).catch(()=>[])
   ]);
 
   let mergedPrices=Array.isArray(histPrices)?[...histPrices]:[];
@@ -2647,20 +3204,46 @@ $("runBtn").addEventListener("click",async()=>{
    $("kdCard").classList.add("hidden");
   }
 
-  const instList=buildInstitutionalSeries(instRaw);
+  // A. 渲染台股本益比（P/E Ratio）計算區塊（僅個股顯示，ETF 自動隱藏）
+  if(!isEtfAsset){
+   const peRes=computeTaiwanPeRatio(close,finRaw,perRaw);
+   $("peTitle").textContent=`📐 ${code} ${name}｜台股本益比（P/E Ratio）計算`;
+   $("peEvalPill").textContent=peRes.evalPill;
+   $("peEvalPill").className="pill "+peRes.evalClass;
+   setMetric("pePriceVal",fmt(close)+" 元");
+   setMetric("peEpsVal",peRes.ttmEps!==null?peRes.ttmEps.toFixed(2)+" 元":"—",peRes.ttmEps>0?"red":peRes.ttmEps<0?"green":"");
+   setMetric("peRatioVal",peRes.peDisplay,peRes.evalClass);
+   setMetric("pePbrVal",peRes.pbrText);
+   $("peFormulaText").innerHTML=peRes.formulaHtml;
+   $("peTargetHint").textContent=peRes.targetHint;
+   $("peNote").innerHTML=peRes.noteText;
+   $("peCard").classList.remove("hidden");
+  }else{
+   $("peCard").classList.add("hidden");
+  }
+
+  // B. 渲染三大法人買賣超張數、金額增減與連續天數趨勢
+  const instList=buildInstitutionalSeries(instRaw,series);
   instSeriesCache=instList;
   if(instList.length){
    const lastInst=instList[instList.length-1];
-   const sum5d=instList.slice(-5).reduce((s,x)=>s+x.total,0);
+   const instTrend=analyzeInstitutionalTrend(instList);
    const colorOf=n=>n>0?"red":n<0?"green":"";
 
-   $("instTitle").textContent=`${code} ${name}｜三大法人買賣超統計（張）`;
+   $("instTitle").textContent=`🏦 ${code} ${name}｜三大法人買賣張數與金額趨勢`;
    $("instDatePill").textContent=`最新統計日：${lastInst.date}`;
-   setMetric("instForeign",fmtSignedInt(lastInst.foreign)+" 張",colorOf(lastInst.foreign));
-   setMetric("instTrust",fmtSignedInt(lastInst.trust)+" 張",colorOf(lastInst.trust));
-   setMetric("instDealer",fmtSignedInt(lastInst.dealer)+" 張",colorOf(lastInst.dealer));
-   setMetric("instTotal",fmtSignedInt(lastInst.total)+" 張",colorOf(lastInst.total));
-   setMetric("inst5dTotal",fmtSignedInt(sum5d)+" 張",colorOf(sum5d));
+
+   const stBadge=$("instStreakBadge");
+   stBadge.textContent=instTrend.streakText;
+   stBadge.className="chip-streak-pill "+instTrend.streakCls;
+   $("instAmtChgBadge").textContent=instTrend.amtText;
+   $("instTrendVerdict").textContent=instTrend.verdict;
+
+   setMetric("instForeign",`${fmtSignedInt(lastInst.foreign)} 張 (${formatMoneyTWD(lastInst.foreignAmt)})`,colorOf(lastInst.foreign));
+   setMetric("instTrust",`${fmtSignedInt(lastInst.trust)} 張 (${formatMoneyTWD(lastInst.trustAmt)})`,colorOf(lastInst.trust));
+   setMetric("instDealer",`${fmtSignedInt(lastInst.dealer)} 張 (${formatMoneyTWD(lastInst.dealerAmt)})`,colorOf(lastInst.dealer));
+   setMetric("instTotal",`${fmtSignedInt(lastInst.total)} 張 (${formatMoneyTWD(lastInst.totalAmt)})`,colorOf(lastInst.total));
+   setMetric("inst5dTotal",`${fmtSignedInt(instTrend.sum5dLots)} 張 (${formatMoneyTWD(instTrend.sum5dAmt)})`,colorOf(instTrend.sum5dLots));
 
    $("instCard").classList.remove("hidden");
    requestAnimationFrame(()=>{
@@ -2672,14 +3255,55 @@ $("runBtn").addEventListener("click",async()=>{
    [...instList].reverse().forEach(r=>{
     const c=v=>v>0?"#ff5c72":v<0?"#30d39a":"#edf4ff";
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.date}</td><td style="color:${c(r.foreign)}">${fmtSignedInt(r.foreign)}</td><td style="color:${c(r.trust)}">${fmtSignedInt(r.trust)}</td><td style="color:${c(r.dealer)}">${fmtSignedInt(r.dealer)}</td><td style="color:${c(r.total)};font-weight:700">${fmtSignedInt(r.total)}</td>`;
+    tr.innerHTML=`<td>${r.date}</td><td style="color:${c(r.foreign)}">${fmtSignedInt(r.foreign)}</td><td style="color:${c(r.trust)}">${fmtSignedInt(r.trust)}</td><td style="color:${c(r.dealer)}">${fmtSignedInt(r.dealer)}</td><td style="color:${c(r.total)};font-weight:700">${fmtSignedInt(r.total)}</td><td style="color:${c(r.totalAmt)};font-weight:700">${formatMoneyTWD(r.totalAmt)}</td>`;
     instTbody.appendChild(tr);
    });
    $("instNote").textContent=isEtfAsset
-    ?`統計近 ${instList.length} 個交易日三大法人買賣超（註：ETF 自營商買賣超常含造市避險與申贖調節，建議重點觀察外資與波段趨勢）。`
-    :`統計近 ${instList.length} 個交易日三大法人買賣超張數（盤後證交所／櫃買中心公布資料）；紅色代表買超、綠色代表賣超。`;
+    ?`統計近 ${instList.length} 個交易日三大法人買賣超與估算金額（註：ETF 自營商買賣超常含造市避險與申贖調節，建議重點觀察外資與波段趨勢）。`
+    :`統計近 ${instList.length} 個交易日三大法人買賣超張數與估算金額（以當日收盤價換算）；紅色代表買超、綠色代表賣超。`;
   }else{
    $("instCard").classList.add("hidden");
+  }
+
+  // C. 渲染融資融券增減、連續天數與資券趨勢
+  const mgList=buildMarginSeries(marginRaw,series);
+  marginSeriesCache=mgList;
+  if(mgList.length){
+   const lastMg=mgList[mgList.length-1];
+   const mgTrend=analyzeMarginTrend(mgList,series);
+   const colorOf=n=>n>0?"red":n<0?"green":"";
+
+   $("marginTitle").textContent=`💳 ${code} ${name}｜融資融券增減與連續天數趨勢`;
+   $("marginDatePill").textContent=`最新統計日：${lastMg.date}`;
+
+   const mgBadge=$("marginStreakBadge");
+   mgBadge.textContent=mgTrend.streakText;
+   mgBadge.className="chip-streak-pill "+mgTrend.streakCls;
+   $("marginAmtBadge").textContent=mgTrend.amtText;
+   $("marginTrendVerdict").textContent=mgTrend.verdict;
+
+   setMetric("mgDiffLots",fmtSignedInt(lastMg.mDiff)+" 張",colorOf(lastMg.mDiff));
+   setMetric("mgDiffAmt",formatMoneyTWD(lastMg.mDiffAmt),colorOf(lastMg.mDiffAmt));
+   setMetric("mgBalance",fmtInt(lastMg.mToday)+" 張");
+   setMetric("mgUtilRate",lastMg.utilRate!==null?lastMg.utilRate.toFixed(2)+"%":"—",lastMg.utilRate>=40?"amber":"");
+   setMetric("mgShortInfo",`${fmtSignedInt(lastMg.sDiff)} 張 / ${lastMg.shortMarginRatio.toFixed(1)}%`,colorOf(lastMg.sDiff));
+
+   $("marginCard").classList.remove("hidden");
+   requestAnimationFrame(()=>{
+    drawMarginChart(mgList,-1);
+    setTimeout(()=>drawMarginChart(mgList,-1),80);
+   });
+
+   const mgTbody=$("marginRows");mgTbody.innerHTML="";
+   [...mgList].reverse().forEach(r=>{
+    const c=v=>v>0?"#ff5c72":v<0?"#30d39a":"#edf4ff";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${r.date}</td><td>${fmtInt(r.mBuy)}</td><td>${fmtInt(r.mSell)}</td><td style="color:${c(r.mDiff)};font-weight:700">${fmtSignedInt(r.mDiff)}</td><td>${fmtInt(r.mToday)}</td><td>${r.utilRate!==null?r.utilRate.toFixed(1)+"%":"—"}</td><td style="color:${c(r.sDiff)}">${fmtSignedInt(r.sDiff)}</td>`;
+    mgTbody.appendChild(tr);
+   });
+   $("marginNote").textContent=`統計近 ${mgList.length} 個交易日融資融券變化（融資增減金額以當日收盤價估算）；紅色代表融資增加、綠色代表融資減少。`;
+  }else{
+   $("marginCard").classList.add("hidden");
   }
 
   const didCalc=runOptionalCalculation(true);
@@ -2701,6 +3325,170 @@ $("runBtn").addEventListener("click",async()=>{
  $(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
 });
 $("code").addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
+
+// =========================================================================
+// 自動載入「大盤融資動向 (散戶指標)」與「三大法人個別買賣超 (主力動向)」近 5 日明細與統計
+// =========================================================================
+async function loadTaiexTopDashboard(){
+ const startDate=getDateStr(18); // 往前抓 18 天確保含 6 個完整交易日（計算 5 日每日增減）
+ const fmtYi=v=>(v>0?"+":"")+v.toFixed(2)+" 億";
+ const colCls=v=>v>0?"red":v<0?"green":"";
+
+ // 1. 抓取大盤融資餘額近 5 日明細與統計
+ try{
+  const mRows=await fetchFinMind("TaiwanStockTotalMarginPurchaseShortSale","",startDate);
+  const moneyList=(Array.isArray(mRows)?mRows:[])
+   .filter(r=>String(r.name||"")==="MarginPurchaseMoney")
+   .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+
+  if(moneyList.length>=2){
+   // 計算每日融資增減（億元）
+   const daily=[];
+   for(let i=1;i<moneyList.length;i++){
+    const curBal=Number(moneyList[i].TodayBalance||0)/1e8;
+    const prevBal=Number(moneyList[i-1].TodayBalance||0)/1e8;
+    daily.push({
+     date:moneyList[i].date,
+     shortDate:moneyList[i].date.slice(5).replace("-","/"),
+     bal:curBal,
+     diff:curBal-prevBal
+    });
+   }
+   const last5=daily.slice(-5); // 最近 5 個交易日（由舊到新）
+   const rev5=[...last5].reverse(); // 由新到舊顯示在明細表
+   const latest=rev5[0];
+
+   $("topMarginDate").textContent=`最新：${latest.date}（共 ${rev5.length} 日）`;
+   const tbody=$("topMarginRows");
+   tbody.innerHTML="";
+   rev5.forEach(d=>{
+    const cls=colCls(d.diff);
+    const dirLabel=d.diff>0?"▲ 融資增加":d.diff<0?"▼ 融資減少":"— 持平";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.shortDate}</td><td>${d.bal.toFixed(2)}</td><td class="${cls}" style="font-weight:800">${fmtYi(d.diff)}</td><td class="${cls}" style="font-weight:700">${dirLabel}</td>`;
+    tbody.appendChild(tr);
+   });
+
+   // 計算連續增減天數與連續累計（從最新一天往回算）
+   const isInc=latest.diff>0;
+   const isDec=latest.diff<0;
+   let streak=0,streakSum=0;
+   if(isInc||isDec){
+    for(let i=daily.length-1;i>=0;i--){
+     const df=daily[i].diff;
+     if((isInc&&df>0)||(isDec&&df<0)){
+      streak++;
+      streakSum+=df;
+     }else break;
+    }
+   }
+   const sum5d=last5.reduce((s,x)=>s+x.diff,0);
+
+   const badge=$("topMarginStreakBadge");
+   badge.textContent=isInc?`🔥 連 ${streak} 日增`:isDec?`🧹 連 ${streak} 日減`:"⚖️ 持平";
+   badge.style.color=isInc?"#ff5e74":isDec?"#2ee0a1":"#fbbf24";
+   badge.style.borderColor=isInc?"#ff5e74":isDec?"#2ee0a1":"#fbbf24";
+
+   setMetric("topMarginBal",latest.bal.toFixed(2)+" 億");
+   setMetric("topMarginStreakSum",fmtYi(streakSum),colCls(streakSum));
+   setMetric("topMargin5dSum",fmtYi(sum5d),colCls(sum5d));
+
+   const vBox=$("topMarginVerdict");
+   vBox.style.borderLeftColor=isInc?"#ff5e74":isDec?"#2ee0a1":"#75b5ff";
+   vBox.textContent=isInc
+    ?(streak>=3?`⚠️ 融資連續 ${streak} 日增加（累計 ${fmtYi(streakSum)}），散戶追價積極，留意高檔籌碼凌亂。`:`📈 今日大盤融資增加 ${fmtYi(latest.diff)}，短線散戶偏多操作。`)
+    :(streak>=3?`🔥 融資連續 ${streak} 日減少（累計 ${fmtYi(streakSum)}），浮額持續清洗沉澱，籌碼轉趨安定。`:`🧹 今日大盤融資減少 ${fmtYi(latest.diff)}，散戶逢高獲利了結或減碼。`);
+  }
+ }catch(e){
+  $("topMarginRows").innerHTML=`<tr><td colspan="4" style="text-align:center;color:#ff8fa0;padding:12px">大盤融資資料暫時無法取得（${e.message}）</td></tr>`;
+ }
+
+ // 2. 抓取三大法人個別買賣超近 5 日明細與個別統計
+ try{
+  const iRows=await fetchFinMind("TaiwanStockTotalInstitutionalInvestors","",startDate);
+  const byDate=new Map();
+  (Array.isArray(iRows)?iRows:[]).forEach(r=>{
+   const dt=r.date;
+   if(!byDate.has(dt))byDate.set(dt,{date:dt,shortDate:dt.slice(5).replace("-","/"),foreign:0,trust:0,dealer:0,total:0});
+   const obj=byDate.get(dt);
+   const netYi=(Number(r.buy||0)-Number(r.sell||0))/1e8;
+   const nm=String(r.name||"");
+   if(nm==="Foreign_Investor"||nm==="Foreign_Dealer_Self")obj.foreign+=netYi;
+   else if(nm==="Investment_Trust")obj.trust+=netYi;
+   else if(nm==="Dealer_self"||nm==="Dealer_Hedging")obj.dealer+=netYi;
+  });
+
+  const allDays=Array.from(byDate.values()).sort((a,b)=>a.date.localeCompare(b.date));
+  allDays.forEach(d=>{d.total=d.foreign+d.trust+d.dealer});
+
+  if(allDays.length>=1){
+   const last5=allDays.slice(-5); // 最近 5 個交易日（由舊到新）
+   const rev5=[...last5].reverse(); // 由新到舊顯示在明細表
+   $("topInstDate").textContent=`最新：${rev5[0].date}（共 ${rev5.length} 日）`;
+
+   const tbody=$("topInstRows");
+   tbody.innerHTML="";
+   rev5.forEach(d=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.shortDate}</td>`
+     +`<td class="${colCls(d.foreign)}" style="font-weight:700">${fmtYi(d.foreign)}</td>`
+     +`<td class="${colCls(d.trust)}" style="font-weight:700">${fmtYi(d.trust)}</td>`
+     +`<td class="${colCls(d.dealer)}" style="font-weight:700">${fmtYi(d.dealer)}</td>`
+     +`<td class="${colCls(d.total)}" style="font-weight:800">${fmtYi(d.total)}</td>`;
+    tbody.appendChild(tr);
+   });
+
+   // 針對外資、投信、自營商各自計算「今日買賣超、連續買賣超天數、連續累計金額、近 5 日合計」
+   const calcSingleInst=(prefix,key)=>{
+    const todayVal=allDays[allDays.length-1][key];
+    const isBuy=todayVal>0;
+    const isSell=todayVal<0;
+    let streak=0,streakSum=0;
+    if(isBuy||isSell){
+     for(let i=allDays.length-1;i>=0;i--){
+      const val=allDays[i][key];
+      if((isBuy&&val>0)||(isSell&&val<0)){
+       streak++;
+       streakSum+=val;
+      }else break;
+     }
+    }
+    const sum5d=last5.reduce((s,x)=>s+x[key],0);
+    const cToday=colCls(todayVal);
+    const c5d=colCls(sum5d);
+
+    const elToday=$(`${prefix}_today`);
+    elToday.textContent=fmtYi(todayVal);
+    elToday.className=cToday;
+    elToday.style.fontWeight="800";
+
+    const elStreak=$(`${prefix}_streak`);
+    elStreak.textContent=isBuy?`連 ${streak} 日買`:isSell?`連 ${streak} 日賣`:"持平";
+    elStreak.className=cToday;
+    elStreak.style.fontWeight="800";
+
+    const elStreakSum=$(`${prefix}_streakSum`);
+    elStreakSum.textContent=fmtYi(streakSum);
+    elStreakSum.className=cToday;
+    elStreakSum.style.fontWeight="700";
+
+    const el5d=$(`${prefix}_5d`);
+    el5d.textContent=fmtYi(sum5d);
+    el5d.className=c5d;
+    el5d.style.fontWeight="800";
+   };
+
+   calcSingleInst("statF","foreign");
+   calcSingleInst("statT","trust");
+   calcSingleInst("statD","dealer");
+  }
+ }catch(e){
+  $("topInstRows").innerHTML=`<tr><td colspan="5" style="text-align:center;color:#ff8fa0;padding:12px">三大法人資料暫時無法取得（${e.message}）</td></tr>`;
+ }
+}
+
+loadTaiexTopDashboard();
+
 setTimeout(()=>ensureStockDirectory(),500);
 </script>
 </body>
