@@ -52,12 +52,26 @@ h1{font-size:clamp(20px,5.2vw,28px);margin:0 0 6px;line-height:1.3;letter-spacin
 }
 .grid{display:grid;grid-template-columns:1fr;gap:12px}
 .grid-2col-mobile{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{position:relative}
 .field label{display:block;font-size:13.5px;font-weight:700;color:#d2e0f2;margin:0 0 6px}
 input{
  width:100%;min-height:48px;border:1.5px solid #3b526f;border-radius:12px;
  background:#0b1727;color:white;padding:11px 13px;
  font-size:17px;font-weight:600;outline:none;
 }
+.suggest-list{
+ position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:50;
+ background:#0f1d32;border:1.5px solid #4c74a8;border-radius:12px;
+ max-height:240px;overflow-y:auto;box-shadow:0 12px 28px rgba(0,0,0,0.55);
+}
+.suggest-item{
+ padding:10px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+ border-bottom:1px solid #1e324f;font-size:14px;color:#f1f6ff;
+}
+.suggest-item:last-child{border-bottom:0}
+.suggest-item:hover,.suggest-item.active{background:#1c3354}
+.suggest-code{font-family:ui-monospace,SFMono-Regular,monospace;font-weight:800;color:#78b5ff;margin-right:8px}
+.suggest-tag{font-size:11px;padding:2px 6px;border-radius:5px;background:#1e3557;color:#a8d0ff}
 input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #78b5ff28}
 .hint{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45}
 
@@ -204,6 +218,56 @@ tr:last-child td{border:0}
  font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:8px;
 }
 
+/* 16 條實戰量價與周轉率口訣檢核專區（僅個股顯示，ETF 自動隱藏） */
+.formula16-box{
+ background:linear-gradient(145deg,#132238,#0c1626);
+ border:1.5px solid #3b6396;border-radius:14px;padding:14px;margin-top:12px;
+}
+.f16-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.f16-title{font-size:15px;font-weight:900;color:#7dd3fc}
+.f16-badge{
+ font-size:12.5px;font-weight:800;padding:4px 12px;border-radius:99px;
+ background:rgba(56,189,248,0.16);border:1px solid #38bdf8;color:#bae6fd;
+}
+.f16-turnover-bar{
+ display:flex;flex-direction:column;gap:6px;
+ background:#0a1322;border:1px solid #263d5c;border-radius:9px;
+ padding:9px 11px;margin-bottom:10px;font-size:12.5px;color:#cbd5e1;
+}
+.f16-turn-top{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.f16-turn-level{
+ display:inline-block;padding:3px 9px;border-radius:7px;font-weight:800;font-size:12px;
+ border:1px solid #3b587d;background:#13233b;color:#e0f2fe;
+}
+.f16-turn-level.cold{background:rgba(148,163,184,0.14);border-color:#64748b;color:#cbd5e1}
+.f16-turn-level.normal{background:rgba(56,189,248,0.14);border-color:#0284c7;color:#7dd3fc}
+.f16-turn-level.active{background:rgba(96,165,250,0.18);border-color:#3b82f6;color:#93c5fd}
+.f16-turn-level.hot{background:rgba(251,191,36,0.16);border-color:#d97706;color:#fcd34d}
+.f16-turn-level.overheat{background:rgba(249,115,22,0.18);border-color:#ea580c;color:#fdba74}
+.f16-turn-level.extreme{background:rgba(239,68,68,0.18);border-color:#dc2626;color:#fca5a5}
+.f16-turn-note{font-size:11.8px;color:#94a3b8;line-height:1.45}
+.f16-grid{display:grid;grid-template-columns:1fr;gap:7px}
+.f16-item{
+ background:#0b1526;border:1px solid #253852;border-radius:10px;
+ padding:8px 10px;font-size:12.8px;line-height:1.45;
+ display:flex;align-items:flex-start;gap:8px;
+}
+.f16-item.matched{
+ background:rgba(56,189,248,0.10);border-color:#38bdf8;
+}
+.f16-item.matched.bull{background:rgba(255,94,116,0.11);border-color:#ff5e74}
+.f16-item.matched.bear{background:rgba(46,224,161,0.10);border-color:#2ee0a1}
+.f16-item.matched.wait{background:rgba(251,191,36,0.11);border-color:#fbbf24}
+.f16-check{flex:0 0 auto;font-size:14px;line-height:1.35}
+.f16-body{flex:1;min-width:0}
+.f16-rule-txt{font-weight:700;color:#94a3b8}
+.f16-item.matched .f16-rule-txt{color:#f8fafc}
+.f16-item.matched.bull .f16-rule-txt{color:#ff8fa0}
+.f16-item.matched.bear .f16-rule-txt{color:#4be8b0}
+.f16-item.matched.wait .f16-rule-txt{color:#fcd34d}
+.f16-detail{font-size:11.8px;color:#8fa3bd;margin-top:2px}
+.f16-item.matched .f16-detail{color:#dbeafe}
+
 /* 專屬策略檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） */
 .strategy-box{
  background:linear-gradient(145deg,#1d1626,#10192b);
@@ -284,7 +348,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  .metrics{grid-template-columns:repeat(3,1fr)}
  .metrics-5{grid-template-columns:repeat(5,1fr)}
  .metrics-5 .metric:last-child{grid-column:auto}
- .rb-grid{grid-template-columns:1fr 1fr}
+ .rb-grid,.f16-grid{grid-template-columns:1fr 1fr}
  .ohlc-bar{flex-direction:row;justify-content:space-between;align-items:center}
  .ohlc-items{display:flex;gap:12px}
 }
@@ -305,10 +369,29 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  .stock-banner .sb-code{color:#1d4ed8!important;font-size:18px!important}
  .stock-banner .sb-price{width:auto!important;border-top:0!important;border-left:1px solid #cbd5e1!important;padding-left:10px!important;font-size:19px!important}
  .card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:10px 12px!important;margin-bottom:8px!important;break-inside:auto!important;page-break-inside:auto!important;border-radius:8px!important}
- .ind-match-box,.reversal-box,.strategy-box,.terminal,.tablewrap{break-inside:auto!important;page-break-inside:auto!important}
- .ind-match-item,.rev-item,.rb-item,.metric,.score-hero{break-inside:avoid!important;page-break-inside:avoid!important;padding:6px 9px!important}
- .ind-match-box,.reversal-box,.strategy-box{padding:9px 11px!important;margin-top:8px!important}
- .ind-match-list,.rev-list,.rb-grid{gap:5px!important}
+ .ind-match-box,.reversal-box,.strategy-box,.formula16-box,.terminal,.tablewrap{break-inside:auto!important;page-break-inside:auto!important}
+ .ind-match-item,.rev-item,.rb-item,.f16-item,.metric,.score-hero{break-inside:avoid!important;page-break-inside:avoid!important;padding:5px 8px!important}
+ .ind-match-box,.reversal-box,.strategy-box,.formula16-box{padding:9px 11px!important;margin-top:8px!important}
+ .ind-match-list,.rev-list,.rb-grid,.f16-grid{gap:5px!important}
+ .f16-grid{grid-template-columns:1fr 1fr!important}
+ .formula16-box{background:#ffffff!important;border:1.5px solid #0284c7!important}
+ .f16-title{color:#0369a1!important}
+ .f16-badge{background:#f0f9ff!important;color:#0369a1!important;border:1px solid #38bdf8!important}
+ .f16-turnover-bar{background:#f8fafc!important;border:1px solid #cbd5e1!important;color:#0f172a!important;padding:5px 9px!important;margin-bottom:6px!important}
+ .f16-turn-level{background:#ffffff!important;color:#0f172a!important;border:1px solid #475569!important}
+ .f16-turn-level.hot,.f16-turn-level.overheat,.f16-turn-level.extreme{color:#dc2626!important;border-color:#dc2626!important}
+ .f16-turn-note{color:#334155!important}
+ .f16-item{background:#ffffff!important;border:1px solid #cbd5e1!important}
+ .f16-item.matched{background:#f0f9ff!important;border:1.5px solid #0284c7!important}
+ .f16-item.matched.bull{background:#fff1f2!important;border-color:#dc2626!important}
+ .f16-item.matched.bear{background:#ecfdf5!important;border-color:#059669!important}
+ .f16-item.matched.wait{background:#fffbeb!important;border-color:#d97706!important}
+ .f16-rule-txt{color:#475569!important}
+ .f16-item.matched .f16-rule-txt{color:#0f172a!important}
+ .f16-item.matched.bull .f16-rule-txt{color:#dc2626!important}
+ .f16-item.matched.bear .f16-rule-txt{color:#059669!important}
+ .f16-item.matched.wait .f16-rule-txt{color:#b45309!important}
+ .f16-detail,.f16-item.matched .f16-detail{color:#334155!important}
  .canvas-box{break-inside:avoid!important;page-break-inside:avoid!important}
  .section{color:#0f172a!important;font-size:15px!important}
  .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
@@ -385,9 +468,10 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
 <section class="card" id="inputCard">
  <div class="grid">
   <div class="grid-2col-mobile">
-   <div class="field">
-    <label for="code">股票／ETF 代號</label>
-    <input id="code" maxlength="6" inputmode="text" autocapitalize="characters" placeholder="如 2330、00919">
+   <div class="field" id="codeFieldWrap">
+    <label for="code">股票／ETF 代號或名稱</label>
+    <input id="code" maxlength="20" inputmode="text" autocomplete="off" placeholder="如 1802 或 台玻、00919">
+    <div id="codeSuggestList" class="suggest-list hidden"></div>
    </div>
    <div class="field">
     <label for="shares">持有股數</label>
@@ -416,7 +500,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
  <div class="actions">
   <button class="main-btn" id="runBtn">查詢股價並自動計算</button>
  </div>
- <div class="status" id="status">輸入股票或 ETF 代號（如 5314、2330、00919、0050）按下按鈕即可查詢。</div>
+ <div class="status" id="status">輸入股票／ETF 代號或中文名稱（如 1802、台玻、2330、台積電、00919）按下按鈕即可查詢。</div>
 
  <div class="pdf-action-bar hidden" id="pdfActionBar">
   <button type="button" class="pdf-btn" id="exportPdfBtn">📄 產生 PDF 報表（全白底省墨版）</button>
@@ -472,6 +556,22 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
   </div>
   <div style="font-size:12.5px;color:#d6e2f0;line-height:1.55" id="revSummary">—</div>
   <div class="rev-list" id="revList"></div>
+ </div>
+
+ <!-- 16 條實戰量價與周轉率口訣檢核專區（僅一般個股顯示，ETF 自動隱藏） -->
+ <div class="formula16-box hidden" id="formula16Box">
+  <div class="f16-head">
+   <span class="f16-title">📜 實戰量價與周轉率 16 條口訣檢核（僅個股適用）</span>
+   <span class="f16-badge" id="f16Badge">符合 0 / 16 項要件</span>
+  </div>
+  <div class="f16-turnover-bar" id="f16TurnoverBar">
+   <div class="f16-turn-top">
+    <span>📊 <b>周轉率（換手率）監控：</b><span id="f16TurnoverInfo">計算中…</span></span>
+    <span class="f16-turn-level hidden" id="f16TurnLevelBadge">—</span>
+   </div>
+   <div class="f16-turn-note" id="f16TurnNote">💡 周轉率是輔助指標，不要單獨使用；最好搭配成交量、股價位置、法人動向一起看。</div>
+  </div>
+  <div class="f16-grid" id="f16Grid"></div>
  </div>
 
  <!-- 專屬檢核箱（個股：馬克紅／紅牛股；ETF：波段趨勢與超賣低接） -->
@@ -676,7 +776,46 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    </li>
   </ul>
 
-  <h3>四、綜合技術強勢總分（0～100 分）等級對照</h3>
+  <h3>四、實戰量價與周轉率 16 條口訣判讀標準（僅個股適用，ETF 不適用）</h3>
+  <p style="margin:4px 0 8px">查詢<b>一般個股</b>時，系統會同步比對以下 <b>16 項實戰口訣</b>，全部列出並以 ✅ 標示符合項目、統計總符合要件數（<b>ETF 因無單一公司流通股本與周轉率特性，系統會自動隱藏此區塊</b>）。各項程式量化定義如下：</p>
+  <ul>
+   <li><b>位階與量能定義（第 1～4 條）</b>：以近 60 個交易日價格區間計算相對位階（低於 35% 為<b>低位</b>、高於 65% 為<b>高位</b>）；以當日成交量 ÷ 5 日均量（量比）定義量能（量比 &lt; 0.80 為<b>無量</b>、量比 ≥ 1.30 為<b>放量</b>）：
+    <br>① <b>低位無量要等，等錯也要等</b>（低位區且量縮整理，耐心等量能表態）；
+    <br>② <b>高位無量要抱，抱錯也要抱</b>（高位多頭區量縮惜售，代表籌碼鎖定）；
+    <br>③ <b>低位放量要進，進錯也要進，並且還要加碼</b>（低位區出現 ≥1.3x 放量且收紅轉強）；
+    <br>④ <b>高位放量要跑，跑錯了也要跑</b>（高位區出現 ≥1.5x 爆量震盪或長黑出貨）。
+   </li>
+   <li><b>單日量價六大口訣（第 5～10 條）</b>：比較當日成交量與昨日及 5 日均量（增減幅度 ±15% 為界），搭配當日漲跌幅（±0.8% 為界）：
+    <br>⑤ <b>量價齊升，進場</b>（量增 &gt;15% 且收漲 &gt;0.8%）；
+    <br>⑥ <b>量增價跌，賣出</b>（量增 &gt;15% 且收跌 &lt;-0.8%）；
+    <br>⑦ <b>量增價平，做空</b>（量增 &gt;15% 但漲跌幅介於 ±0.8% 滯漲）；
+    <br>⑧ <b>量平價漲，加碼</b>（量能溫和持平 ±15% 內，但股價穩健收漲 &gt;0.8%）；
+    <br>⑨ <b>量平價跌，賣出</b>（量能持平但股價收跌 &lt;-0.8%，買盤無力承接）；
+    <br>⑩ <b>量減價升，抱住</b>（量縮 &gt;15% 卻能持續收漲 &gt;0.8%，籌碼高度集中）。
+   </li>
+   <li><b>當日強勢漲幅口訣（第 11 條）</b>：
+    <br>⑪ <b>任何一隻個股，漲超 7%，還沒有亮燈，有賺就該賣出</b>（當日漲幅達 <b>+7.0% 以上</b>但未達 10% 漲停鎖死，提醒高檔獲利調節）。
+   </li>
+   <li><b>均線與波段 N 字型態口訣（第 12、14、15 條）</b>：
+    <br>⑫ <b>任何一檔股，只要第一次回踩月線，就是第一買點</b>（前期連續站穩月線 MA20 達 8 日以上後，首次盤中回測月線 ±1.5% 內且收盤守穩月線之上）；
+    <br>⑭ <b>任何一檔股，當股價在低位出現放量上漲，然後又量縮回調，接著再次放量上漲，就可以果斷買入</b>（近 15 日內完成「放量啟動 → 量縮回檔守低 → 再度放量上攻」N 字突破結構）；
+    <br>⑮ <b>任何一檔股，當 5 日攻擊線，上穿 10 日均線形成金叉，可以小買</b>（昨日 MA5 ≤ MA10 且今日 MA5 &gt; MA10 黃金交叉）。
+   </li>
+   <li><b>周轉率（換手率）雙重鐵律（第 13、16 條）與六段熱度分級</b>：周轉率 = <code>當日成交股數 ÷ 總發行股數 × 100%</code>：
+    <br>⑬ <b>任何一檔股，只要連續三天，周轉率低於 5%，就要賣</b>（近 3 個交易日每日周轉率皆 &lt; 5%，代表交投冷清、人氣退潮）；
+    <br>⑯ <b>任何一檔股，高位放出天量，只要周轉率超過 20%，必須要賣</b>（處於波段高位區且當日周轉率 &gt; 20%，屬主力高檔巨量換手警訊）；
+    <br>• <b>周轉率六段熱度分級判讀</b>：
+    <br>　① <b>0.5% 以下</b>：交投清淡，屬於冷門股、少有人問津；
+    <br>　② <b>0.5%～1.5%</b>：屬於普通股；
+    <br>　③ <b>1.5%～3%</b>：有一定關注度；
+    <br>　④ <b>3%～5%</b>：屬於熱門股，短線資金積極進出；
+    <br>　⑤ <b>5%～8%</b>：已經算過熱，容易出現大幅波動；
+    <br>　⑥ <b>8% 以上</b>：極度過熱，常伴隨急速上漲或崩跌，風險高；
+    <br>　※ <i>提醒：周轉率是輔助指標，不要單獨使用，最好搭配成交量、股價位置、法人動向一起看。</i>
+   </li>
+  </ul>
+
+  <h3>五、綜合技術強勢總分（0～100 分）等級對照</h3>
   <ul>
    <li><b>75 分以上</b>：🔥 極強勢多頭格局（個股主升段噴發／ETF 強勢多頭波段）</li>
    <li><b>60～74 分</b>：📈 偏多震盪走強（均線有撐、趨勢偏多操作）</li>
@@ -685,7 +824,7 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
    <li><b>29 分以下</b>：❄️ 弱勢空頭格局（短中期均線空頭排列，宜保守觀望）</li>
   </ul>
 
-  <h3>五、手機操作與全白底 PDF 報表說明</h3>
+  <h3>六、手機操作與全白底 PDF 報表說明</h3>
   <ul>
    <li><b>三圖同步縮放與平移</b>：K 線、成交量與 KD 走勢圖共用同步時間軸，在手機上可用<b>雙指捏合放大縮小、單指左右滑動檢視歷史區間</b>，或點擊圖表右上角「<b>＋ / － / 重置</b>」按鈕。</li>
    <li><b>全白底省墨 PDF 報表</b>：查詢後點擊「<b>產生 PDF 報表</b>」，系統會將所有圖表自動轉為純白底高對比配色以節省列印油墨，預設檔名為「<b>股票名稱_代號_當天日期</b>」，並完整附帶反轉訊號、指標符合明細與本評分標準供分享或上傳給 AI 分析。</li>
@@ -703,6 +842,151 @@ const fmtSignedInt=n=>{const val=Math.round(Number(n));return (val>0?"+":"")+val
 
 let stockNameCache="";
 let isEtfAsset=false;
+let stockDirectoryCache=null;
+let stockDirectoryPromise=null;
+
+// 內建常見台股與熱門 ETF 快速對照表（網路清單載入前亦可即時秒查）
+const BUILTIN_STOCK_MAP=[
+ {stock_id:"1802",stock_name:"台玻",type:"twse"},
+ {stock_id:"2330",stock_name:"台積電",type:"twse"},
+ {stock_id:"2317",stock_name:"鴻海",type:"twse"},
+ {stock_id:"2454",stock_name:"聯發科",type:"twse"},
+ {stock_id:"2303",stock_name:"聯電",type:"twse"},
+ {stock_id:"2308",stock_name:"台達電",type:"twse"},
+ {stock_id:"2382",stock_name:"廣達",type:"twse"},
+ {stock_id:"3231",stock_name:"緯創",type:"twse"},
+ {stock_id:"2356",stock_name:"英業達",type:"twse"},
+ {stock_id:"2376",stock_name:"技嘉",type:"twse"},
+ {stock_id:"3017",stock_name:"奇鋐",type:"twse"},
+ {stock_id:"3324",stock_name:"雙鴻",type:"tpex"},
+ {stock_id:"6274",stock_name:"台燿",type:"tpex"},
+ {stock_id:"5314",stock_name:"世紀",type:"tpex"},
+ {stock_id:"1569",stock_name:"濱川",type:"tpex"},
+ {stock_id:"3264",stock_name:"欣銓",type:"tpex"},
+ {stock_id:"5340",stock_name:"建榮",type:"tpex"},
+ {stock_id:"3026",stock_name:"禾伸堂",type:"twse"},
+ {stock_id:"2465",stock_name:"麗臺",type:"twse"},
+ {stock_id:"2603",stock_name:"長榮",type:"twse"},
+ {stock_id:"2609",stock_name:"陽明",type:"twse"},
+ {stock_id:"2615",stock_name:"萬海",type:"twse"},
+ {stock_id:"2881",stock_name:"富邦金",type:"twse"},
+ {stock_id:"2882",stock_name:"國泰金",type:"twse"},
+ {stock_id:"2891",stock_name:"中信金",type:"twse"},
+ {stock_id:"2886",stock_name:"兆豐金",type:"twse"},
+ {stock_id:"2884",stock_name:"玉山金",type:"twse"},
+ {stock_id:"2002",stock_name:"中鋼",type:"twse"},
+ {stock_id:"1301",stock_name:"台塑",type:"twse"},
+ {stock_id:"1303",stock_name:"南亞",type:"twse"},
+ {stock_id:"0050",stock_name:"元大台灣50",type:"twse"},
+ {stock_id:"0056",stock_name:"元大高股息",type:"twse"},
+ {stock_id:"00878",stock_name:"國泰永續高股息",type:"twse"},
+ {stock_id:"00919",stock_name:"群益台灣精選高息",type:"twse"},
+ {stock_id:"00929",stock_name:"復華台灣科技優息",type:"twse"},
+ {stock_id:"00940",stock_name:"元大台灣價值高息",type:"twse"},
+ {stock_id:"006208",stock_name:"富邦台50",type:"twse"},
+ {stock_id:"00713",stock_name:"元大台灣高息低波",type:"twse"},
+ {stock_id:"00915",stock_name:"凱基優選高股息30",type:"twse"},
+ {stock_id:"00679B",stock_name:"元大美債20年",type:"tpex"},
+ {stock_id:"00687B",stock_name:"國泰20年美債",type:"tpex"}
+];
+
+// 載入全台灣上市櫃股票與 ETF 名稱對照表（支援中文名稱反查代號）
+async function ensureStockDirectory(){
+ if(Array.isArray(stockDirectoryCache)&&stockDirectoryCache.length>50)return stockDirectoryCache;
+ if(stockDirectoryPromise)return stockDirectoryPromise;
+ stockDirectoryPromise=(async()=>{
+  const map=new Map();
+  BUILTIN_STOCK_MAP.forEach(item=>map.set(item.stock_id,item));
+  try{
+   const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),10000);
+   const r=await fetch("https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo",{signal:ctl.signal});
+   clearTimeout(timer);
+   if(r.ok){
+    const j=await r.json();
+    if(j.status===200&&Array.isArray(j.data)){
+     j.data.forEach(row=>{
+      const id=String(row.stock_id||"").trim().toUpperCase();
+      const nm=String(row.stock_name||"").trim();
+      if(id&&nm&&/^[0-9A-Z]{4,6}$/.test(id)){
+       map.set(id,{stock_id:id,stock_name:nm,type:row.type||"",industry_category:row.industry_category||""});
+      }
+     });
+    }
+   }
+  }catch(e){}
+  stockDirectoryCache=Array.from(map.values());
+  return stockDirectoryCache;
+ })();
+ return stockDirectoryPromise;
+}
+
+// 解析使用者輸入（可為代號如 1802、中文名稱如 台玻、或「1802 台玻」）
+async function resolveStockCodeInput(rawInput){
+ const q=String(rawInput||"").trim();
+ if(!q)return null;
+ const upper=q.toUpperCase();
+ if(/^[0-9A-Z]{4,6}$/.test(upper)){
+  return {code:upper,matchedName:""};
+ }
+ const prefixMatch=upper.match(/^([0-9A-Z]{4,6})\s+(.+)$/);
+ if(prefixMatch){
+  return {code:prefixMatch[1],matchedName:prefixMatch[2].trim()};
+ }
+ const dir=await ensureStockDirectory();
+ const normQ=q.replace(/\s+/g,"").toUpperCase();
+ let hit=dir.find(item=>item.stock_name.replace(/\s+/g,"").toUpperCase()===normQ);
+ if(!hit)hit=dir.find(item=>item.stock_name.replace(/\s+/g,"").toUpperCase().startsWith(normQ));
+ if(!hit){
+  const candidates=dir.filter(item=>item.stock_name.replace(/\s+/g,"").toUpperCase().includes(normQ)||item.stock_id.includes(normQ));
+  candidates.sort((a,b)=>a.stock_id.length-b.stock_id.length||a.stock_name.length-b.stock_name.length);
+  hit=candidates[0];
+ }
+ if(hit){
+  return {code:hit.stock_id,matchedName:hit.stock_name};
+ }
+ return null;
+}
+
+function renderCodeSuggestions(queryText){
+ const listEl=$("codeSuggestList");
+ const q=String(queryText||"").trim();
+ if(!q){
+  listEl.classList.add("hidden");
+  return;
+ }
+ const dir=stockDirectoryCache||BUILTIN_STOCK_MAP;
+ const normQ=q.replace(/\s+/g,"").toUpperCase();
+ const matches=dir.filter(item=>
+  item.stock_id.startsWith(normQ)||
+  item.stock_name.replace(/\s+/g,"").toUpperCase().includes(normQ)
+ ).sort((a,b)=>{
+  const aExact=(a.stock_name.toUpperCase()===normQ||a.stock_id===normQ)?0:1;
+  const bExact=(b.stock_name.toUpperCase()===normQ||b.stock_id===normQ)?0:1;
+  if(aExact!==bExact)return aExact-bExact;
+  return a.stock_id.length-b.stock_id.length;
+ }).slice(0,12);
+
+ if(!matches.length){
+  listEl.classList.add("hidden");
+  return;
+ }
+ listEl.innerHTML="";
+ matches.forEach(item=>{
+  const div=document.createElement("div");
+  div.className="suggest-item";
+  const mkt=item.type==="twse"?"上市":item.type==="tpex"?"上櫃":"台股";
+  div.innerHTML=`<div><span class="suggest-code">${item.stock_id}</span><span>${item.stock_name}</span></div><span class="suggest-tag">${mkt}</span>`;
+  div.addEventListener("mousedown",e=>{
+   e.preventDefault();
+   $("code").value=`${item.stock_id} ${item.stock_name}`;
+   stockNameCache=item.stock_name;
+   listEl.classList.add("hidden");
+   $("runBtn").click();
+  });
+  listEl.appendChild(div);
+ });
+ listEl.classList.remove("hidden");
+}
 let fullChartSeries=[];
 let instSeriesCache=[];
 let activeIdx=-1;
@@ -965,6 +1249,277 @@ function detectReversalSignals(series,isEtf){
    signals:[]
   };
  }
+}
+
+// 抓取個股總發行股數（用於精準計算每日周轉率 = 成交股數 / 總發行股數 * 100%）
+async function fetchIssuedShares(code){
+ // 優先嘗試 FinMind TaiwanStockShareholding 取得最新發行股數 (NumberOfSharesIssued)
+ try{
+  const rows=await fetchFinMind("TaiwanStockShareholding",code,getDateStr(20));
+  if(Array.isArray(rows)&&rows.length){
+   const last=rows[rows.length-1];
+   const issued=Number(last.NumberOfSharesIssued||last.number_of_shares_issued||0);
+   if(issued>0)return {shares:issued,source:"集保/證交所最新發行股數"};
+  }
+ }catch(e){}
+ // 備援：嘗試從 TaiwanStockBalanceSheet 取得實收資本額 (OrdinaryShare / CapitalStock) 換算股數（面額 10 元）
+ try{
+  const bs=await fetchFinMind("TaiwanStockBalanceSheet",code,getDateStr(200));
+  if(Array.isArray(bs)&&bs.length){
+   const capRow=[...bs].reverse().find(r=>String(r.type||"").includes("OrdinaryShare")||String(r.type||"").includes("CapitalStock")||String(r.origin_name||"").includes("股本"));
+   if(capRow&&Number(capRow.value)>0){
+    const shares=Math.round(Number(capRow.value)/10);
+    if(shares>0)return {shares,source:"財報普通股股本換算"};
+   }
+  }
+ }catch(e){}
+ return {shares:0,source:"查無發行股數"};
+}
+
+// 評估個股 16 條實戰量價與周轉率口訣（僅個股適用，ETF 不適用）
+function evaluate16StockRules(series,issuedSharesInfo){
+ const totalRules=16;
+ if(!series||series.length<3){
+  return {matchedCount:0,totalRules,turnoverText:"資料不足",rules:[]};
+ }
+ const n=series.length;
+ const pt=series[n-1];
+ const prev=series[n-2];
+ const prev2=series[n-3];
+
+ // 1. 近 60 日價格位階 (0% ~ 100%)
+ const win60=series.slice(Math.max(0,n-60));
+ const low60=Math.min(...win60.map(x=>x.low));
+ const high60=Math.max(...win60.map(x=>x.high));
+ const posPct=(high60>low60)?((pt.close-low60)/(high60-low60))*100:50;
+ const isLowPos=posPct<=35;
+ const isHighPos=posPct>=65;
+ const posLabel=isLowPos?`低位區 (${posPct.toFixed(0)}%)`:isHighPos?`高位區 (${posPct.toFixed(0)}%)`:`中位區 (${posPct.toFixed(0)}%)`;
+
+ // 2. 量比與量價變化
+ const volRatio=pt.vma5>0?(pt.volLots/pt.vma5):1;
+ const volChgVsPrev=prev.volLots>0?((pt.volLots-prev.volLots)/prev.volLots)*100:0;
+ const priceChgPct=pt.prevClose>0?((pt.close-pt.prevClose)/pt.prevClose)*100:0;
+
+ const isNoVol=volRatio<0.80;
+ const isHighVol=volRatio>=1.30;
+
+ const isVolUp=volChgVsPrev>15||volRatio>=1.20;
+ const isVolDown=volChgVsPrev<-15||volRatio<=0.80;
+ const isVolFlat=!isVolUp&&!isVolDown;
+
+ const isPriceUp=priceChgPct>0.8;
+ const isPriceDown=priceChgPct<-0.8;
+ const isPriceFlat=!isPriceUp&&!isPriceDown;
+
+ // 3. 周轉率計算（當日成交張數 * 1000 / 總發行股數 * 100%）
+ const totalIssued=issuedSharesInfo&&issuedSharesInfo.shares>0?issuedSharesInfo.shares:0;
+ const calcTurn=bar=>totalIssued>0?((bar.volLots*1000)/totalIssued)*100:null;
+ const t0=calcTurn(pt);
+ const t1=calcTurn(prev);
+ const t2=calcTurn(prev2);
+ const hasTurnover=t0!==null&&t1!==null&&t2!==null;
+
+ let turnLevel=null;
+ if(hasTurnover){
+  if(t0<0.5)turnLevel={cls:"cold",label:"❄️ 0.5% 以下｜交投清淡，屬於冷門股、少有人問津"};
+  else if(t0<1.5)turnLevel={cls:"normal",label:"📘 0.5%～1.5%｜屬於普通股"};
+  else if(t0<3.0)turnLevel={cls:"active",label:"👀 1.5%～3%｜有一定關注度"};
+  else if(t0<5.0)turnLevel={cls:"hot",label:"🔥 3%～5%｜屬於熱門股，短線資金積極進出"};
+  else if(t0<8.0)turnLevel={cls:"overheat",label:"⚠️ 5%～8%｜已經算過熱，容易出現大幅波動"};
+  else turnLevel={cls:"extreme",label:"🚨 8% 以上｜極度過熱，常伴隨急速上漲或崩跌，風險高"};
+ }
+
+ const turnoverText=hasTurnover
+  ?`今日 ${t0.toFixed(2)}%（前1日 ${t1.toFixed(2)}% ／ 前2日 ${t2.toFixed(2)}%，${issuedSharesInfo.source}）`
+  :"查無公開發行股本數據，第 13、16 條周轉率口訣暫無法自動換算";
+
+ // 4. 第 11 條：漲超 7% 且未亮燈（漲停約 9.5% 以上）
+ const r11Match=priceChgPct>=7.0&&priceChgPct<9.5;
+
+ // 5. 第 12 條：第一次回踩月線（前期連續站穩月線 >= 8 日，今日盤中回測月線 +-1.5% 內且收盤守穩月線）
+ let r12Match=false;
+ let r12Detail="尚未觸發首次回踩月線條件";
+ if(pt.ma20&&n>=12){
+  let aboveStreak=0;
+  for(let i=n-2;i>=Math.max(0,n-20);i--){
+   if(series[i].ma20&&series[i].close>series[i].ma20)aboveStreak++;
+   else break;
+  }
+  const distLowToMa20=Math.abs(pt.low-pt.ma20)/pt.ma20;
+  const touchedMa20=pt.low<=pt.ma20*1.015&&pt.close>=pt.ma20*0.995;
+  if(aboveStreak>=8&&touchedMa20){
+   r12Match=true;
+   r12Detail=`已連續 ${aboveStreak} 日站穩月線 (${fmt(pt.ma20)}) 後首度回踩並守穩，符合第一買點`;
+  }else{
+   r12Detail=`月線 ${fmt(pt.ma20)}（此前連站月線 ${aboveStreak} 日，今日最低 ${fmt(pt.low)}）`;
+  }
+ }
+
+ // 6. 第 13 條：連續三天周轉率低於 5%
+ const r13Match=hasTurnover&&(t0<5&&t1<5&&t2<5);
+ const r13Detail=hasTurnover
+  ?`近 3 日周轉率為 ${t2.toFixed(2)}% → ${t1.toFixed(2)}% → ${t0.toFixed(2)}%（${r13Match?"已連續 3 日低於 5%":"未連 3 日低於 5%"}）`
+  :"缺乏發行股數資料，無法計算連 3 日周轉率";
+
+ // 7. 第 14 條：低位放量上漲 -> 量縮回調 -> 再次放量上漲（近 15 日 N 字量價突破）
+ let r14Match=false;
+ let r14Detail="近 15 日尚未完成「低位放量漲→量縮回調→再放量漲」三段式結構";
+ if(n>=12){
+  const sub=series.slice(-15);
+  const lastBar=sub[sub.length-1];
+  const todaySurge=lastBar.close>lastBar.open&&lastBar.vma5>0&&(lastBar.volLots/lastBar.vma5)>=1.25&&((lastBar.close-lastBar.prevClose)/lastBar.prevClose)*100>=1.5;
+  if(todaySurge){
+   // 尋找前段（倒數第 5～14 根）曾出現低位放量紅K，且中間（倒數第 2～4 根）出現量縮回調
+   let firstLegIdx=-1;
+   for(let i=0;i<=sub.length-5;i++){
+    const b=sub[i];
+    const bPos=(high60>low60)?((b.close-low60)/(high60-low60))*100:50;
+    if(bPos<=45&&b.close>b.open&&b.vma5>0&&(b.volLots/b.vma5)>=1.25){
+     firstLegIdx=i;
+     break;
+    }
+   }
+   if(firstLegIdx>=0){
+    const midBars=sub.slice(firstLegIdx+1,sub.length-1);
+    const hasPullback=midBars.some(m=>m.volLots<sub[firstLegIdx].volLots*0.85&&m.low>=sub[firstLegIdx].low*0.97);
+    if(hasPullback){
+     r14Match=true;
+     r14Detail=`於 ${sub[firstLegIdx].shortDate} 低位放量啟動後量縮回調守低，今日再度放量收漲 +${priceChgPct.toFixed(2)}%`;
+    }
+   }
+  }
+ }
+
+ // 8. 第 15 條：5 日攻擊線上穿 10 日均線形成金叉
+ const r15Match=Boolean(pt.ma5&&pt.ma10&&prev.ma5&&prev.ma10&&prev.ma5<=prev.ma10&&pt.ma5>pt.ma10);
+ const r15Detail=(pt.ma5&&pt.ma10)
+  ?`今日 MA5 (${fmt(pt.ma5)}) vs MA10 (${fmt(pt.ma10)})，昨日 MA5 (${fmt(prev.ma5)}) vs MA10 (${fmt(prev.ma10)})`
+  :"均線資料不足";
+
+ // 9. 第 16 條：高位放出天量，周轉率超過 20%
+ const r16Match=hasTurnover&&isHighPos&&t0>20;
+ const r16Detail=hasTurnover
+  ?`目前位階 ${posLabel}，今日周轉率 ${t0.toFixed(2)}%（${t0>20?"已超過 20% 天量門檻":"未達 20%"}）`
+  :"缺乏發行股數資料，無法判斷周轉率是否超過 20%";
+
+ const rules=[
+  {
+   no:1,
+   title:"1、低位無量要等，等錯也要等",
+   matched:isLowPos&&isNoVol,
+   tone:"wait",
+   detail:`位階：${posLabel}｜量比：${volRatio.toFixed(2)}x（<0.80 為無量）`
+  },
+  {
+   no:2,
+   title:"2、高位無量要抱，抱錯也要抱",
+   matched:isHighPos&&isNoVol,
+   tone:"bull",
+   detail:`位階：${posLabel}｜量比：${volRatio.toFixed(2)}x（<0.80 為無量）`
+  },
+  {
+   no:3,
+   title:"3、低位放量要進，進錯也要進，並且還要加碼",
+   matched:isLowPos&&isHighVol&&pt.close>=pt.open,
+   tone:"bull",
+   detail:`位階：${posLabel}｜量比：${volRatio.toFixed(2)}x（≥1.30 放量）｜今日漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:4,
+   title:"4、高位放量要跑，跑錯了也要跑",
+   matched:isHighPos&&volRatio>=1.45,
+   tone:"bear",
+   detail:`位階：${posLabel}｜量比：${volRatio.toFixed(2)}x（≥1.45 高位爆量）`
+  },
+  {
+   no:5,
+   title:"5、量價齊升，進場",
+   matched:isVolUp&&isPriceUp,
+   tone:"bull",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（量比 ${volRatio.toFixed(2)}x）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:6,
+   title:"6、量增價跌，賣出",
+   matched:isVolUp&&isPriceDown,
+   tone:"bear",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（量比 ${volRatio.toFixed(2)}x）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:7,
+   title:"7、量增價平，做空",
+   matched:isVolUp&&isPriceFlat,
+   tone:"bear",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（量比 ${volRatio.toFixed(2)}x）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%（±0.8% 滯漲）`
+  },
+  {
+   no:8,
+   title:"8、量平價漲，加碼",
+   matched:isVolFlat&&isPriceUp,
+   tone:"bull",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（持平）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:9,
+   title:"9、量平價跌，賣出",
+   matched:isVolFlat&&isPriceDown,
+   tone:"bear",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（持平）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:10,
+   title:"10、量減價升，抱住",
+   matched:isVolDown&&isPriceUp,
+   tone:"bull",
+   detail:`量變 ${volChgVsPrev>=0?"+":""}${volChgVsPrev.toFixed(0)}%（量比 ${volRatio.toFixed(2)}x）｜漲跌 ${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%`
+  },
+  {
+   no:11,
+   title:"11、任何一隻個股，漲超 7%，還沒有亮燈，有賺就該賣出",
+   matched:r11Match,
+   tone:"bear",
+   detail:`當日漲跌幅：${priceChgPct>=0?"+":""}${priceChgPct.toFixed(2)}%（區間 +7.0%～+9.4% 未漲停觸發）`
+  },
+  {
+   no:12,
+   title:"12、任何一檔股，只要第一次回踩月線，就是第一買點",
+   matched:r12Match,
+   tone:"bull",
+   detail:r12Detail
+  },
+  {
+   no:13,
+   title:"13、任何一檔股，只要連續三天，周轉率低於 5%，就要賣",
+   matched:r13Match,
+   tone:"bear",
+   detail:r13Detail
+  },
+  {
+   no:14,
+   title:"14、任何一檔股，當股價在低位出現放量上漲，然後又量縮回調，接著再次放量上漲，就可以果斷買入",
+   matched:r14Match,
+   tone:"bull",
+   detail:r14Detail
+  },
+  {
+   no:15,
+   title:"15、任何一檔股，當 5 日攻擊線，上穿 10 日均線形成金叉，可以小買",
+   matched:r15Match,
+   tone:"bull",
+   detail:r15Detail
+  },
+  {
+   no:16,
+   title:"16、任何一檔股，高位放出天量，只要周轉率超過 20%，必須要賣",
+   matched:r16Match,
+   tone:"bear",
+   detail:r16Detail
+  }
+ ];
+
+ const matchedCount=rules.filter(r=>r.matched).length;
+ return {matchedCount,totalRules,turnoverText,turnLevel,rules};
 }
 
 // 雙軌技術評分引擎：自動區分 ETF（波段趨勢與超賣低接）與 個股（攻擊動能與紅牛股）+ 逐項符合說明
@@ -1665,7 +2220,7 @@ function enterPrintMode(){
  const now=new Date();
  const dateStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
  const timeStr=`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
- const code=$("code").value.trim().toUpperCase();
+ const rawCodeVal=$("code").value.trim().toUpperCase();const code=(rawCodeVal.match(/^([0-9A-Z]{4,6})/)||["",rawCodeVal])[1];
  const sName=stockNameCache||"個股";
  const typeLabel=isEtfAsset?"ETF 波段趨勢模型":"個股攻擊動能模型";
  $("printMeta").textContent=`分析標的：${sName} (${code}) [${typeLabel}] ｜ 報表產出時間：${dateStr} ${timeStr}`;
@@ -1782,7 +2337,7 @@ async function fetchRealtimeTwse(code){
 }
 
 function runOptionalCalculation(silent=false){
- const code=$("code").value.trim().toUpperCase();
+ const rawCodeVal=$("code").value.trim().toUpperCase();const code=(rawCodeVal.match(/^([0-9A-Z]{4,6})/)||["",rawCodeVal])[1];
  const shares=v("shares");
  const buyRaw=$("buy").value.trim(),targetRaw=$("target").value.trim(),curRaw=$("current").value.trim();
  const buy=Number(buyRaw),target=Number(targetRaw),current=Number(curRaw);
@@ -1846,31 +2401,61 @@ function runOptionalCalculation(silent=false){
  return true;
 }
 
-$("code").addEventListener("input",()=>{stockNameCache=""});
+$("code").addEventListener("focus",()=>{
+ ensureStockDirectory().then(()=>{
+  if($("code").value.trim())renderCodeSuggestions($("code").value);
+ });
+});
+$("code").addEventListener("input",e=>{
+ stockNameCache="";
+ ensureStockDirectory();
+ renderCodeSuggestions(e.target.value);
+});
+$("code").addEventListener("blur",()=>{
+ setTimeout(()=>$("codeSuggestList").classList.add("hidden"),160);
+});
 
 $("runBtn").addEventListener("click",async()=>{
- const code=$("code").value.trim().toUpperCase();
- if(!/^[0-9A-Z]{4,6}$/.test(code)){
+ $("codeSuggestList").classList.add("hidden");
+ const rawInput=$("code").value.trim();
+ if(!rawInput){
   if(runOptionalCalculation(false)){
    $("status").textContent="已完成手動輸入價格之試算。";
   }else{
-   $("status").textContent="請輸入 4 至 6 碼股票或 ETF 代號（例如 5314、2330、00919）。";
+   $("status").textContent="請輸入股票／ETF 代號或中文名稱（例如 1802、台玻、00919）。";
    $("code").focus();
   }
   return;
  }
 
  $("runBtn").disabled=true;$("runBtn").textContent="查詢行情與計算中…";
- $("status").textContent="正在同步抓取最新股價、六均線K線、KD 走勢與三大法人資料…";
+ $("status").textContent="正在比對股票代號／中文名稱並抓取最新行情…";
+
+ const resolved=await resolveStockCodeInput(rawInput);
+ if(!resolved||!/^[0-9A-Z]{4,6}$/.test(resolved.code)){
+  $("runBtn").disabled=false;$("runBtn").textContent="查詢股價並自動計算";
+  if(runOptionalCalculation(false)){
+   $("status").textContent="已完成手動輸入價格之試算。";
+  }else{
+   $("status").textContent=`找不到符合「${rawInput}」的台股或 ETF，請確認名稱或直接輸入 4～6 碼代號（如 1802 台玻）。`;
+   $("code").focus();
+  }
+  return;
+ }
+
+ const code=resolved.code;
+ if(resolved.matchedName)stockNameCache=resolved.matchedName;
+ $("status").textContent=`已鎖定 ${code}${resolved.matchedName?" "+resolved.matchedName:""}，正在同步抓取最新股價、六均線K線、KD 走勢與三大法人資料…`;
 
  try{
-  const [liveBar,histPrices,info,instRaw]=await Promise.all([
+  const [liveBar,histPrices,info,instRaw,issuedInfo]=await Promise.all([
    fetchRealtimeTwse(code).catch(()=>null),
    fetchFinMind("TaiwanStockPrice",code,getDateStr(400))
     .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(110)))
     .catch(()=>fetchFinMind("TaiwanStockPrice",code,getDateStr(50))),
    fetchFinMind("TaiwanStockInfo",code).catch(()=>[]),
-   fetchFinMind("TaiwanStockInstitutionalInvestorsBuySell",code,getDateStr(45)).catch(()=>[])
+   fetchFinMind("TaiwanStockInstitutionalInvestorsBuySell",code,getDateStr(45)).catch(()=>[]),
+   fetchIssuedShares(code).catch(()=>({shares:0,source:"查無發行股數"}))
   ]);
 
   let mergedPrices=Array.isArray(histPrices)?[...histPrices]:[];
@@ -1998,6 +2583,32 @@ $("runBtn").addEventListener("click",async()=>{
     revList.appendChild(empty);
    }
 
+   // 渲染 16 條實戰量價與周轉率口訣（僅一般個股顯示，ETF 自動隱藏）
+   const f16Box=$("formula16Box");
+   if(!isEtfAsset){
+    const res16=evaluate16StockRules(series,issuedInfo);
+    $("f16Badge").textContent=`符合 ${res16.matchedCount} / ${res16.totalRules} 項要件`;
+    $("f16TurnoverInfo").textContent=res16.turnoverText;
+    const lvlBadge=$("f16TurnLevelBadge");
+    if(res16.turnLevel){
+     lvlBadge.textContent=res16.turnLevel.label;
+     lvlBadge.className="f16-turn-level "+res16.turnLevel.cls;
+     lvlBadge.classList.remove("hidden");
+    }else{
+     lvlBadge.classList.add("hidden");
+    }
+    const f16Grid=$("f16Grid");f16Grid.innerHTML="";
+    res16.rules.forEach(r=>{
+     const item=document.createElement("div");
+     item.className="f16-item"+(r.matched?` matched ${r.tone}`:"");
+     item.innerHTML=`<span class="f16-check">${r.matched?"✅":"⬜"}</span><div class="f16-body"><div class="f16-rule-txt">${r.title}</div><div class="f16-detail">${r.detail}</div></div>`;
+     f16Grid.appendChild(item);
+    });
+    f16Box.classList.remove("hidden");
+   }else{
+    f16Box.classList.add("hidden");
+   }
+
    // 渲染專屬策略檢核箱
    $("rbGrade").textContent=st.badge;
    $("rbSummary").textContent=st.summary;
@@ -2090,6 +2701,7 @@ $("runBtn").addEventListener("click",async()=>{
  $(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
 });
 $("code").addEventListener("keydown",e=>{if(e.key==="Enter")$("runBtn").click()});
+setTimeout(()=>ensureStockDirectory(),500);
 </script>
 </body>
 </html>
