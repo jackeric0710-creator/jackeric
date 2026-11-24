@@ -498,109 +498,186 @@ canvas{width:100%;height:100%;display:block;cursor:crosshair}
 /* 全白底省墨 PDF 匯出／列印專用樣式 */
 .print-meta{display:none}
 @media print{
- @page{size:A4 portrait;margin:10mm}
- html,body{background:#ffffff!important;color:#0f172a!important;padding:0!important;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- main{max-width:100%!important}
- header{margin:0 0 10px!important;padding-bottom:8px;border-bottom:2px solid #1e293b}
- h1{color:#0f172a!important;font-size:18px!important}
- .logo,.sub,#inputCard,.kd-toggle,.pdf-action-bar,.zoom-controls,.zoom-hint-txt{display:none!important}
- .print-meta{display:block!important;font-size:11.5px;color:#334155;margin-top:4px;font-weight:700}
- .stock-banner{background:#ffffff!important;border:1.5px solid #334155!important;box-shadow:none!important;margin-top:6px!important;padding:6px 14px!important}
- .sb-tag{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #cbd5e1!important}
- .stock-banner .sb-name{color:#0f172a!important;font-size:20px!important}
- .stock-banner .sb-code{color:#1d4ed8!important;font-size:18px!important}
- .stock-banner .sb-price{width:auto!important;border-top:0!important;border-left:1px solid #cbd5e1!important;padding-left:10px!important;font-size:19px!important}
+ @page{size:A4 portrait;margin:9mm 8mm}
+ html,body{
+  background:#ffffff!important;
+  background-image:none!important;
+  color:#0f172a!important;
+  padding:0!important;
+  margin:0!important;
+  width:100%!important;
+  font-size:11.5px!important;
+  line-height:1.45!important;
+  -webkit-print-color-adjust:exact!important;
+  print-color-adjust:exact!important;
+ }
+ main{max-width:100%!important;width:100%!important;margin:0!important}
+ .hidden{display:none!important}
 
- .taiex-top-section{grid-template-columns:1fr 1.15fr!important;gap:8px!important;margin-bottom:8px!important}
- .taiex-card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:9px 10px!important;border-radius:8px!important}
- .taiex-head{border-color:#cbd5e1!important}
- .taiex-title{color:#0f172a!important;font-size:14px!important}
- .taiex-date-tag{background:#f8fafc!important;color:#334155!important;border-color:#cbd5e1!important}
- .taiex-table-wrap{border-color:#cbd5e1!important;background:#ffffff!important}
- .taiex-table th{background:#f1f5f9!important;color:#0f172a!important;border-color:#cbd5e1!important}
- .taiex-table td,.taiex-table td:first-child{color:#1e293b!important;border-color:#e2e8f0!important}
- .taiex-summary-box,.taiex-sum-item,.taiex-verdict{background:#f8fafc!important;border-color:#cbd5e1!important;color:#0f172a!important}
- .taiex-sum-title{color:#1d4ed8!important}
- .taiex-sum-item small{color:#475569!important}
- .card{background:#ffffff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;padding:10px 12px!important;margin-bottom:8px!important;break-inside:auto!important;page-break-inside:auto!important;border-radius:8px!important}
- .ind-match-box,.reversal-box,.strategy-box,.formula16-box,.terminal,.tablewrap{break-inside:auto!important;page-break-inside:auto!important}
- .ind-match-item,.rev-item,.rb-item,.f16-item,.metric,.score-hero{break-inside:avoid!important;page-break-inside:avoid!important;padding:5px 8px!important}
- .ind-match-box,.reversal-box,.strategy-box,.formula16-box{padding:9px 11px!important;margin-top:8px!important}
+ /* 隱藏操作列與互動控制元件 */
+ .logo,.sub,#inputCard,.kd-toggle,.pdf-action-bar,.zoom-controls,.zoom-hint-txt,.ma-toggles .zoom-bar-row>span{display:none!important}
+
+ /* 報表頁首與標的橫幅 */
+ header{margin:0 0 8px!important;padding-bottom:6px!important;border-bottom:2px solid #1e293b!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ h1{color:#0f172a!important;font-size:16.5px!important;margin:0 0 3px!important}
+ .print-meta{display:block!important;font-size:11px!important;color:#334155!important;margin-top:3px!important;font-weight:700!important}
+ .stock-banner{
+  background:#ffffff!important;border:1.5px solid #334155!important;box-shadow:none!important;
+  margin-top:6px!important;padding:6px 12px!important;border-radius:8px!important;
+  display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;gap:8px!important;
+ }
+ .sb-tag{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #94a3b8!important;font-size:11px!important;padding:2px 7px!important}
+ .stock-banner .sb-name{color:#0f172a!important;font-size:18px!important}
+ .stock-banner .sb-code{color:#1d4ed8!important;font-size:16.5px!important}
+ .stock-banner .sb-price{width:auto!important;margin-top:0!important;padding-top:0!important;border-top:0!important;border-left:1.5px solid #cbd5e1!important;padding-left:10px!important;font-size:17.5px!important}
+
+ /* 頂部大盤籌碼雙欄排版防擠壓 */
+ .taiex-top-section{
+  display:grid!important;grid-template-columns:1fr 1.18fr!important;gap:8px!important;margin-bottom:8px!important;
+  break-inside:avoid!important;page-break-inside:avoid!important;
+ }
+ .taiex-card{
+  background:#ffffff!important;border:1px solid #94a3b8!important;box-shadow:none!important;
+  padding:8px 9px!important;border-radius:8px!important;overflow:visible!important;
+ }
+ .taiex-head{border-color:#cbd5e1!important;margin-bottom:6px!important;padding-bottom:4px!important}
+ .taiex-title{color:#0f172a!important;font-size:13px!important}
+ .taiex-date-tag{background:#f8fafc!important;color:#334155!important;border-color:#cbd5e1!important;font-size:10px!important;padding:1px 6px!important}
+ .taiex-table-wrap{border-color:#cbd5e1!important;background:#ffffff!important;overflow:visible!important}
+ .taiex-table{font-size:10.5px!important;width:100%!important}
+ .taiex-table th{background:#f1f5f9!important;color:#0f172a!important;border-color:#cbd5e1!important;padding:4px 3px!important;font-size:10px!important}
+ .taiex-table td,.taiex-table td:first-child{color:#1e293b!important;border-color:#e2e8f0!important;padding:4px 3px!important;font-size:10.5px!important}
+ .taiex-summary-box{background:#f8fafc!important;border-color:#cbd5e1!important;padding:6px 7px!important;margin-top:6px!important}
+ .taiex-sum-grid{grid-template-columns:repeat(3,1fr)!important;gap:5px!important}
+ .taiex-sum-grid .taiex-sum-item:first-child{grid-column:auto!important}
+ .taiex-sum-item,.taiex-verdict{background:#ffffff!important;border-color:#cbd5e1!important;color:#0f172a!important;padding:4px 6px!important}
+ .taiex-sum-title{color:#1d4ed8!important;font-size:10.5px!important;margin-bottom:4px!important}
+ .taiex-sum-item small{color:#475569!important;font-size:9.5px!important}
+ .taiex-sum-item strong{font-size:11px!important}
+ .taiex-verdict{font-size:10.5px!important;margin-top:5px!important;padding:4px 7px!important}
+
+ /* 卡片與標題分頁防斷裂控制 */
+ .card{
+  background:#ffffff!important;border:1px solid #94a3b8!important;box-shadow:none!important;
+  padding:9px 11px!important;margin-bottom:8px!important;border-radius:8px!important;
+  break-inside:auto!important;page-break-inside:auto!important;
+ }
+ .subhead,.section,.guide-block h3,.ind-match-head,.rev-head,.f16-head,.rb-head{
+  break-after:avoid!important;page-break-after:avoid!important;
+ }
+ .section{color:#0f172a!important;font-size:14px!important;margin-bottom:6px!important}
+ .subhead{margin-bottom:6px!important}
+
+ /* 圖表容器整塊保護，避免 K 線/量能/KD 被跨頁腰斬 */
+ .terminal{
+  background:#ffffff!important;border:1px solid #94a3b8!important;color:#0f172a!important;
+  padding:7px 8px!important;margin-top:6px!important;border-radius:8px!important;
+  break-inside:avoid!important;page-break-inside:avoid!important;
+ }
+ .canvas-box{width:100%!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ #intradayCard .canvas-box{height:190px!important}
+ #kdCard .canvas-box:nth-of-type(1){height:175px!important}
+ #kdCard .canvas-box:nth-of-type(2){height:75px!important}
+ #kdCard .canvas-box:nth-of-type(3){height:135px!important}
+ #instCard .canvas-box,#marginCard .canvas-box{height:105px!important}
+ canvas{width:100%!important;height:100%!important;max-width:100%!important}
+
+ /* 指標項目、口訣卡片與格線排版 */
+ .ind-match-box,.reversal-box,.strategy-box,.formula16-box{
+  padding:8px 10px!important;margin-top:7px!important;border-radius:8px!important;
+  break-inside:auto!important;page-break-inside:auto!important;
+ }
+ .ind-match-item,.rev-item,.rb-item,.f16-item,.metric,.score-hero,.chip-trend-banner,.intraday-stat{
+  break-inside:avoid!important;page-break-inside:avoid!important;
+ }
+ .ind-match-item,.rev-item,.rb-item,.f16-item{padding:5px 8px!important;font-size:11.5px!important}
  .ind-match-list,.rev-list,.rb-grid,.f16-grid{gap:5px!important}
- .f16-grid{grid-template-columns:1fr 1fr!important}
+ .f16-grid,.rb-grid{grid-template-columns:1fr 1fr!important}
  .formula16-box{background:#ffffff!important;border:1.5px solid #0284c7!important}
- .f16-title{color:#0369a1!important}
- .f16-badge{background:#f0f9ff!important;color:#0369a1!important;border:1px solid #38bdf8!important}
- .f16-turnover-bar{background:#f8fafc!important;border:1px solid #cbd5e1!important;color:#0f172a!important;padding:5px 9px!important;margin-bottom:6px!important}
- .f16-turn-level{background:#ffffff!important;color:#0f172a!important;border:1px solid #475569!important}
+ .f16-title{color:#0369a1!important;font-size:13.5px!important}
+ .f16-badge{background:#f0f9ff!important;color:#0369a1!important;border:1px solid #38bdf8!important;font-size:11px!important}
+ .f16-turnover-bar{background:#f8fafc!important;border:1px solid #cbd5e1!important;color:#0f172a!important;padding:5px 8px!important;margin-bottom:6px!important;font-size:11.5px!important;break-inside:avoid!important}
+ .f16-turn-level{background:#ffffff!important;color:#0f172a!important;border:1px solid #475569!important;font-size:11px!important}
  .f16-turn-level.hot,.f16-turn-level.overheat,.f16-turn-level.extreme{color:#dc2626!important;border-color:#dc2626!important}
- .f16-turn-note{color:#334155!important}
+ .f16-turn-note{color:#334155!important;font-size:10.5px!important}
  .f16-item{background:#ffffff!important;border:1px solid #cbd5e1!important}
  .f16-item.matched{background:#f0f9ff!important;border:1.5px solid #0284c7!important}
  .f16-item.matched.bull{background:#fff1f2!important;border-color:#dc2626!important}
  .f16-item.matched.bear{background:#ecfdf5!important;border-color:#059669!important}
  .f16-item.matched.wait{background:#fffbeb!important;border-color:#d97706!important}
- .f16-rule-txt{color:#475569!important}
+ .f16-rule-txt{color:#475569!important;font-size:11.5px!important}
  .f16-item.matched .f16-rule-txt{color:#0f172a!important}
  .f16-item.matched.bull .f16-rule-txt{color:#dc2626!important}
  .f16-item.matched.bear .f16-rule-txt{color:#059669!important}
  .f16-item.matched.wait .f16-rule-txt{color:#b45309!important}
- .f16-detail,.f16-item.matched .f16-detail{color:#334155!important}
- .canvas-box{break-inside:avoid!important;page-break-inside:avoid!important}
- .section{color:#0f172a!important;font-size:15px!important}
- .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
+ .f16-detail,.f16-item.matched .f16-detail{color:#334155!important;font-size:10.5px!important}
+
+ .mode-chip{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important;font-size:11px!important;padding:3px 8px!important;margin-bottom:6px!important}
  .score-hero,.metric,.rb-item,.tech-tag,.pill,.ind-match-box,.ind-match-item,.rev-item,.chip-trend-banner,.chip-streak-pill{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#0f172a!important}
- .pe-grid{grid-template-columns:repeat(4,1fr)!important}
+ .metric{padding:6px 8px!important}
+ .metric small{color:#475569!important;font-size:10.5px!important;margin-bottom:2px!important}
+ .metric strong{font-size:13.5px!important}
+ .intraday-meta-grid{grid-template-columns:repeat(5,1fr)!important;gap:6px!important;margin-bottom:7px!important}
+ .intraday-stat{padding:5px 7px!important}
+ .intraday-stat strong{font-size:12px!important}
+ .pe-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px!important}
+ .metrics{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+ .metrics-5{grid-template-columns:repeat(5,1fr)!important;gap:6px!important}
+ .metrics-5 .metric:last-child{grid-column:auto!important}
+
  .ind-match-item.bull{border-left:4px solid #dc2626!important}
  .ind-match-item.bear{border-left:4px solid #059669!important}
  .ind-match-item.neutral{border-left:4px solid #d97706!important}
  .ind-match-item.etf-buy{border-left:4px solid #7e22ce!important}
- .ind-badge{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #cbd5e1!important}
- .ind-match-head{color:#0f172a!important}
+ .ind-badge{background:#f1f5f9!important;color:#0f172a!important;border:1px solid #cbd5e1!important;font-size:10.5px!important}
+ .ind-match-head{color:#0f172a!important;font-size:13px!important}
  .reversal-box{background:#ffffff!important;border:1.5px solid #64748b!important}
  .reversal-box.bull-rev{border-color:#dc2626!important}
  .reversal-box.bear-rev{border-color:#059669!important}
  .reversal-box.mixed-rev{border-color:#d97706!important}
- .rev-title{color:#0f172a!important}
+ .rev-title{color:#0f172a!important;font-size:13.5px!important}
  .reversal-box.bull-rev .rev-title{color:#dc2626!important}
  .reversal-box.bear-rev .rev-title{color:#059669!important}
  .reversal-box.mixed-rev .rev-title{color:#b45309!important}
- .rev-status-pill{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important}
- #revSummary{color:#1e293b!important}
- .score-hero{flex-direction:row!important}
- .metrics{grid-template-columns:repeat(3,1fr)!important}
- .metrics-5{grid-template-columns:repeat(5,1fr)!important}
- .metrics-5 .metric:last-child{grid-column:auto!important}
- .rb-grid{grid-template-columns:1fr 1fr!important}
+ .rev-status-pill{background:#f8fafc!important;color:#0f172a!important;border:1px solid #94a3b8!important;font-size:11px!important}
+ #revSummary{color:#1e293b!important;font-size:11.5px!important}
+ .score-hero{flex-direction:row!important;padding:9px 11px!important;margin-bottom:7px!important}
+ .score-num{font-size:32px!important}
  .score-bar-bg{background:#e2e8f0!important}
- .signal-title-lg{color:#0f172a!important}
- .metric small{color:#475569!important}
+ .signal-title-lg{color:#0f172a!important;font-size:12.5px!important}
+ .tech-tag{font-size:11px!important;padding:3px 7px!important}
  .red{color:#dc2626!important}.green{color:#059669!important}.blue{color:#1d4ed8!important}.amber{color:#b45309!important}.purple{color:#7e22ce!important}
  .strategy-box{background:#ffffff!important;border:1.5px solid #f43f5e!important}
  .strategy-box.etf-mode{border-color:#8b5cf6!important}
- .rb-title{color:#be123c!important}
+ .rb-title{color:#be123c!important;font-size:13.5px!important}
  .strategy-box.etf-mode .rb-title{color:#6d28d9!important}
- .rb-badge{background:#fff1f2!important;color:#be123c!important;border:1px solid #fb7185!important}
+ .rb-badge{background:#fff1f2!important;color:#be123c!important;border:1px solid #fb7185!important;font-size:11px!important}
  .strategy-box.etf-mode .rb-badge{background:#f5f3ff!important;color:#6d28d9!important;border-color:#a78bfa!important}
  #rbSummary,.rb-item span{color:#0f172a!important}
- .terminal{background:#ffffff!important;border:1px solid #94a3b8!important;color:#0f172a!important}
- .ohlc-bar{flex-direction:row!important;border-color:#cbd5e1!important}
- .ohlc-items{display:flex!important;gap:12px!important}
- .ma-toggles,.chart-subbar{border-color:#cbd5e1!important;color:#0f172a!important}
- .ohlc-bar span,#barDate,#barVol,#instHoverText{color:#0f172a!important}
- #barVolMa5{color:#b45309!important}
- .ma-btn{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#334155!important}
+ .ohlc-bar{flex-direction:row!important;border-color:#cbd5e1!important;font-size:11.5px!important;padding-bottom:5px!important}
+ .ohlc-items{display:flex!important;gap:10px!important}
+ .ma-toggles,.chart-subbar{border-color:#cbd5e1!important;color:#0f172a!important;padding:4px 2px!important;font-size:11px!important}
+ .ma-group{flex-wrap:wrap!important;overflow:visible!important}
+ .ohlc-bar span,#barDate,#barVol,#instHoverText,#marginHoverText{color:#0f172a!important}
+ #barVolMa5{color:#0284c7!important}
+ #barVolMa20{color:#d97706!important}
+ .ma-btn{background:#ffffff!important;border:1px solid #cbd5e1!important;color:#334155!important;min-height:24px!important;padding:2px 7px!important;font-size:11px!important}
  .ma-btn.active{background:#f8fafc!important;border-color:#475569!important;color:#0f172a!important}
  .c-rsv{color:#4338ca!important}.c-k9{color:#dc2626!important}.c-d9{color:#059669!important}
- .note{color:#1e293b!important;font-size:11.5px!important}
- .guide-block{display:block!important;background:#ffffff!important;border:1px solid #cbd5e1!important;break-inside:auto}
- .guide-block h3{color:#0f172a!important;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
- .guide-block li,.guide-block p{color:#1e293b!important}
- .tablewrap{max-height:none!important;overflow:visible!important;border-color:#cbd5e1!important}
- th{background:#f1f5f9!important;color:#0f172a!important;border-bottom:1px solid #94a3b8!important}
- td,td:first-child{background:#ffffff!important;color:#1e293b!important;border-bottom:1px solid #e2e8f0!important}
- th:first-child{background:#f1f5f9!important}
- footer{color:#475569!important}
+ .note{color:#1e293b!important;font-size:11px!important;line-height:1.55!important}
+ .guide-block{display:block!important;background:#ffffff!important;border:1px solid #94a3b8!important;break-inside:auto!important}
+ .guide-block h3{color:#0f172a!important;border-bottom:1px solid #cbd5e1!important;padding-bottom:2px!important;margin:9px 0 4px!important;font-size:13px!important}
+ .guide-block li,.guide-block p{color:#1e293b!important;font-size:11px!important;margin-bottom:3px!important}
+
+ /* 明細資料表列印優化：自動換頁重複表頭、單列不斷裂 */
+ .tablewrap{max-height:none!important;overflow:visible!important;border-color:#94a3b8!important}
+ table{min-width:0!important;width:100%!important;font-size:10.5px!important}
+ thead{display:table-header-group!important}
+ tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ th{background:#f1f5f9!important;color:#0f172a!important;border-bottom:1px solid #94a3b8!important;padding:5px 4px!important;position:static!important}
+ td,td:first-child{background:#ffffff!important;color:#1e293b!important;border-bottom:1px solid #e2e8f0!important;padding:4px 4px!important;position:static!important}
+ th:first-child{background:#f1f5f9!important;position:static!important}
+ footer{color:#475569!important;font-size:10.5px!important;padding:4px 0!important}
 }
 </style>
 </head>
@@ -2731,6 +2808,12 @@ $("toggleMarginTable").addEventListener("click",()=>{
 });
 
 const origDocTitle=document.title;
+function redrawAllCanvasesForCurrentMode(){
+ renderAllCharts(-1);
+ if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
+ if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
+ if(intradayCache)drawIntradayChart(intradayCache,-1);
+}
 function enterPrintMode(){
  isPrintMode=true;
  activeIdx=-1;
@@ -2742,29 +2825,30 @@ function enterPrintMode(){
  const typeLabel=isEtfAsset?"ETF 波段趨勢模型":"個股攻擊動能模型";
  $("printMeta").textContent=`分析標的：${sName} (${code}) [${typeLabel}] ｜ 報表產出時間：${dateStr} ${timeStr}`;
  document.title=`${sName}_${code}_${dateStr}`;
- renderAllCharts(-1);
- if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
- if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
- if(intradayCache)drawIntradayChart(intradayCache,-1);
+ redrawAllCanvasesForCurrentMode();
 }
 function exitPrintMode(){
  if(!isPrintMode)return;
  isPrintMode=false;
  document.title=origDocTitle;
- renderAllCharts(-1);
- if(instSeriesCache.length)drawInstChart(instSeriesCache,-1);
- if(marginSeriesCache.length)drawMarginChart(marginSeriesCache,-1);
- if(intradayCache)drawIntradayChart(intradayCache,-1);
+ redrawAllCanvasesForCurrentMode();
 }
 window.addEventListener("beforeprint",enterPrintMode);
 window.addEventListener("afterprint",exitPrintMode);
+if(window.matchMedia){
+ const printMq=window.matchMedia("print");
+ const onPrintMediaChange=e=>{if(e.matches)enterPrintMode();else exitPrintMode();};
+ if(printMq.addEventListener)printMq.addEventListener("change",onPrintMediaChange);
+ else if(printMq.addListener)printMq.addListener(onPrintMediaChange);
+}
 
 $("exportPdfBtn").addEventListener("click",()=>{
  enterPrintMode();
- setTimeout(()=>{
-  window.print();
-  setTimeout(exitPrintMode,300);
- },150);
+ requestAnimationFrame(()=>{
+  setTimeout(()=>{
+   window.print();
+  },180);
+ });
 });
 
 function getDateStr(daysAgo){
